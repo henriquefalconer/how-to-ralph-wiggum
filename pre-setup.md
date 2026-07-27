@@ -22,11 +22,12 @@ Everything listed here is already installed and configured. Do NOT reinstall, re
 - `npm run dev` — dev server on port **3015**
 - `npm run build` — production build
 
-## AWS Infrastructure (already provisioned)
-- **RDS Postgres** — `resend-clone-db` in us-east-1, connection string in `.env` as `DATABASE_URL`
+## AWS Infrastructure (provisioned by `scripts/preflight.sh`)
+Resource names derive from `APP_NAME` in `scripts/preflight.sh` (default `product-clone`):
+- **RDS Postgres** — `${APP_NAME}-db` in us-east-1, connection string written to `.env` as `DATABASE_URL`
 - **AWS SES** — production mode (can send to anyone), `foreverbrowsing.com` domain verified with DKIM
-- **S3** — `resend-clone-storage-699486076867` with prefixes: `attachments/`, `templates/`, `inbound/`
-- **ECR** — `resend-clone` repository at `699486076867.dkr.ecr.us-east-1.amazonaws.com/resend-clone`
+- **S3** — `${APP_NAME}-storage-<account-id>`, create prefixes as the clone needs them
+- **ECR** — `${APP_NAME}` repository at `<account-id>.dkr.ecr.us-east-1.amazonaws.com/${APP_NAME}`
 - **AWS CLI** — configured via `~/.aws/credentials`, use `us-east-1` for SES
 
 ## Cloudflare DNS
@@ -58,10 +59,11 @@ scripts/           — Infrastructure and deploy scripts
 - `DASHBOARD_KEY` — master key for dashboard auth (set when needed)
 
 ## Target Product Login (if session expires)
-If the target product (e.g., resend.com) logs you out during inspection:
-- Email: `jaeyunha@foreverbrowsing.com`
-- Password: `Janda0317!@#`
-- Use Ever CLI to log back in: `ever click` on sign-in fields, `ever input` credentials, submit.
+The browser already holds a logged-in session for the target product — see
+"Browser & Target Account" in `CLAUDE.md` for the account email and how to reach
+the mailbox for confirmation links. If the target logs you out during inspection,
+sign back in with that account: `ever click` the sign-in fields, `ever input` the
+credentials, submit.
 
 ## Port
 Dev server runs on **3015**. Do not change this.

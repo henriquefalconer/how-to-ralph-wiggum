@@ -9,7 +9,7 @@
 - **Who:** Non-technical founders who want to build/clone a SaaS product
 - **What:** They know exactly what to build — but can't build and launch it at production quality themselves
 - **Pain:** Getting to production typically takes months or years, requires entire engineering teams, and costs significant money
-- **Story:** A solo founder sees a product like Resend, knows customers want it, knows exactly which features to copy — but gets stuck because frontend, backend, infra, APIs, auth, deployment, and ops are too much for one person
+- **Story:** A solo founder sees a product they could sell, knows customers want it, knows exactly which features to copy — but gets stuck because frontend, backend, infra, APIs, auth, deployment, and ops are too much for one person
 
 ## Slide 3: Solution
 - **One sentence:** Ralph-to-Ralph clones real products end-to-end — from browser analysis to deployed production software you own
@@ -29,5 +29,5 @@
 - **Bug fix loop:** Bugs Found → Fix → Retest (up to 5 cycles)
 
 ## Slide 5: Current Progress
-- Working Resend clone deployed to production
+- Working clone deployed to production
 - Full end-to-end pipeline operational: URL in → deployed product out

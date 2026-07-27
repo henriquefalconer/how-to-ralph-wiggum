@@ -4,7 +4,9 @@
 set -euo pipefail
 
 REGION="${AWS_REGION:-us-east-1}"
-APP_NAME="resend-clone"
+# Names every provisioned resource (RDS, S3, ECR). Override per target product:
+#   APP_NAME=pipefy-clone ./scripts/preflight.sh
+APP_NAME="${APP_NAME:-product-clone}"
 
 echo "=== Pre-flight Infrastructure Setup ==="
 echo "Region: $REGION"
@@ -22,7 +24,7 @@ else
     --engine postgres \
     --engine-version 15 \
     --master-username postgres \
-    --master-user-password "${DB_PASSWORD:-ResendClone2026!}" \
+    --master-user-password "${DB_PASSWORD:-ProductClone2026!}" \
     --allocated-storage 20 \
     --publicly-accessible \
     --backup-retention-period 0 \
@@ -34,7 +36,7 @@ else
 fi
 RDS_ENDPOINT=$(aws rds describe-db-instances --db-instance-identifier ${APP_NAME}-db --region $REGION --query 'DBInstances[0].Endpoint.Address' --output text)
 echo "RDS Endpoint: $RDS_ENDPOINT"
-echo "DATABASE_URL=postgresql://postgres:${DB_PASSWORD:-ResendClone2026!}@${RDS_ENDPOINT}:5432/${APP_NAME}" >> .env
+echo "DATABASE_URL=postgresql://postgres:${DB_PASSWORD:-ProductClone2026!}@${RDS_ENDPOINT}:5432/${APP_NAME}" >> .env
 
 # 2. SES - verify at least one sender identity for sandbox mode
 echo ""
