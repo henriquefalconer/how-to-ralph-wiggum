@@ -52,6 +52,20 @@ Phase 1: Inspect (Claude + Ever CLI) → Phase 2: Build (Claude + Playwright E2E
 - **Drizzle** — `drizzle.config.ts`, `npm run db:generate`, `npm run db:migrate`
 
 ## Environment
+- **GitHub CLI** — installed as a Windows binary, **not** on `PATH` as `gh`. Invoke it by full path:
+  ```bash
+  "/mnt/c/Program Files/GitHub CLI/gh.exe" auth status
+  ```
+  Plain `git push` over HTTPS has no credentials of its own and fails with
+  `could not read Username for 'https://github.com'`. `gh.exe` is already
+  authenticated, so it supplies them via the credential helper configured in
+  this repo:
+  ```bash
+  git config --local credential."https://github.com".helper \
+    '!"/mnt/c/Program Files/GitHub CLI/gh.exe" auth git-credential'
+  ```
+  With that set, `git push` works normally — the loops commit and push on their own.
+  Use `gh.exe` for any other GitHub work too (PRs, issues, API).
 - **AWS CLI** — pre-configured via `~/.aws/credentials`. `aws` commands and `@aws-sdk/*` packages work out of the box. Use `us-east-1` for SES.
 - **`.env`** contains:
   - `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ZONE_ID` — Cloudflare DNS management
