@@ -2,7 +2,7 @@
 
 ## What This Is
 A three-phase autonomous system that clones any SaaS product from just a URL.
-Phase 1: Inspect (Claude + Ever CLI) → Phase 2: Build (Claude + Playwright E2E) → Phase 3: QA (Codex + Ever CLI)
+Phase 1: Inspect (Claude + Ever CLI) → Phase 2: Build (Claude + Playwright E2E) → Phase 3: QA (Claude + Ever CLI)
 
 ## Tech Stack
 - **Framework**: Next.js 16 (App Router, Turbopack) — pre-installed, do not change

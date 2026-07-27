@@ -1,5 +1,5 @@
 #!/bin/bash
-# Phase 3: QA evaluation using Codex as independent evaluator
+# Phase 3: QA evaluation using a fresh Claude agent as independent evaluator
 # Runs Playwright regression first (fast), then Ever CLI for visual/interaction QA
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -12,7 +12,7 @@ if [ ! -f "prd.json" ]; then
   exit 1
 fi
 
-echo "=== RALPH-TO-RALPH: Phase 3 (QA with Codex) ==="
+echo "=== RALPH-TO-RALPH: Phase 3 (QA with Claude) ==="
 echo "Target: ${TARGET_URL:-none}"
 echo "Iterations: $ITERATIONS"
 echo ""
@@ -53,17 +53,9 @@ fi
 for ((i=1; i<=$ITERATIONS; i++)); do
   echo "--- QA iteration $i/$ITERATIONS ---"
 
-  # Use Codex as an independent evaluator (different model = different perspective)
-  result=$(timeout 1200 codex exec --dangerously-bypass-approvals-and-sandbox \
-"$(cat qa-prompt.md)
-
-Read these files before starting:
-@pre-setup.md
-@build-spec.md
-@prd.json
-@qa-progress.txt
-@qa-report.json
-@ever-cli-reference.md
+  # Use a fresh Claude agent as an independent evaluator (clean context, skeptical prompt)
+  result=$(timeout 1200 claude -p --dangerously-skip-permissions --chrome --model claude-opus-4-6 \
+"@qa-prompt.md @pre-setup.md @build-spec.md @prd.json @qa-progress.txt @qa-report.json @ever-cli-reference.md
 
 ITERATION: $i of $ITERATIONS
 ${TARGET_CONTEXT}

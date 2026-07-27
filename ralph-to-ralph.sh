@@ -38,7 +38,7 @@ echo ""
 ./build-ralph.sh "$BUILD_ITERS"
 
 echo ""
-echo ">>> Phase 3: QA (Codex as independent evaluator)"
+echo ">>> Phase 3: QA (Claude as independent evaluator)"
 echo ""
 ./qa-ralph.sh "$QA_ITERS"
 

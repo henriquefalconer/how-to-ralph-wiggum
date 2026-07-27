@@ -34,7 +34,7 @@ Ralph-to-Ralph runs a three-phase autonomous pipeline:
 
 ### Phase 3: QA (Ralph Loop #3)
 
-**Codex Agents (parallel)** verify everything works:
+**Claude QA Agents** verify everything works:
 - E2E testing via Ever CLI
 - Bug fixes + visual regression screenshots
 - Regression test suite
@@ -55,7 +55,7 @@ A strict watchdog wraps the entire pipeline, ensuring all Ralph loops stay stabl
 |-------|------|
 | **[Ever CLI](https://foreverbrowsing.com)** | Custom browser agent for site inspection and E2E testing |
 | **Claude Opus** | Powers the Inspect and Build loops — architecture, code generation, infra setup |
-| **Codex** | Runs parallel QA agents for fast, thorough verification |
+| **Claude (QA)** | Runs independent fresh-context QA agents for thorough verification |
 
 ## Demo Results: Resend.com Clone
 
