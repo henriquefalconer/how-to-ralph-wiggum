@@ -22,7 +22,7 @@ if [ -f ".ralph-watchdog.lock" ]; then
 fi
 
 # Initialize state files
-touch build-progress.txt inspect-progress.txt qa-progress.txt
+touch progress-build.txt progress-inspect.txt progress-qa.txt
 
 echo "Starting watchdog..."
 echo "=================================="

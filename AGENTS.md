@@ -29,7 +29,7 @@ Use Ever CLI for visual and interactive testing:
 ### Step 3: Real API testing
 The clone has its own REST API. Test it directly:
 ```bash
-# Test API endpoints (check build-progress.txt for dev API key and available routes)
+# Test API endpoints (check progress-build.txt for dev API key and available routes)
 curl -X POST http://localhost:3015/api/<endpoint> \
   -H "Authorization: Bearer <dev-api-key>" \
   -H "Content-Type: application/json" \
@@ -49,7 +49,7 @@ const { data, error } = await client.<resource>.<method>({...});
 ```
 
 ### Step 5: Deployed version
-If a live URL exists (check `build-progress.txt`), test the deployed version too. Same tests, different base URL.
+If a live URL exists (check `progress-build.txt`), test the deployed version too. Same tests, different base URL.
 
 ## What To Verify
 - **Functional**: CRUD works, forms validate, navigation correct, search/filter returns results

@@ -8,7 +8,7 @@ TARGET_URL="${1:-}"
 ITERATIONS="${2:-999}"
 
 if [ ! -f "prd.json" ]; then
-  echo "Error: prd.json not found. Run build-ralph.sh first."
+  echo "Error: prd.json not found. Run ralph-build.sh first."
   exit 1
 fi
 
@@ -18,7 +18,7 @@ echo "Iterations: $ITERATIONS"
 echo ""
 
 # Initialize
-touch qa-progress.txt
+touch progress-qa.txt
 if [ ! -f "qa-report.json" ]; then
   echo '[]' > qa-report.json
 fi
@@ -55,7 +55,7 @@ for ((i=1; i<=$ITERATIONS; i++)); do
 
   # Use a fresh Claude agent as an independent evaluator (clean context, skeptical prompt)
   result=$(timeout 1200 claude -p --dangerously-skip-permissions --chrome --model claude-opus-4-6 \
-"@qa-prompt.md @pre-setup.md @build-spec.md @prd.json @qa-progress.txt @qa-report.json @ever-cli-reference.md
+"@prompt-qa.md @pre-setup.md @spec-build.md @prd.json @progress-qa.txt @qa-report.json @ever-cli-reference.md
 
 ITERATION: $i of $ITERATIONS
 ${TARGET_CONTEXT}

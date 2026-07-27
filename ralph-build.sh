@@ -7,12 +7,12 @@ cd "$(dirname "$0")"
 ITERATIONS="${1:-999}"
 
 if [ ! -f "prd.json" ]; then
-  echo "Error: prd.json not found. Run inspect-ralph.sh first."
+  echo "Error: prd.json not found. Run ralph-inspect.sh first."
   exit 1
 fi
 
-if [ ! -f "build-spec.md" ]; then
-  echo "Error: build-spec.md not found. Run inspect-ralph.sh first."
+if [ ! -f "spec-build.md" ]; then
+  echo "Error: spec-build.md not found. Run ralph-inspect.sh first."
   exit 1
 fi
 
@@ -21,7 +21,7 @@ echo "Iterations: $ITERATIONS"
 echo ""
 
 # Initialize
-touch build-progress.txt
+touch progress-build.txt
 
 count_passes() {
   python3 -c "import json; d=json.load(open('prd.json')); print(sum(1 for x in d if x.get('passes', False)))" 2>/dev/null || echo "0"
@@ -42,7 +42,7 @@ for ((i=1; i<=$ITERATIONS; i++)); do
   fi
 
   result=$(timeout 1200 claude -p --dangerously-skip-permissions --chrome --model claude-opus-4-6 \
-"@build-prompt.md @pre-setup.md @build-spec.md @prd.json @build-progress.txt @CLAUDE.md
+"@prompt-build.md @pre-setup.md @spec-build.md @prd.json @progress-build.txt @CLAUDE.md
 
 ITERATION: $i of $ITERATIONS
 PROGRESS: $PASSES/$TOTAL features passed

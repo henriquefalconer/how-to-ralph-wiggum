@@ -6,7 +6,7 @@
     "page": "N/A \u2014 Backend",
     "ui_details": "N/A",
     "behavior": "Drizzle schema defines all tables with correct field types, relations, enums (email_status, domain_status, permission_type, etc.). Generates migration files via npm run db:generate.",
-    "data_model": "See section 5 of build-spec.md for all entity fields and types",
+    "data_model": "See section 5 of spec-build.md for all entity fields and types",
     "priority": 1,
     "core": true,
     "passes": true,

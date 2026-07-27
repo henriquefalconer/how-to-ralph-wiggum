@@ -14,9 +14,9 @@ You have access to the **original product URL** (passed as TARGET_URL). When con
 The original product is your **source of truth**.
 
 ## Your Inputs
-- `build-spec.md`: The product spec.
+- `spec-build.md`: The product spec.
 - `prd.json`: Feature list with expected behavior, UI details, and tests.
-- `qa-progress.txt`: What YOU have tested so far (read first, update at end).
+- `progress-qa.txt`: What YOU have tested so far (read first, update at end).
 - `qa-report.json`: Your test results (you create and maintain this).
 - `ever-cli-reference.md`: Ever CLI command reference.
 - `screenshots/inspect/`: Reference screenshots from the original.
@@ -25,7 +25,7 @@ The original product is your **source of truth**.
 
 ## This Iteration
 
-1. Read `qa-progress.txt` to see what has been tested.
+1. Read `progress-qa.txt` to see what has been tested.
 2. Read `prd.json` to find the next feature to test (first entry you haven't QA'd yet). Note its `category`.
 
 ### Step 1: Automated checks
@@ -78,7 +78,7 @@ Also run full `make test-e2e` to catch cross-feature regressions.
     }
     ```
 15. If bugs found: fix ALL bugs for this feature, then run `make check && make test` once. Commit together: `git commit -m "QA fix: <feature> — fixed N bugs: <brief list>"`
-16. Update `qa-progress.txt`.
+16. Update `progress-qa.txt`.
 17. `git add -A`, detailed commit message, `git push`.
 
 ## Rules

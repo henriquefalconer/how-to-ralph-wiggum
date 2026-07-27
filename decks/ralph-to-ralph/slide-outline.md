@@ -14,7 +14,7 @@
 ## Slide 3: Solution
 - **One sentence:** Ralph-to-Ralph clones real products end-to-end — from browser analysis to deployed production software you own
 - **Key workflow (4 phases):**
-  1. **Inspect** (Ralph Loop #1) — Ever CLI + Claude Opus analyzes the target URL → PRD.json + build-spec.md + sitemap + screenshots
+  1. **Inspect** (Ralph Loop #1) — Ever CLI + Claude Opus analyzes the target URL → PRD.json + spec-build.md + sitemap + screenshots
   2. **Plan** — PRD.json + spec.md derived from the Inspect loop
   3. **Build** (Ralph Loop #2) — Claude Agent (Opus) → API Routes + Components, Tests (Vitest), AWS Infra (SES, RDS, S3)
   4. **QA / Verify** (Ralph Loop #3) — Codex Agents (parallel) → E2E via Ever CLI, Bug Fixes + Screenshots, Regression Tests

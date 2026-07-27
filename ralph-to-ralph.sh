@@ -18,9 +18,9 @@ echo "========================================="
 echo ""
 
 # Initialize progress files
-touch inspect-progress.txt
-touch build-progress.txt
-touch qa-progress.txt
+touch progress-inspect.txt
+touch progress-build.txt
+touch progress-qa.txt
 mkdir -p screenshots
 
 # Initialize PRD if not exists
@@ -30,23 +30,23 @@ fi
 
 echo ">>> Phase 1: Inspect (Ever CLI + Claude)"
 echo ""
-./inspect-ralph.sh "$TARGET_URL" "$INSPECT_ITERS"
+./ralph-inspect.sh "$TARGET_URL" "$INSPECT_ITERS"
 
 echo ""
 echo ">>> Phase 2: Build (Claude)"
 echo ""
-./build-ralph.sh "$BUILD_ITERS"
+./ralph-build.sh "$BUILD_ITERS"
 
 echo ""
 echo ">>> Phase 3: QA (Claude as independent evaluator)"
 echo ""
-./qa-ralph.sh "$QA_ITERS"
+./ralph-qa.sh "$QA_ITERS"
 
 echo ""
 echo "========================================="
 echo "  RALPH-TO-RALPH: Complete!"
 echo "========================================="
 echo "  PRD: prd.json"
-echo "  Spec: build-spec.md"
+echo "  Spec: spec-build.md"
 echo "  QA Report: qa-report.json"
 echo "========================================="

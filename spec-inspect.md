@@ -1,7 +1,7 @@
 # Inspect Spec — Written by Humans
 
 ## Goal
-Thoroughly inspect a target web product and produce a complete build spec (`build-spec.md`) and feature list (`prd.json`) that another AI agent can use to build a working clone from scratch.
+Thoroughly inspect a target web product and produce a complete build spec (`spec-build.md`) and feature list (`prd.json`) that another AI agent can use to build a working clone from scratch.
 
 ## Assumptions
 - The user is ALREADY LOGGED IN to the target product in the browser.
@@ -125,8 +125,8 @@ For each page/feature (one per iteration):
 | Testing API features | `curl` with API key from `.env` |
 | Capturing visual reference | `ever screenshot` |
 
-### Every Iteration: Update build-spec.md Incrementally
-After each inspection iteration, update `build-spec.md` with what you know so far. This file grows as you discover more:
+### Every Iteration: Update spec-build.md Incrementally
+After each inspection iteration, update `spec-build.md` with what you know so far. This file grows as you discover more:
 - Add newly discovered pages to the site map
 - Add newly observed colors, fonts, components to the design system
 - Add newly discovered data fields to the data models
@@ -135,8 +135,8 @@ After each inspection iteration, update `build-spec.md` with what you know so fa
 
 This ensures that if the inspect loop stops unexpectedly, there's still a usable (partial) spec.
 
-### Final Iteration: Clean Up build-spec.md & Reorder PRD
-Once all features are inspected, do a final cleanup pass on `build-spec.md`:
+### Final Iteration: Clean Up spec-build.md & Reorder PRD
+Once all features are inspected, do a final cleanup pass on `spec-build.md`:
 - Remove all "partial" markers
 - Consolidate duplicate observations
 - Ensure the design system is complete and consistent
@@ -177,7 +177,7 @@ Sort all entries so the build loop implements core features first:
 Add a `"priority"` field (1 = first to build) to each entry reflecting this order.
 Also add a `"core"` field: `true` for the essential features, `false` for everything else.
 
-**Step 2: Create `build-spec.md` containing:**
+**Step 2: Create `spec-build.md` containing:**
 1. **Product Overview**: What the product does, who it's for
 2. **Tech Stack Recommendation**: Based on what we observed, recommend the best stack for cloning
 3. **Site Map**: All pages and their relationships
@@ -276,13 +276,13 @@ If a feature is too big (e.g., "entire settings page"), break it into:
 
 Small PRD items = small commits = tight feedback loops = working product.
 
-### build-spec.md
+### spec-build.md
 A comprehensive spec document that gives the build loop everything it needs to clone the product. This is the PRIMARY input for the build phase.
 
 ### screenshots/
 Visual reference for every page and key interaction state.
 
-### inspect-progress.txt
+### progress-inspect.txt
 Running log of what was inspected each iteration — helps avoid re-inspecting.
 
 ## Rules

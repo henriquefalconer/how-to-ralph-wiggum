@@ -13,7 +13,7 @@ echo "Iterations: $ITERATIONS"
 echo ""
 
 # Initialize files
-touch inspect-progress.txt
+touch progress-inspect.txt
 if [ ! -f "prd.json" ]; then
   echo '[]' > prd.json
 fi
@@ -30,14 +30,14 @@ for ((i=1; i<=$ITERATIONS; i++)); do
   echo "--- Inspection iteration $i/$ITERATIONS ---"
 
   result=$(timeout 1200 claude -p --dangerously-skip-permissions --chrome --model claude-opus-4-6 \
-"@inspect-prompt.md @inspect-spec.md @ever-cli-reference.md @prd.json @inspect-progress.txt
+"@prompt-inspect.md @spec-inspect.md @ever-cli-reference.md @prd.json @progress-inspect.txt
 
 TARGET URL: $TARGET_URL
 ITERATION: $i of $ITERATIONS
 
 Inspect exactly ONE page/feature, then commit, push, and stop.
 Output <promise>NEXT</promise> when done with this page.
-Output <promise>INSPECT_COMPLETE</promise> only if ALL pages are inspected AND build-spec.md is finalized.")
+Output <promise>INSPECT_COMPLETE</promise> only if ALL pages are inspected AND spec-build.md is finalized.")
 
   echo "$result"
 
@@ -45,7 +45,7 @@ Output <promise>INSPECT_COMPLETE</promise> only if ALL pages are inspected AND b
     echo ""
     echo "=== Inspection complete after $i iterations ==="
     echo "PRD: prd.json"
-    echo "Build spec: build-spec.md"
+    echo "Build spec: spec-build.md"
     touch .inspect-complete
     exit 0
   fi

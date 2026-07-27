@@ -75,7 +75,7 @@ while ! inspect_done; do
   fi
 
   log "Phase 1: Running inspect loop... (attempt $((inspect_restarts + 1)))"
-  ./inspect-ralph.sh "$TARGET_URL" || true
+  ./ralph-inspect.sh "$TARGET_URL" || true
   cron_backup
 
   if inspect_done; then
@@ -106,7 +106,7 @@ for ((cycle=1; cycle<=MAX_CYCLES; cycle++)); do
     fi
 
     log "Phase 2: Building... $(count_passes)/$(total_tasks) passes (attempt $((build_restarts + 1)))"
-    ./build-ralph.sh || true
+    ./ralph-build.sh || true
     cron_backup
 
     if all_passed; then
@@ -122,7 +122,7 @@ for ((cycle=1; cycle<=MAX_CYCLES; cycle++)); do
 
   # ─── PHASE 3: QA ───
   log "Phase 3: Starting QA..."
-  ./qa-ralph.sh "$TARGET_URL" || true
+  ./ralph-qa.sh "$TARGET_URL" || true
   cron_backup
 
   AFTER_QA=$(count_passes)

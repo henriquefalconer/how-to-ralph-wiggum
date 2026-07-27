@@ -63,7 +63,7 @@
 
 ### Files created/updated:
 - sitemap.md — complete site structure
-- build-spec.md — updated sections 6 (Design System partial), 7 (Site Map), 8 (Build Order)
+- spec-build.md — updated sections 6 (Design System partial), 7 (Site Map), 8 (Build Order)
 - screenshots/inspect/ — 10 page screenshots
 
 ### Next:
@@ -96,7 +96,7 @@
 - Receiving tab uses workspace-specific subdomain for inbound email (e.g., <anything>@yaniefenal.resend.app)
 
 ### Files created/updated:
-- build-spec.md — Added section 6 (Feature Deep Dives) with Emails Sending tab, Receiving tab, and Email Detail
+- spec-build.md — Added section 6 (Feature Deep Dives) with Emails Sending tab, Receiving tab, and Email Detail
 - prd.json — Added 7 feature entries (feature-001 through feature-007)
 - screenshots/inspect/ — emails-sending.jpg, emails-date-range-picker.jpg, emails-status-filter.jpg, emails-api-drawer.jpg, email-detail.jpg, email-detail-insights.jpg, emails-receiving.jpg
 
@@ -134,7 +134,7 @@
 - Editor supports template picking, HTML upload, and image upload
 
 ### Files created/updated:
-- build-spec.md — Added sections 6.4 (Broadcasts List) and 6.5 (Broadcast Editor)
+- spec-build.md — Added sections 6.4 (Broadcasts List) and 6.5 (Broadcast Editor)
 - prd.json — Added 5 feature entries (feature-008 through feature-012)
 - screenshots/inspect/ — broadcasts-list.jpg, broadcasts-editor.jpg, broadcasts-review-panel.jpg, broadcasts-editor-variables.jpg
 
@@ -174,7 +174,7 @@
 - Template alias is a URL-safe slug with copy-to-clipboard
 
 ### Files created/updated:
-- build-spec.md — Added sections 6.6 (Templates List), 6.7 (Template Editor), 6.8 (Template Detail)
+- spec-build.md — Added sections 6.6 (Templates List), 6.7 (Template Editor), 6.8 (Template Detail)
 - prd.json — Added 3 feature entries (feature-013 through feature-015)
 - screenshots/inspect/ — templates-list.jpg, template-editor.jpg, template-details.jpg
 
@@ -220,7 +220,7 @@
 - Contact properties: first_name, last_name, company_name (built-in) + custom properties
 
 ### Files created/updated:
-- build-spec.md — Added sections 6.9 (Contacts), 6.10 (Contact Detail), 6.11 (Properties), 6.12 (Segments), 6.13 (Topics)
+- spec-build.md — Added sections 6.9 (Contacts), 6.10 (Contact Detail), 6.11 (Properties), 6.12 (Segments), 6.13 (Topics)
 - prd.json — Added 7 feature entries (feature-016 through feature-022)
 - screenshots/inspect/ — audience-contacts.jpg, audience-add-contact-modal.jpg, audience-contact-detail.jpg, audience-properties.jpg, audience-add-property-modal.jpg, audience-segments.jpg, audience-create-segment-modal.jpg, audience-topics.jpg, audience-create-topic-modal.jpg
 
@@ -266,7 +266,7 @@
 - Long DNS record values use [...] truncation with expandable tooltips
 
 ### Files created/updated:
-- build-spec.md — Added sections 6.14 (Domains List) and 6.15 (Domain Detail)
+- spec-build.md — Added sections 6.14 (Domains List) and 6.15 (Domain Detail)
 - prd.json — Added 4 feature entries (feature-023 through feature-026)
 - screenshots/inspect/ — domains-list.jpg, domain-detail-config.jpg, domain-detail-records.jpg
 
@@ -302,7 +302,7 @@
 - No Response Body section for error logs
 
 ### Files created/updated:
-- build-spec.md — Added sections 6.16 (Logs List), 6.17 (Log Detail Success), 6.18 (Log Detail Error)
+- spec-build.md — Added sections 6.16 (Logs List), 6.17 (Log Detail Success), 6.18 (Log Detail Error)
 - prd.json — Added 3 feature entries (feature-027 through feature-029)
 - screenshots/inspect/ — logs-list.jpg, logs-status-filter.jpg, log-detail.jpg, log-detail-error.jpg
 
@@ -340,7 +340,7 @@
 - Creator email shown on detail page (not on list page)
 
 ### Files created/updated:
-- build-spec.md — Added sections 6.19 (API Keys List) and 6.20 (API Key Detail), updated site map detail pages
+- spec-build.md — Added sections 6.19 (API Keys List) and 6.20 (API Key Detail), updated site map detail pages
 - prd.json — Added 3 feature entries (feature-030 through feature-032)
 - screenshots/inspect/ — api-keys-list.jpg, api-keys-create-modal.jpg, api-key-detail.jpg, api-key-edit-modal.jpg
 
@@ -378,7 +378,7 @@
 - Empty state is unique — uses centered layout with description (unlike other list pages that just show empty table)
 
 ### Files created/updated:
-- build-spec.md — Added section 6.21 (Webhooks List)
+- spec-build.md — Added section 6.21 (Webhooks List)
 - prd.json — Added 3 feature entries (feature-033 through feature-035)
 - screenshots/inspect/ — webhooks-list.jpg, webhooks-add-modal.jpg, webhooks-event-types.jpg
 
@@ -412,7 +412,7 @@
 - Domain filter shows region flags (e.g., us-east-1) next to each domain name
 
 ### Files created/updated:
-- build-spec.md — Added section 6.22 (Metrics Page)
+- spec-build.md — Added section 6.22 (Metrics Page)
 - prd.json — Added 4 feature entries (feature-036 through feature-039)
 - screenshots/inspect/ — metrics-page.jpg, metrics-date-range.jpg, metrics-bounce-info.jpg, metrics-events-menu.jpg, metrics-full.jpg
 
@@ -455,16 +455,16 @@
 - Settings tabs use Radix tabs with data-state="active"/"inactive" for navigation
 
 ### Files created/updated:
-- build-spec.md — Added sections 6.23 (Usage), 6.24 (SMTP), 6.25 (Integrations), 6.26 (Unsubscribe page), 6.27 (Documents)
+- spec-build.md — Added sections 6.23 (Usage), 6.24 (SMTP), 6.25 (Integrations), 6.26 (Unsubscribe page), 6.27 (Documents)
 - prd.json — Added 5 feature entries (feature-040 through feature-044)
 - screenshots/inspect/ — settings-usage.jpg, settings-smtp.jpg, settings-integrations.jpg, settings-unsubscribe-preferences.jpg, settings-unsubscribe-success.jpg, settings-unsubscribe-editor.jpg, settings-documents.jpg
 
 ### Next:
-- Iteration 12: Final iteration — Finalize build-spec.md (clean up, complete design system, reorder PRD, write build order)
+- Iteration 12: Final iteration — Finalize spec-build.md (clean up, complete design system, reorder PRD, write build order)
 
 ---
 
-## Iteration 12: Final — Finalize build-spec.md & Reorder PRD — COMPLETE (2026-03-29)
+## Iteration 12: Final — Finalize spec-build.md & Reorder PRD — COMPLETE (2026-03-29)
 
 ### What was done:
 - Extracted complete design system from live site via eval:
@@ -472,7 +472,7 @@
   - Typography: aBCFavorit for h1 (28px/500), Inter for body (14px/400), table headers (12px)
   - Layout: 250px sidebar, 12px border-radius buttons, specific paddings
   - Component styles: button bg rgba(24,25,28,0.88), border rgba(176,199,217,0.145)
-- Updated build-spec.md status from PARTIAL to COMPLETE
+- Updated spec-build.md status from PARTIAL to COMPLETE
 - Completed Design System section (section 7) with full color palette, typography table, layout specs, component catalog
 - Renumbered sections: Site Map (8), Build Order (9), Backend Architecture (10)
 - Rewrote Build Order (section 9) with implementation priority table mapping PRD items to phases
@@ -510,11 +510,11 @@
 - 55 total PRD entries covering full product clone with infrastructure → core → secondary → polish ordering
 
 ### Files created/updated:
-- build-spec.md — Finalized: complete design system, build order, backend architecture, SDK/DX, deployment sections
+- spec-build.md — Finalized: complete design system, build order, backend architecture, SDK/DX, deployment sections
 - prd.json — Reordered 55 entries (44 existing + 11 new) by implementation priority P1-P21
 
 ### Status:
 - ALL PAGES INSPECTED ✓
-- build-spec.md FINALIZED ✓
+- spec-build.md FINALIZED ✓
 - prd.json REORDERED ✓
 - INSPECTION COMPLETE

@@ -22,7 +22,7 @@ Ralph-to-Ralph runs a three-phase autonomous pipeline:
 
 **Ever CLI + Claude Opus** analyzes the target URL and produces:
 - `PRD.json` — structured product requirements
-- `build-spec.md` — technical build specification
+- `spec-build.md` — technical build specification
 - Sitemap + screenshots of every page
 
 ### Phase 2: Build (Ralph Loop #2)
