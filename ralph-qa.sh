@@ -19,8 +19,8 @@ echo ""
 
 # Initialize
 touch progress-qa.txt
-if [ ! -f "qa-report.json" ]; then
-  echo '[]' > qa-report.json
+if [ ! -f "report-qa.json" ]; then
+  echo '[]' > report-qa.json
 fi
 
 # Start dev server in background
@@ -55,7 +55,7 @@ for ((i=1; i<=$ITERATIONS; i++)); do
 
   # Use a fresh Claude agent as an independent evaluator (clean context, skeptical prompt)
   result=$(timeout 1200 claude -p --dangerously-skip-permissions --chrome --model claude-opus-4-6 \
-"@prompt-qa.md @pre-setup.md @spec-build.md @prd.json @progress-qa.txt @qa-report.json @ever-cli-reference.md
+"@prompt-qa.md @pre-setup.md @spec-build.md @prd.json @progress-qa.txt @report-qa.json @ever-cli-reference.md
 
 ITERATION: $i of $ITERATIONS
 ${TARGET_CONTEXT}
@@ -91,4 +91,4 @@ echo ""
 
 echo ""
 echo "=== QA finished after $ITERATIONS iterations ==="
-echo "Check qa-report.json for results."
+echo "Check report-qa.json for results."

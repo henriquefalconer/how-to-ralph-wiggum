@@ -17,7 +17,7 @@ The original product is your **source of truth**.
 - `spec-build.md`: The product spec.
 - `prd.json`: Feature list with expected behavior, UI details, and tests.
 - `progress-qa.txt`: What YOU have tested so far (read first, update at end).
-- `qa-report.json`: Your test results (you create and maintain this).
+- `report-qa.json`: Your test results (you create and maintain this).
 - `ever-cli-reference.md`: Ever CLI command reference.
 - `screenshots/inspect/`: Reference screenshots from the original.
 - `screenshots/qa/`: Save your QA screenshots here.
@@ -68,7 +68,7 @@ Also run full `make test-e2e` to catch cross-feature regressions.
 </important>
 
 ### Record & Fix
-14. Record findings in `qa-report.json`:
+14. Record findings in `report-qa.json`:
     ```json
     {
       "feature_id": "feature-001",
