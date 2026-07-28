@@ -252,6 +252,22 @@ rename for clarity but should preserve the same concepts.
   `organization-webhooks.md` / `pipe-table-webhooks.md` for the event list to
   mirror.
 
+### EmailThread / EmailMessage / EmailTemplate (confirmed, Iteration 4)
+- `EmailThread`: always card-scoped (`card_id` NOT NULL) — no freeform/cardless
+  compose exists in the product.
+- `EmailMessage`: `direction` (inbound/outbound), `from_address` — outbound
+  messages get a **per-thread generated alias**
+  (`pipe{pipeId}+{token}@mail.pipefy.com`), distinct from the pipe-level
+  **inbound routing alias** (`pipe{pipeId}@mail.pipefy.com`, toggleable,
+  off by default). `to[]`/`cc[]`/`bcc[]` are arrays (typed addresses tokenize
+  into chips). Also carries thread-level metadata independent of the card's
+  own fields: `assignee_id`, `due_date`, `label_ids`, `read`.
+- `EmailTemplate`: pipe-scoped, reusable; subject/body support token
+  interpolation via the same "Conteúdo dinâmico" picker component already
+  used by Automations (feature-010) and Reports (feature-011) — build once,
+  share across all three.
+- See prd feature-018 and spec-build.md §17 for full detail.
+
 ### AI Agent / Automation (modeled, not really executed via LLM)
 - Attach to a phase or pipe; `automation-events.md` / `automation-actions.md`
   define trigger→action pairs (e.g. "on card created in phase X → set field Y").
@@ -323,10 +339,9 @@ Provisional core-feature guess (to validate against the real UI next):
 - [x] Automation rule builder (separate from field conditionals — pipe-level Automações tab; 10 triggers × 12 actions, tested end-to-end incl. Logs — screenshot: `screenshots/inspect/automations-builder.jpg`; see §13 and prd feature-010)
 - [ ] Interfaces / Portal builder (prd feature-008, discovered Iteration 1, not yet deep-dived)
 - [x] Pipe Settings — Pessoas / Configurações do pipe / Atividades / Ferramentas (Etiquetas + Gerador de PDF) / Lixeira (Iteration 2; see §15 and prd feature-013 through feature-017; screenshots: `screenshots/inspect/pipe-settings-pessoas.jpg`, `screenshots/inspect/pipe-settings-configuracoes.jpg`)
-- [ ] Emails compose flow
+- [x] Emails compose flow (card-scoped compose, per-thread generated alias vs. pipe inbound alias, email templates with shared 'Conteúdo dinâmico' token picker — Iteration 4; see §17 and prd feature-018; screenshots: `screenshots/inspect/emails-inbox.jpg`, `screenshots/inspect/emails-compose.jpg`)
 - [ ] AI Agents creation flow
 - [ ] `/my-tasks` (org-level "my work" list)
-- [ ] AI Agents creation flow
 - [ ] Search
 - [ ] Design system consolidated from screenshots
 - [ ] Final cleanup pass + PRD reorder (spec-inspect.md "Final Iteration")
@@ -759,3 +774,64 @@ from observed *behavior*, not from replaying Pipefy's internal transport.
 
 Screenshots: `screenshots/inspect/home-pipes-grid.jpg`,
 `screenshots/inspect/pipe-create-modal.jpg`.
+
+## 17. Emails — Shared Team Inbox (Iteration 4, live UI test)
+
+Deep-dove the pipe-level Emails tab (`/pipes/:id/emails`) and its settings
+surface (Gerenciar > Email, `/pipes/:id/settings/email`) — the top item on
+`sitemap.md`'s not-yet-inspected list and a whole feature area with zero
+prior `prd.json` coverage. Full detail is in prd feature-018.
+
+**Everything is card-scoped — there is no freeform compose.** "Compor email"
+first opens a card-picker popover ("Selecione um card para escrever uma
+mensagem") with search; there is no way to send a Pipefy-hosted email that
+isn't attached to a card. Picking a card navigates to
+`/pipes/:id/emails/:threadId` and opens a fully-formed compose UI in place.
+
+**Two distinct generated addresses, easy to conflate.** The pipe has one
+*inbound* alias for routing external mail into the pipe as new cards
+(`pipe{pipeId}@mail.pipefy.com`, shown in the left rail and in Gerenciar >
+Email, off by default via a toggle). Separately, every email *thread* gets
+its own generated *outbound* alias as its "De" address
+(`pipe{pipeId}+{randomToken}@mail.pipefy.com`) — confirmed by inspecting the
+compose form's "De" field for the one test card. These are different
+mechanisms (org-wide inbound routing vs. per-thread outbound identity) that
+must not collapse into a single `pipe_email_alias` field in the clone's data
+model.
+
+**Compose form fields:** Nome (free-text sender display name, prefilled to
+the logged-in member), De (the generated per-thread alias, shown as a
+non-editable chip), Para (typed addresses tokenize into removable chips on
+blur/comma — confirmed with `teste@example.com`), CC/CCO toggles, Assunto,
+a rich-text body editor, "Adicionar assinatura", and a footer with
+Enviar / anexar arquivos / Respostas salvas (saved quick-replies) /
+Aplicar template / Cancelar / delete.
+
+**Thread-level metadata, separate from the card's own fields.** A toolbar
+above the compose pane exposes Adicionar responsável, Vencimento, Adicionar
+etiquetas, Marcar como não lido, and Imprimir tudo — these attach to the
+*email thread*, not to the card, and are the same left-rail axes the inbox
+filters on (Atribuídas a mim / Sem responsável). The right-hand pane
+mirrors the card: title, current phase, and the same one-click
+"Mover a fase" quick-mover confirmed in §11's Card detail view — so acting
+on an email can move its card without leaving the Emails tab.
+
+**Email Templates reuse the shared token-picker component.** "Meus
+templates" > "Criar um novo template" opens a template editor (Nome do
+template, Nome do remetente + "Endereço de email customizado" toggle, Email
+do remetente, Email do destinatário with CC/CCO, Assunto, body) whose body
+editor has a "Conteúdo dinâmico" pill — the *same* categorized field/token
+picker component already confirmed in feature-010 (Automations' variable
+picker) and feature-011 (Reports' filter/column picker). This is now
+confirmed reused across three independent features; the clone should build
+it once as a shared component, not per-feature.
+
+**Not triggered, by design:** clicking Enviar on a real message (would
+actually deliver mail — same "don't trigger irreversible external actions"
+policy already applied to feature-011's Email/Download export), and
+toggling "Endereço de email do pipe" on (would make an inbound-routing
+address live). Both were filled/opened to document their shape, then
+cancelled/left at default.
+
+Screenshots: `screenshots/inspect/emails-inbox.jpg`,
+`screenshots/inspect/emails-compose.jpg`.

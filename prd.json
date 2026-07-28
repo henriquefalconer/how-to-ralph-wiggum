@@ -890,5 +890,78 @@
         }
       ]
     }
+  },
+  {
+    "id": "feature-018",
+    "category": "ui",
+    "description": "Emails: card-scoped shared team inbox — compose/reply to a card's email thread, per-pipe inbound forwarding alias, reusable email templates with dynamic-content tokens",
+    "page": "Pipe > Emails tab (/pipes/:id/emails[/:threadId]); settings surfaced at Gerenciar > Email (/pipes/:id/settings/email)",
+    "ui_details": "Confirmed (Iteration 4, live test). Emails tab layout: left rail (Compor email button, Todas as mensagens / Mensagens não lidas / Atribuídas a mim / Sem responsável filters, then Automações de email / Templates de email / Configurações de email links, then a 'Redirecione seus emails para esse endereço' box showing the pipe's inbound alias `pipe{pipeId}@mail.pipefy.com` — greyed out with 'Essa funcionalidade está desabilitada no momento. Clique aqui para habilitá-la.' since the toggle is off by default), a middle thread list (empty state: 'Nenhum email encontrado nessa seleção.', has a 'Todas as fases' phase filter dropdown + reload icon), and a right-hand detail/compose pane. 'Compor email' first opens a small popover: 'Selecione um card para escrever uma mensagem' with a searchable card picker (mandatory — email is always attached to a card, there is no freeform/cardless compose). Picking a card navigates to /emails/:threadId and opens 'Novo email': Nome (free-text sender display name, prefilled to the logged-in member's name), De (a per-CARD auto-generated alias button, observed format `pipe{pipeId}+{randomToken}@mail.pipefy.com` — distinct from the pipe-level inbound alias), Para (tokenizes each typed address into a removable chip, plus CC/CCO toggles), Assunto (subject), a rich-text body editor (font-size, bold, text-color, alignment, list, link, image, '⋮ more'), 'Adicionar assinatura' link, and a footer bar: Enviar (primary), anexar arquivos (paperclip), 'Respostas salvas' (saved-replies icon), 'Aplicar template' (apply a saved EmailTemplate), Cancelar, delete/trash icon. A right-side card mini-panel mirrors the card detail view: card title, Fase atual read-only badge, 'Mover a fase' one-click buttons for the adjacent phases (same component as feature-004's quick-mover), and a Comentários box. Top toolbar above the thread (icons only): Adicionar responsável (assignee), Vencimento (due date), Adicionar etiquetas (labels), Marcar como não lido, 'Imprimir tudo' (print, links to /emails/:threadId/print) — these are thread-level metadata actions, independent of the card's own fields. Card-scoped empty state (before composing) reads 'Centralize a comunicação ao reunir seus emails em um único lugar.' with two CTAs: 'Criar email' and 'Use um template'. Settings modal (Gerenciar > Email) has 5 cards: 'Endereço de email do pipe' (toggle, off by default, shows the pipe-level inbound alias + disabled 'Opções avançadas' while off), 'Templates de email' (Meus templates / Template de email padrão links), 'Envie emails via Pipefy' (connect a custom SMTP business address), 'Automação de email' (external link into the Automations builder, feature-010, pre-scoped to email triggers), 'Receber emails e solicitações no Pipefy' (external link, same concept as the inbound-alias toggle). 'Meus templates' > 'Criar um novo template' opens a template editor: Nome do template, Nome do remetente (+ 'Endereço de email customizado' toggle), Email do remetente ('Pipefy utiliza como respondar para a menos que...'), Email do destinatário (multi-address, + CC/CCO), Assunto, and a body editor with a 'Conteúdo dinâmico' pill (the same categorized field/token picker component confirmed in feature-010 Automations and feature-011 Reports — a third confirmed reuse of that component) plus a fuller toolbar (bold/italic/underline/strikethrough/font-color/align/lists/link/image/embed/quote/table/code-view). Screenshots: screenshots/inspect/emails-inbox.jpg, screenshots/inspect/emails-compose.jpg.",
+    "behavior": "Live-tested: clicking 'Compor email' with zero cards would presumably show an empty picker (this pipe has 1 card, 'João Silva', so the picker showed exactly that one row); selecting it navigates straight to a per-card compose view and provisions/reuses that card's unique alias inline (no extra confirmation step). Filled out a full test message (Para: teste@example.com — tokenized into a chip on blur/comma, Assunto: 'Teste de assunto', body text) to confirm field behavior, then clicked Cancelar to discard rather than Enviar — sending a real outbound email was intentionally not triggered during inspection (same policy as feature-011's un-triggered Email/Download export actions). Creating a new email template and clicking Cancelar correctly discarded it with no persisted row (re-opening 'Meus templates' showed the same empty state). Toggling 'Endereço de email do pipe' was not exercised (left at its default-off state) since enabling inbound routing has an external side effect (a real address becomes live for mail forwarding) beyond this inspection's scope.",
+    "data_model": "EmailThread: id, card_id (FK cards, NOT NULL — every thread is card-scoped), pipe_id (FK), created_at. EmailMessage: id, thread_id (FK), direction (enum: inbound|outbound), from_name, from_address (per-thread generated alias `pipe{pipeId}+{token}@mail.pipefy.com` for outbound; the sender's real address for inbound), to[] (string[]), cc[] (string[]), bcc[] (string[]), subject, body_html, sent_at, read (bool), assignee_id (FK members, nullable), due_date (date, nullable), label_ids (FK labels, many-to-many). Pipe gains: inbound_email_enabled (bool, default false), inbound_email_alias (string, `pipe{pipeId}@mail.pipefy.com`, server-generated at pipe creation regardless of enabled state). EmailTemplate: id, pipe_id (FK), name, sender_name, sender_email (nullable — falls back to a Pipefy-branded reply-to when unset), use_custom_sender_address (bool), default_to[] (string[]), default_cc[] (string[]), default_bcc[] (string[]), default_subject (string, supports token interpolation), body_html (supports token interpolation via the shared 'Conteúdo dinâmico' field-token picker — same token scheme as feature-010's automation variable picker and feature-011's report filters).",
+    "priority": 10,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "outbound message gets a per-thread generated alias, not the pipe-level inbound alias",
+          "description": "The 'De' address for a new EmailThread's first message is derived per-card, distinct from the pipe's shared inbound_email_alias",
+          "input": "composeEmail({cardId, pipeId})",
+          "expected_output": "message.from_address matches `pipe{pipeId}+{token}@mail.pipefy.com` and token is unique per thread, not equal to pipe.inbound_email_alias's local part"
+        },
+        {
+          "name": "typed recipient text is tokenized into an addresses array on blur/comma/enter",
+          "description": "The 'Para' field converts free text into discrete chip values",
+          "input": "typeInto('Para', 'teste@example.com,'); blur()",
+          "expected_output": "message.to === ['teste@example.com']"
+        },
+        {
+          "name": "email template subject/body interpolate dynamic-content tokens at send time",
+          "description": "A token like {{card.title}} inserted via 'Conteúdo dinâmico' resolves against the target card when the template is applied",
+          "input": "applyTemplate(templateId, {cardId}) where template.default_subject === 'Re: {{card.title}}'",
+          "expected_output": "resolved subject === 'Re: João Silva'"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "compose flow requires picking a card before any message fields are shown",
+          "steps": [
+            "Navigate to /pipes/:id/emails",
+            "Click 'Compor email'",
+            "Verify a card-picker popover appears with a search box and no message fields yet",
+            "Click a card row (e.g. 'João Silva')"
+          ],
+          "expected": "Navigates to /pipes/:id/emails/:threadId showing a 'Novo email' form pre-filled with De = the thread's generated alias, and a right-hand card mini-panel showing that card's title and current phase"
+        },
+        {
+          "name": "creating and cancelling a new email template does not persist it",
+          "steps": [
+            "Navigate to Gerenciar > Email > Templates de email > Meus templates",
+            "Click 'Criar um novo template'",
+            "Fill 'Nome do template' with a test value",
+            "Click Cancelar"
+          ],
+          "expected": "Modal closes; reopening 'Meus templates' still shows the empty 'Economize tempo...' state with no template listed"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "compose picker on a pipe with zero cards",
+          "steps": [
+            "On a pipe with no cards, click 'Compor email'"
+          ],
+          "expected": "Card picker shows an empty/no-results state instead of a card list; 'Adicionar' stays disabled"
+        },
+        {
+          "name": "empty inbox filters",
+          "steps": [
+            "Navigate to /pipes/:id/emails with zero email threads",
+            "Click each left-rail filter (Todas as mensagens, Mensagens não lidas, Atribuídas a mim, Sem responsável)"
+          ],
+          "expected": "Each filter shows 'Nenhum email encontrado nessa seleção.' with no error, and the right pane keeps showing the generic 'Centralize a comunicação...' promo (no card selected)"
+        }
+      ]
+    }
   }
 ]

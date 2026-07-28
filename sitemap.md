@@ -59,7 +59,7 @@ Page tabs (`/pipes/:id`, `/pipes/:id/flow`, etc.):
 | Lista | `/list` (approx) | Configurable table view | Column-based list of cards; starts with "Nenhuma coluna selecionada — habilite as colunas" empty state; has its own "Criar novo card". |
 | Relatórios | `/reports_v2` | Reports builder | **Inspected iteration 6** — grouped field filter/column picker (shared with Automations token picker), live-query results table, saved report tiles with live count badges. See prd feature-011, spec-build.md §14. |
 | Formulário | (interfaces path) | Start-form editor | "Vamos começar adicionando alguns campos" + "Adicionar campos" CTA; side panel shows solicitation count, and "Próximos passos" tips (enable request tracking, create standardized emails, analyze reports). |
-| Emails | (own path) | Shared team inbox | Left rail: Compor email, Todas as mensagens, Mensagens não lidas, Atribuídas a mim, Sem responsável, then Automações de email / Templates de email / Configurações; a per-pipe forwarding address (`pipe307273712@...`, currently disabled) for routing inbound email into the pipe. |
+| Emails | (own path) | Shared team inbox | **Inspected iteration 4** — card-scoped compose only (no freeform compose), per-thread generated outbound alias distinct from the pipe's inbound-routing alias, reusable email templates sharing the 'Conteúdo dinâmico' token picker with Automations/Reports. See prd feature-018, spec-build.md §17. |
 | Painéis | `/dashboards` | Analytics dashboards | **Inspected iteration 6** — named dashboards of drag-resizable chart widgets, 8 viz types, live-recomputed aggregation metrics. See prd feature-012, spec-build.md §14. |
 | Learning Center | (org-level, pipe-scoped entry point) | Same help hub as org-level — out of scope |
 
@@ -70,7 +70,7 @@ Page tabs (`/pipes/:id`, `/pipes/:id/flow`, etc.):
 | Formulário inicial | Start form field editor (same as Formulário tab) |
 | Fases | **Phase editor** (`/pipes/:id/settings/phases[/:phaseId]`) — phase switcher + field-type palette + live form builder + 'Condicionais em campos' (field conditional rules, see prd feature-009) + 'Opções Avançadas' (per-phase name/color/description, done flag, allow-card-creation, task email collection, auto-assign, SLA alert, delete). **Inspected iteration 2** — see prd feature-002/003/009 and `screenshots/inspect/phases-editor.jpg`. |
 | Pessoas | Pipe members/roles. **Inspected iteration 2** — member list + 4-tier role picker (Membro do pipe / Admin do Pipe / Somente leitura / Visão restrita, 3 of 4 upgrade-gated in this trial org — clone should not gate them). See prd feature-013. |
-| Email | Pipe email settings (redundant with Emails tab's "Configurações") — not yet opened |
+| Email | Pipe email settings (redundant with Emails tab's "Configurações"). **Inspected iteration 4** — 5 cards: inbound-alias toggle + Opções avançadas, Templates de email (Meus templates / Template de email padrão), Envie emails via Pipefy (custom SMTP), Automação de email (external link into feature-010), Receber emails e solicitações (same concept as the inbound toggle). See prd feature-018, spec-build.md §17. |
 | Configurações do pipe | General pipe settings. **Inspected iteration 2** — icon/name/tags, item naming, default view, "Título do card" field picker (drives `card.title` — corrects the iteration-3 "first field" assumption, see spec-build.md Card section), Kanban/connected-card field pickers, pipe-wide expiration alert, visibility, AI-tool toggles, edit-permission toggles, clone/delete pipe. See prd feature-014. |
 | Atividades | Activity/audit log for the pipe. **Inspected iteration 2** — 2-tab log (Atividade de cards / Alterações de configuração), searchable by author, exportable, live (no reload needed). See prd feature-015. |
 | Ferramentas | Tool panel: Apps (marketplace, out of scope) / Conexões (not deep-dived) / Etiquetas / Gerador de PDF. **Etiquetas inspected iteration 2** — created a real label, name+hex-color model confirmed (prd feature-016). Gerador de PDF noted but not deep-dived (template list + toggle + "Criar novo modelo"). |
@@ -86,7 +86,6 @@ Automations sub-tabs (`/pipes/:id/automations`): Automações, Logs. **Inspected
 confirmed via Logs and the card detail view. See prd feature-010 and spec-build.md §13.
 
 ## Not yet inspected (next iterations)
-- Emails compose flow
 - AI Agents agent creation flow
 - `/my-tasks` (org-level "my work" list) — confirm relation to Tarefas e Solicitações
 - Account/notification menus (low priority, auth-adjacent)
