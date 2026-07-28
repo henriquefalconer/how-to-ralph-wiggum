@@ -86,6 +86,15 @@ inspect_done() {
     [ "$(cat "$STATE_DIR/inspect-complete" 2>/dev/null)" = "$TARGET_URL" ]
 }
 
+# QA's verdict is delivered by *editing* prd.json — a failed feature gets
+# passes:false. So "QA approved everything" and "QA died before testing
+# anything" produce byte-identical state: an unchanged prd.json. Inferring
+# success from the absence of a rejection let a QA process that crashed in under
+# a second be reported as "PASSED + QA VERIFIED". ralph-qa.sh clears this
+# sentinel on entry and writes it only on QA_COMPLETE, so it is positive proof
+# that a full pass ran rather than the absence of a complaint.
+qa_verified() { [ -f "$STATE_DIR/qa-complete" ]; }
+
 cron_backup() {
   git add -A 2>/dev/null || true
   git commit -m "watchdog backup $(date '+%H:%M') — $(count_passes)/$(total_tasks) passes" 2>/dev/null || true
@@ -125,6 +134,9 @@ done
 # ─── PHASE 2 + 3: Build → QA → Fix loop ───
 
 MAX_CYCLES=5
+MAX_QA_FAILURES=3
+qa_failures=0
+
 for ((cycle=1; cycle<=MAX_CYCLES; cycle++)); do
   log ""
   log "===== CYCLE $cycle/$MAX_CYCLES ====="
@@ -158,9 +170,31 @@ for ((cycle=1; cycle<=MAX_CYCLES; cycle++)); do
 
   # ─── PHASE 3: QA ───
   log "Phase 3: Starting QA..."
-  ./ralph-to-ralph/ralph-qa.sh "$TARGET_URL" "$QA_ITERS" || true
+  qa_rc=0
+  ./ralph-to-ralph/ralph-qa.sh "$TARGET_URL" "$QA_ITERS" || qa_rc=$?
   cron_backup
 
+  if ! qa_verified; then
+    qa_failures=$((qa_failures + 1))
+    case "$qa_rc" in
+      0) why="exited cleanly without reaching QA_COMPLETE" ;;
+      *) why="exited $qa_rc" ;;
+    esac
+    log "Phase 3: QA $why — no full pass ran ($qa_failures/$MAX_QA_FAILURES)."
+    log "         prd.json is unchanged because QA did not finish, not because it approved."
+
+    if [ "$qa_failures" -ge "$MAX_QA_FAILURES" ]; then
+      log "FATAL: QA failed to complete $MAX_QA_FAILURES times running."
+      log "Refusing to report a verified build. Check $STATE_DIR/logs/qa/ — the"
+      log "features may well build, but nothing has verified that they work."
+      exit 1
+    fi
+
+    sleep 5
+    continue   # retry QA; build is re-entered first and no-ops if everything passes
+  fi
+
+  qa_failures=0
   AFTER_QA=$(count_passes)
 
   if all_passed; then
@@ -182,6 +216,12 @@ log ""
 log "========================================="
 log "  RALPH-TO-RALPH COMPLETE"
 log "  Features: $(count_passes)/$(total_tasks) passed"
+if qa_verified; then
+  log "  QA: full pass completed ($(cat "$STATE_DIR/qa-complete" 2>/dev/null))"
+else
+  log "  QA: NO full pass completed — the passes above are the build agent's"
+  log "      own claim and nothing has independently verified them."
+fi
 log "  QA Report: report-qa.json"
 log "  End time: $(date '+%Y-%m-%d %H:%M:%S')"
 log "  Duration: ${HOURS}h ${MINUTES}m ${SECONDS_LEFT}s"

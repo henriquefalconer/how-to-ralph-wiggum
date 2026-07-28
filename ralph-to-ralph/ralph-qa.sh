@@ -11,6 +11,9 @@ MAX_FAILURES="${RALPH_MAX_FAILURES:-3}"   # abort after N consecutive no-promise
 
 PROGRESS_DIR="ralph-to-ralph/.state/progress/qa"
 LOG_DIR="ralph-to-ralph/.state/logs/qa"
+STATE_DIR="ralph-to-ralph/.state"
+QA_SENTINEL="$STATE_DIR/qa-complete"
+DEV_PORT=3015
 
 if [ ! -f "prd.json" ]; then
   echo "Error: prd.json not found. Run ralph-build.sh first."
@@ -22,19 +25,63 @@ echo "Target: ${TARGET_URL:-none}"
 echo "Iterations: $ITERATIONS"
 echo ""
 
-mkdir -p "$PROGRESS_DIR" "$LOG_DIR"
+mkdir -p "$PROGRESS_DIR" "$LOG_DIR" "$STATE_DIR"
 if [ ! -f "report-qa.json" ]; then
   echo '[]' > report-qa.json
 fi
 
-# Start dev server in background
-npm run dev &
+# The watchdog reads this file to tell "QA verified everything" apart from "QA
+# died before verifying anything". Clear it up front so only *this* run can
+# vouch for the build — a sentinel left by an earlier cycle must never be
+# mistaken for a verdict on the current one.
+rm -f "$QA_SENTINEL"
+
+# ─── Dev server ───
+#
+# `npm run dev` is four processes deep: npm -> sh -c -> node next -> next-server
+# (plus workers). Killing the npm pid alone kills only the first two: the node
+# child survives, reparents to init, and keeps serving the port. Next then
+# refuses to start a second dev server ("Another next dev server is already
+# running") and exits 1 rather than falling back to another port, so a later
+# cycle would test against the orphan while its own cleanup no-ops on a pid that
+# is already dead.
+#
+# Two changes fix that: sweep any orphan before starting, and start under setsid
+# so the whole tree lands in its own process group that the trap can take down.
+stop_dev() {
+  kill -- "-$DEV_PID" 2>/dev/null ||
+    kill "$DEV_PID" 2>/dev/null || true      # in case setsid forked and $! is not the leader
+  pkill -f "next dev --port $DEV_PORT" 2>/dev/null || true
+}
+
+pkill -f "next dev --port $DEV_PORT" 2>/dev/null || true
+
+DEV_LOG="$LOG_DIR/dev-server.log"
+setsid npm run dev > "$DEV_LOG" 2>&1 &
 DEV_PID=$!
-echo "Dev server started (PID: $DEV_PID)"
-# `|| true` because under `set -e` a failed kill (dev server already gone) would
-# abort the trap and make the phase exit non-zero even on a successful QA_COMPLETE.
-trap 'kill $DEV_PID 2>/dev/null || true' EXIT
-sleep 5  # Wait for server to be ready
+# `|| true` inside stop_dev because under `set -e` a failed kill (dev server
+# already gone) would abort the trap and make the phase exit non-zero even on a
+# successful QA_COMPLETE.
+trap stop_dev EXIT
+echo "Dev server starting (PID: $DEV_PID, log: $DEV_LOG)"
+
+# Poll for readiness instead of sleeping a fixed 5s and hoping. A server that
+# never comes up has to fail loudly here — the old code carried on regardless,
+# so the failure surfaced later as inexplicable QA results.
+dev_ready=""
+for _ in $(seq 60); do
+  if curl -sf -o /dev/null "http://localhost:$DEV_PORT/" 2>/dev/null; then
+    dev_ready=1
+    break
+  fi
+  sleep 1
+done
+if [ -z "$dev_ready" ]; then
+  echo "Error: dev server never became ready on port $DEV_PORT (60s). Last output:"
+  tail -20 "$DEV_LOG" 2>/dev/null || true
+  exit 1
+fi
+echo "Dev server ready on port $DEV_PORT"
 
 # Run Playwright regression suite first (fast, catches obvious bugs)
 if [ -f "playwright.config.ts" ] || [ -d "tests/e2e" ]; then
@@ -93,6 +140,10 @@ If ALL features have been QA tested and all bugs fixed, output <promise>QA_COMPL
     npx playwright test --reporter=list 2>&1 || echo "Some Playwright tests failed in final regression."
     echo ""
     echo "=== QA complete after $i iterations! ==="
+    # Positive proof for the watchdog that a full QA pass actually happened.
+    # Without it the watchdog can only observe that prd.json is unchanged, which
+    # looks identical whether QA approved every feature or died on startup.
+    printf '%s\n' "$(date '+%Y-%m-%d %H:%M:%S') after $i iterations" > "$QA_SENTINEL"
     exit 0
   fi
 
@@ -130,4 +181,5 @@ echo ""
 
 echo ""
 echo "=== QA finished after $ITERATIONS iterations ==="
+echo "Ran out of iterations without reaching QA_COMPLETE — features remain unverified."
 echo "Check report-qa.json for results."
