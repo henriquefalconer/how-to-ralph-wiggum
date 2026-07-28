@@ -338,12 +338,13 @@ Provisional core-feature guess (to validate against the real UI next):
 - [x] Reports/dashboards (Reports builder — filter/column picker, saved report tiles; Dashboards — chart builder with 8 viz types, live aggregation metrics — Iteration 6; screenshots: `screenshots/inspect/reports-list.jpg`, `screenshots/inspect/dashboard-number-chart.jpg`, `screenshots/inspect/dashboard-panel.jpg`)
 - [x] Automation rule builder (separate from field conditionals — pipe-level Automações tab; 10 triggers × 12 actions, tested end-to-end incl. Logs — screenshot: `screenshots/inspect/automations-builder.jpg`; see §13 and prd feature-010)
 - [x] Interfaces / Portal builder (drag-only element palette, Dados live-query table + viewer-scoped dynamic visibility conditions, Formularios launcher-card, per-page AI Assistant chat widget — Iteration 6; remaining content/media elements [Texto/Link/Divisor/Imagem/Vídeo/Incorporar/Documento] + Compartilhar > Gerenciar pessoas — Iteration 8; see §19/§21 and prd feature-008/feature-020/feature-023 through feature-026; screenshots: `screenshots/inspect/interfaces-builder.jpg`, `screenshots/inspect/interfaces-live-view-ai-assistant.jpg`, `screenshots/inspect/interfaces-elements-builder.jpg`)
-- [x] Pipe Settings — Pessoas / Configurações do pipe / Atividades / Ferramentas (Etiquetas + Gerador de PDF) / Lixeira (Iteration 2; see §15 and prd feature-013 through feature-017; screenshots: `screenshots/inspect/pipe-settings-pessoas.jpg`, `screenshots/inspect/pipe-settings-configuracoes.jpg`)
+- [x] Pipe Settings — Pessoas / Configurações do pipe / Atividades / Ferramentas (Etiquetas + Gerador de PDF) / Lixeira, including full delete→restore lifecycle (Iteration 2 + Iteration 10; see §15 and prd feature-013 through feature-017; screenshots: `screenshots/inspect/pipe-settings-pessoas.jpg`, `screenshots/inspect/pipe-settings-configuracoes.jpg`, `screenshots/inspect/lixeira-populated.jpg`, `screenshots/inspect/lixeira-restored-on-kanban.jpg`)
 - [x] Emails compose flow (card-scoped compose, per-thread generated alias vs. pipe inbound alias, email templates with shared 'Conteúdo dinâmico' token picker — Iteration 4; see §17 and prd feature-018; screenshots: `screenshots/inspect/emails-inbox.jpg`, `screenshots/inspect/emails-compose.jpg`)
 - [x] AI Agents creation flow (3-step builder, trigger/instructions/model/skills/effort, Logs/Templates/MCP sub-tabs — Iteration 5; see §18 and prd feature-019; screenshots: `screenshots/inspect/ai-agents-empty.jpg`, `screenshots/inspect/ai-agents-behaviors-builder.jpg`, `screenshots/inspect/ai-agents-templates.jpg`)
 - [x] Meu trabalho / `/my-tasks` (org-level "my work" list) + notification system (Iteration 9; see §22 and prd feature-027; screenshots: `screenshots/inspect/my-work-populated.jpg`, `screenshots/inspect/notifications.jpg`)
-- [ ] Search
-- [ ] Tarefas e Solicitações's underlying data source (confirmed distinct from Meu trabalho and from card Atividades — see §22 and sitemap.md)
+- [ ] Search (pipe-scoped "Procurar cards" box seen in the Kanban top nav — not yet live-tested)
+- [ ] Start form as its own dedicated deep-dive (covered incidentally throughout §11/§16/§17 via card-creation gating, but the Formulário/Formulário inicial editor itself — field palette, 'Próximos passos' tips, solicitation count — has not had its own focused pass)
+- [ ] Tarefas e Solicitações's underlying data source (re-checked Iteration 10: still "Sem tarefas" / empty even with an active overdue+assigned card in Meu trabalho — confirmed NOT the same trigger as Meu trabalho; low priority, deferred)
 - [ ] Design system consolidated from screenshots
 - [ ] Final cleanup pass + PRD reorder (spec-inspect.md "Final Iteration")
 
@@ -708,14 +709,31 @@ para "Nome do solicitante"`). See `prd.json` feature-015.
 
 ### Lixeira (trash) — modal, tagged "Beta"
 Single "Cards" tab. Subtext: "Os cards ficam aqui por 15 dias. Depois disso,
-não podem ser restaurados." Empty in this pipe (never tested with a real
-delete, to preserve the "João Silva" card fixture other features' tests
-depend on) — empty state: "A lixeira está vazia. Os cards excluídos
-aparecerão aqui." Restore flow and purge timing are unconfirmed; flagged as a
-follow-up. See `prd.json` feature-017.
+não podem ser restaurados." Empty state: "A lixeira está vazia. Os cards
+excluídos aparecerão aqui."
+
+**Delete + restore flow confirmed end-to-end (Iteration 10, live test)** using
+a disposable "Throwaway Test Card": the card-detail delete entry point is a
+'⋮' kebab menu item labelled **"Mover card para a lixeira"** (not "Excluir"),
+whose confirmation dialog reads "Admins do pipe podem restaurar o card
+'<title>' da lixeira em até 15 dias" — **restore is gated to the Admin do
+Pipe role**, not available to all pipe members (ties into feature-013's role
+model). Deleting is synchronous: the card vanished from the Kanban board and
+the phase's card count decremented immediately, no reload needed. A populated
+Lixeira row shows the card title, a relative timestamp, and "De <phase
+name>" — the phase the card was deleted from. Clicking "Restaurar" is
+**asynchronous**: toast reads "Restaurando o card. Atualize em instantes para
+vê-lo." and the Lixeira list empties immediately (optimistic UI) while the
+restore is still pending server-side; after ~15-20s + reload the card
+reappeared on the Kanban board **back in the exact phase it was deleted
+from** (not a default/first phase). Permanent-purge timing past the 15-day
+window is still unconfirmed (background job vs. lazy-on-view) — would require
+waiting out the retention window. See `prd.json` feature-017.
 
 Screenshots: `screenshots/inspect/pipe-settings-pessoas.jpg`,
-`screenshots/inspect/pipe-settings-configuracoes.jpg`.
+`screenshots/inspect/pipe-settings-configuracoes.jpg`,
+`screenshots/inspect/lixeira-populated.jpg`,
+`screenshots/inspect/lixeira-restored-on-kanban.jpg`.
 
 ## 16. Pipe Creation Flow & Início Dashboard (Iteration 3, live UI test)
 

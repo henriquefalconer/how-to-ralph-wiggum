@@ -889,8 +889,8 @@
     "category": "data",
     "description": "Pipe-scoped card trash (Lixeira): deleted cards are retained for 15 days before permanent purge",
     "page": "Gerenciar (top nav) > Ferramentas > Lixeira — modal, tagged 'Beta'",
-    "ui_details": "Confirmed (Iteration 2, live test): header 'Lixeira' + a 'Beta' tag, subtext 'Os cards ficam aqui por 15 dias. Depois disso, não podem ser restaurados.', a single 'Cards' tab (the tab strip's singularity suggests Lixeira may extend to other resource types later — e.g. Database records — but only Cards was present in this build), an 'Enviar feedback' link, and — since this pipe has never had a card deleted — the empty state: 'A lixeira está vazia. Os cards excluídos aparecerão aqui.' Deleting the pipe's one real card ('João Silva') to observe the populated/restore state was deliberately skipped this pass, since that card is the fixture feature-004/010's confirmed automation test depends on.",
-    "behavior": "Not yet tested end-to-end — the restore action, the exact permanent-purge trigger (background job vs. lazy-on-view), and whether resource types besides Card ever populate this view are all unconfirmed. Follow-up: create a disposable throwaway card, delete it, verify it lands here with a restore control, and confirm restoring it re-inserts into its original phase.",
+    "ui_details": "Confirmed (Iteration 2 + Iteration 10, live test): header 'Lixeira' + a 'Beta' tag, subtext 'Os cards ficam aqui por 15 dias. Depois disso, não podem ser restaurados.', a single 'Cards' tab, an 'Enviar feedback' link. Empty state: 'A lixeira está vazia. Os cards excluídos aparecerão aqui.' Populated state (Iteration 10): each row shows the card title, a relative timestamp, 'De <phase name>' (the phase it was deleted from), and a 'Restaurar' action on the right. The card-detail delete entry point is a '⋮' kebab menu item labelled 'Mover card para a lixeira' (not 'Excluir') — its confirmation dialog reads 'Admins do pipe podem restaurar o card \"<title>\" da lixeira em até 15 dias', confirming restore is an Admin-do-Pipe-only permission, not available to all pipe members.",
+    "behavior": "Confirmed end-to-end (Iteration 10, live test): created a disposable 'Throwaway Test Card' in Caixa de entrada, opened it, used the card-detail kebab menu → 'Mover card para a lixeira', confirmed the dialog → toast 'Card movido para a lixeira', card instantly disappeared from the Kanban board (phase count decremented immediately — this delete step is synchronous). Lixeira modal then listed it with a working 'Restaurar' control. Clicking 'Restaurar' showed toast 'Restaurando o card. Atualize em instantes para vê-lo.' — confirming restore itself is ASYNCHRONOUS (a background job), unlike the delete step. The Lixeira list emptied immediately (optimistic UI) while the restore was still pending. After ~15-20s and a page reload, the card reappeared on the Kanban board back in its original phase (Caixa de entrada) — confirming restore re-inserts into the phase the card was deleted from, not a default/first phase. Permanent-purge timing (background job vs. lazy-on-view after the 15-day window) remains unconfirmed — would require waiting out the retention window to observe.",
     "data_model": "cards gains: deleted_at (timestamp, nullable), purge_at (timestamp, nullable — computed as deleted_at + 15 days)",
     "priority": 12,
     "core": false,
@@ -910,7 +910,20 @@
           "expected_output": "Deleted card is absent from the result"
         }
       ],
-      "e2e": [],
+      "e2e": [
+        {
+          "name": "delete a card and restore it from Lixeira",
+          "steps": [
+            "Create a card via 'Criar novo card' on the Kanban board",
+            "Open the card, click the '⋮' kebab menu, click 'Mover card para a lixeira'",
+            "Confirm the 'Mover card para a lixeira' dialog",
+            "Navigate to Gerenciar > Ferramentas > Lixeira",
+            "Click 'Restaurar' on the card's row",
+            "Reload the Kanban board"
+          ],
+          "expected": "After step 3, toast 'Card movido para a lixeira' appears and the card disappears from its phase column (count decrements immediately). In Lixeira, the row shows the card title, a relative timestamp, and 'De <original phase>'. After clicking Restaurar, a toast indicates the restore is processing asynchronously; after reload the card reappears in the Kanban board in the SAME phase it was deleted from."
+        }
+      ],
       "edge_cases": [
         {
           "name": "empty trash",
@@ -918,6 +931,14 @@
             "Navigate to Gerenciar > Ferramentas > Lixeira on a pipe with zero deleted cards"
           ],
           "expected": "Empty state 'A lixeira está vazia. Os cards excluídos aparecerão aqui.' shown, no error"
+        },
+        {
+          "name": "restore is gated to pipe admins",
+          "steps": [
+            "Delete a card as a pipe admin",
+            "View the Lixeira confirmation copy shown before deleting"
+          ],
+          "expected": "Dialog text reads 'Admins do pipe podem restaurar o card ... da lixeira em até 15 dias' — the clone should gate the Restaurar action to the Admin do Pipe role, matching feature-013's role model, not expose it to all pipe members"
         }
       ]
     }

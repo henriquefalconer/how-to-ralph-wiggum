@@ -92,6 +92,19 @@ Automations sub-tabs (`/pipes/:id/automations`): Automações, Logs. **Inspected
 confirmed via Logs and the card detail view. See prd feature-010 and spec-build.md §13.
 
 ## Not yet inspected (next iterations)
-- Lixeira restore flow (currently empty; needs a disposable throwaway card to test)
+- Pipe-scoped card search ("Procurar cards" box in the Kanban top nav) — never live-tested
+- Start form / Formulário inicial editor as its own dedicated deep-dive (field palette,
+  "Próximos passos" tips, solicitation count) — covered only incidentally so far via
+  card-creation gating in other features
 - Tarefas e Solicitações's actual data source — confirmed NOT the same feed as Meu trabalho
-  and NOT a card's Atividades log; still unconfirmed what populates it (low priority)
+  and NOT a card's Atividades log; **re-checked iteration 10, still empty** ("Sem tarefas")
+  even with an active overdue+assigned card populating Meu trabalho; still unconfirmed what
+  populates it (low priority)
+- Design system consolidation pass + final spec-build.md cleanup (spec-inspect.md "Final Iteration")
+
+## Resolved iteration 10
+- **Lixeira restore flow** — fully tested: created a disposable card, deleted it via the
+  card-detail kebab menu ("Mover card para a lixeira" — synchronous, confirmed by a role-gated
+  confirmation dialog: "Admins do pipe podem restaurar"), then restored it from the Lixeira
+  modal (asynchronous — toast says to reload in a moment). Confirmed the card reappears in its
+  original phase after restore. See prd feature-017, spec-build.md §15.
