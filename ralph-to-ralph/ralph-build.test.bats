@@ -53,6 +53,32 @@ STUB
   [ "$(cat "$STUB_CALLS")" -eq 0 ]
 }
 
+@test "refuses to run on an empty prd.json instead of invoking an agent with nothing to build" {
+  echo '[]' > "$REPO/prd.json"
+  run "$REPO/ralph-to-ralph/ralph-build.sh" 5
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"contains no features"* ]]
+  [ "$(cat "$STUB_CALLS")" -eq 0 ]
+}
+
+@test "aborts if the agent truncates prd.json to an empty list mid-run" {
+  export STUB_OUT="<promise>NEXT</promise>"
+  cat > "$REPO/bin/claude" <<'STUB'
+#!/bin/bash
+printf '%s\n' "$@" >> "$STUB_ARGS"
+n=$(( $(cat "$STUB_CALLS") + 1 )); echo "$n" > "$STUB_CALLS"
+echo '[]' > prd.json
+echo "${STUB_OUT:-}"
+exit 0
+STUB
+  chmod +x "$REPO/bin/claude"
+
+  run "$REPO/ralph-to-ralph/ralph-build.sh" 9
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"contains no features"* ]]
+  [ "$(cat "$STUB_CALLS")" -eq 1 ]
+}
+
 @test "refuses to run when prd.json is valid JSON but not a list" {
   echo '{"id":"f1"}' > "$REPO/prd.json"
   run "$REPO/ralph-to-ralph/ralph-build.sh" 5
@@ -81,7 +107,7 @@ STUB
   run "$REPO/ralph-to-ralph/ralph-build.sh" 1
   [ "$status" -eq 0 ]
   grep -qx -- "--model" "$STUB_ARGS"
-  grep -qx -- "claude-opus-4-8" "$STUB_ARGS"
+  grep -qx -- "claude-sonnet-5" "$STUB_ARGS"
 }
 
 @test "NEXT continues, COMPLETE ends the loop" {

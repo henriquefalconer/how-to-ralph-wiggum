@@ -65,8 +65,21 @@ for ((i=1; i<=$ITERATIONS; i++)); do
   TOTAL=$(total_tasks)
   echo "--- Build iteration $i/$ITERATIONS ($PASSES/$TOTAL passed) ---"
 
+  # An empty feature list parses fine, so require_prd waves it through — but
+  # there is nothing here to build. The "all done" test below deliberately
+  # excludes 0/0, so without this the loop would invoke the agent against an
+  # empty PRD every iteration, and the watchdog would restart it ten times per
+  # cycle for five cycles. Re-checked each iteration because the agent rewrites
+  # prd.json and could truncate it.
+  if [ "$TOTAL" -eq 0 ]; then
+    echo "Error: prd.json contains no features — there is nothing to build."
+    echo "Inspect should have written the feature list. Check that Phase 1 actually"
+    echo "produced one before spending iterations here."
+    exit 1
+  fi
+
   # Check if all done before invoking
-  if [ "$PASSES" -ge "$TOTAL" ] && [ "$TOTAL" -gt 0 ]; then
+  if [ "$PASSES" -ge "$TOTAL" ]; then
     echo "All $TOTAL features already pass!"
     exit 0
   fi
@@ -83,7 +96,7 @@ for ((i=1; i<=$ITERATIONS; i++)); do
   # promise; rc is captured so a crash doesn't trip `set -e` before the retry logic.
   LOG="$LOG_DIR/$(printf '%03d' "$i").log"
   rc=0
-  timeout 1200 claude -p --dangerously-skip-permissions --chrome --model claude-opus-4-8 \
+  timeout 1200 claude -p --dangerously-skip-permissions --chrome --model claude-sonnet-5 \
 "@ralph-to-ralph/prompt-build.md @pre-setup.md @spec-build.md @prd.json @CLAUDE.md $PROGRESS_REFS
 
 ITERATION: $i of $ITERATIONS

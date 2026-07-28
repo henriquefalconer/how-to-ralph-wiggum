@@ -49,6 +49,68 @@ STUB
   [ -d "$REPO/screenshots" ]
 }
 
+@test "records the target it is inspecting for" {
+  export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 1
+  [ "$(cat "$REPO/ralph-to-ralph/.state/inspect-target")" = "https://example.com" ]
+}
+
+@test "keeps the previous run's artifacts when the target is unchanged" {
+  # A restarted or resumed inspection of the same product must build on what it
+  # already has — only a *different* target invalidates it.
+  export STUB_OUT="<promise>NEXT</promise>"
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 1
+  echo '[{"id":"f1"}]' > "$REPO/prd.json"
+  echo "spec for example.com" > "$REPO/spec-build.md"
+
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 1
+  [ "$status" -eq 0 ]
+  [ "$(cat "$REPO/prd.json")" = '[{"id":"f1"}]' ]
+  [ -f "$REPO/spec-build.md" ]
+  [ ! -d "$REPO/ralph-to-ralph/.state/archive" ]
+}
+
+@test "archives the previous target's artifacts when the target changes" {
+  # The inspect prompt tells the agent to *append* to prd.json. Pointed at a new
+  # product with the old PRD still on disk, run #2 builds a chimera of both.
+  export STUB_OUT="<promise>NEXT</promise>"
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://first-target.com 1
+  echo '[{"id":"first-target-feature"}]' > "$REPO/prd.json"
+  echo "spec for the first target" > "$REPO/spec-build.md"
+  echo "sitemap for the first target" > "$REPO/sitemap.md"
+  mkdir -p "$PROGRESS" && echo "inspected first-target.com" > "$PROGRESS/001.md"
+  printf 'https://first-target.com\n' > "$REPO/ralph-to-ralph/.state/inspect-complete"
+
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://second-target.com 1
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Target changed"* ]]
+
+  # the new run starts clean
+  [ "$(cat "$REPO/prd.json")" = "[]" ]
+  [ ! -f "$REPO/spec-build.md" ]
+  [ ! -f "$REPO/sitemap.md" ]
+  [ ! -f "$PROGRESS/001.md" ]
+  [ ! -f "$REPO/ralph-to-ralph/.state/inspect-complete" ]
+  [ "$(cat "$REPO/ralph-to-ralph/.state/inspect-target")" = "https://second-target.com" ]
+
+  # nothing is destroyed — the old run is recoverable
+  ARCHIVE=$(find "$REPO/ralph-to-ralph/.state/archive" -mindepth 1 -maxdepth 1 -type d | head -1)
+  [ -n "$ARCHIVE" ]
+  grep -q "first-target-feature" "$ARCHIVE/prd.json"
+  grep -q "first target" "$ARCHIVE/spec-build.md"
+  grep -q "first-target.com" "$ARCHIVE/progress/inspect/001.md"
+}
+
+@test "does not feed the previous target's journals into the new run's prompt" {
+  export STUB_OUT="<promise>NEXT</promise>"
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://first-target.com 1
+  mkdir -p "$PROGRESS" && echo "notes about the first target" > "$PROGRESS/001.md"
+
+  rm -f "$STUB_ARGS"
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://second-target.com 1
+  ! grep -q -- "@ralph-to-ralph/.state/progress/inspect/001.md" "$STUB_ARGS"
+}
+
 @test "drives the browser through claude-in-chrome, not a separate session" {
   export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
   run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 1
@@ -63,7 +125,7 @@ STUB
   run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 1
   [ "$status" -eq 0 ]
   grep -qx -- "--model" "$STUB_ARGS"
-  grep -qx -- "claude-opus-4-8" "$STUB_ARGS"
+  grep -qx -- "claude-sonnet-5" "$STUB_ARGS"
 }
 
 @test "passes the target url and iteration into the prompt" {

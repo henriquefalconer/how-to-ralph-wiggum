@@ -68,6 +68,20 @@ require_prd() {
   fi
 }
 
+# Empty is not corrupt, so require_prd passes it — but it is just as unusable
+# once inspect claims to be done, and it fails `all_passed` (which requires
+# total > 0) exactly like a PRD full of unbuilt features. That combination is
+# what turns an empty list into 10 build restarts × 5 cycles against a file with
+# nothing in it.
+require_features() {
+  if [ "$(total_tasks)" -eq 0 ]; then
+    log "FATAL: inspect completed but prd.json lists no features."
+    log "Nothing to build or verify. Delete $STATE_DIR/inspect-complete to re-inspect,"
+    log "and check ralph-to-ralph/.state/logs/inspect/ for what Phase 1 actually did."
+    exit 1
+  fi
+}
+
 count_passes() { local s; s=$(read_prd 2>/dev/null) || s="0 0"; echo "${s%% *}"; }
 total_tasks()  { local s; s=$(read_prd 2>/dev/null) || s="0 0"; echo "${s##* }"; }
 
@@ -133,6 +147,9 @@ done
 
 # ─── PHASE 2 + 3: Build → QA → Fix loop ───
 
+require_prd       # inspect wrote it; refuse to enter the cycles on an unusable file
+require_features
+
 MAX_CYCLES=5
 MAX_QA_FAILURES=3
 qa_failures=0
@@ -146,7 +163,10 @@ for ((cycle=1; cycle<=MAX_CYCLES; cycle++)); do
   build_restarts=0
 
   while ! all_passed; do
-    require_prd   # a corrupt prd.json also reads as "not all passed" — catch it here
+    # A corrupt or emptied prd.json also reads as "not all passed" — catch both
+    # here, since the agent rewrites the file every iteration.
+    require_prd
+    require_features
 
     if [ "$build_restarts" -ge "$MAX_BUILD_RESTARTS" ]; then
       log "Phase 2: Hit max restarts ($MAX_BUILD_RESTARTS). Moving to QA."

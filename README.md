@@ -38,14 +38,14 @@ Ralph-to-Ralph runs a three-phase autonomous pipeline:
 
 ### Phase 1: Inspect (Ralph Loop #1)
 
-**Claude in Chrome + Claude Opus** analyzes the target URL and produces:
+**Claude in Chrome + Claude Sonnet** analyzes the target URL and produces:
 - `PRD.json` — structured product requirements
 - `spec-build.md` — technical build specification
 - Sitemap + screenshots of every page
 
 ### Phase 2: Build (Ralph Loop #2)
 
-**Claude Agent (Opus)** builds the full stack:
+**Claude Agent (Sonnet)** builds the full stack:
 - API routes + React components
 - Unit tests (Vitest)
 - Cloud infrastructure (Neon, Render)
@@ -72,7 +72,7 @@ A strict watchdog wraps the entire pipeline, ensuring all Ralph loops stay stabl
 | Agent | Role |
 |-------|------|
 | **Claude in Chrome** | Anthropic's browser extension — drives the signed-in Chrome window for site inspection and E2E testing |
-| **Claude Opus** | Powers the Inspect and Build loops — architecture, code generation, infra setup |
+| **Claude Sonnet** | Powers the Inspect and Build loops — architecture, code generation, infra setup |
 | **Claude (QA)** | Runs independent fresh-context QA agents for thorough verification |
 
 ## Running It

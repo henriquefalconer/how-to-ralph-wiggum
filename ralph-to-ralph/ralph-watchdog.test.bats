@@ -40,9 +40,15 @@ fi
 exit 0
 STUB
 
+  # QA: records args; writes the qa-complete sentinel, which is the watchdog's
+  # only proof that a full pass ran. QA_NEVER_COMPLETES simulates a QA process
+  # that dies before verifying anything.
   cat > "$REPO/ralph-to-ralph/ralph-qa.sh" <<'STUB'
 #!/bin/bash
 printf '%s\n' "$@" >> "$QA_ARGS"
+rm -f "$STATE/qa-complete"
+[ "${QA_NEVER_COMPLETES:-0}" = "1" ] && exit 1
+printf 'stub pass\n' > "$STATE/qa-complete"
 exit 0
 STUB
 
@@ -147,11 +153,51 @@ STUB
   [[ "$output" == *"not a JSON list"* ]]
 }
 
-@test "a missing prd.json is still 0/0 rather than a corruption abort" {
+@test "a missing prd.json is diagnosed as an empty PRD, not as corruption" {
   rm -f "$REPO/prd.json"
   run "$REPO/ralph-to-ralph/ralph-watchdog.sh" https://example.com
+  [ "$status" -eq 1 ]
   [[ "$output" != *"cannot parse"* ]]
-  [ -f "$BUILD_ARGS" ]
+  [[ "$output" == *"lists no features"* ]]
+}
+
+@test "aborts when inspect completed but left an empty feature list" {
+  # `[]` parses fine, so the corruption guard waves it through — and it fails
+  # all_passed (which requires total > 0) exactly like a PRD of unbuilt
+  # features. Unguarded, that is 10 build restarts x 5 cycles on an empty file.
+  echo '[]' > "$REPO/prd.json"
+  run "$REPO/ralph-to-ralph/ralph-watchdog.sh" https://example.com
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"lists no features"* ]]
+  [ ! -f "$BUILD_ARGS" ]
+  [ ! -f "$QA_ARGS" ]
+  [[ "$output" != *"RALPH-TO-RALPH COMPLETE"* ]]
+}
+
+@test "aborts when the build agent truncates prd.json to an empty list mid-cycle" {
+  cat > "$REPO/ralph-to-ralph/ralph-build.sh" <<'STUB'
+#!/bin/bash
+printf '%s\n' "$@" >> "$BUILD_ARGS"
+echo '[]' > prd.json
+exit 0
+STUB
+  chmod +x "$REPO/ralph-to-ralph/ralph-build.sh"
+
+  run "$REPO/ralph-to-ralph/ralph-watchdog.sh" https://example.com
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"lists no features"* ]]
+  # caught on the next pass round the build loop, not after ten restarts
+  [ "$(wc -l < "$BUILD_ARGS")" -eq 1 ]
+}
+
+@test "a QA run that never completes is not read as approval" {
+  export QA_NEVER_COMPLETES=1
+  run "$REPO/ralph-to-ralph/ralph-watchdog.sh" https://example.com
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"no full pass ran"* ]]
+  [[ "$output" != *"PASSED + QA VERIFIED"* ]]
+  # three QA attempts, then it refuses to report a verified build
+  [ "$(grep -c "https://example.com" "$QA_ARGS")" -eq 3 ]
 }
 
 @test "QA demoting a feature to passes:false sends it back to build" {
@@ -160,6 +206,7 @@ STUB
   cat > "$REPO/ralph-to-ralph/ralph-qa.sh" <<'STUB'
 #!/bin/bash
 printf '%s\n' "$@" >> "$QA_ARGS"
+printf 'stub pass\n' > "$STATE/qa-complete"
 # fail QA the first time only, so the run still terminates
 [ -f "$QA_ARGS.done" ] && exit 0
 touch "$QA_ARGS.done"

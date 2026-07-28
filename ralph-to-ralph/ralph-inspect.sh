@@ -9,13 +9,52 @@ ITERATIONS="${2:-999}"
 
 MAX_FAILURES="${RALPH_MAX_FAILURES:-3}"   # abort after N consecutive no-promise iterations
 
-PROGRESS_DIR="ralph-to-ralph/.state/progress/inspect"
-LOG_DIR="ralph-to-ralph/.state/logs/inspect"
+STATE_DIR="ralph-to-ralph/.state"
+PROGRESS_DIR="$STATE_DIR/progress/inspect"
+LOG_DIR="$STATE_DIR/logs/inspect"
+TARGET_FILE="$STATE_DIR/inspect-target"
 
 echo "=== RALPH-TO-RALPH: Phase 1 (Inspect) ==="
 echo "Target: $TARGET_URL"
 echo "Iterations: $ITERATIONS"
 echo ""
+
+mkdir -p "$STATE_DIR"
+
+# Re-inspecting a *different* product is not enough on its own: every artifact
+# of the previous run is still on disk, and the prompt tells this agent to
+# *append* to prd.json and update spec-build.md incrementally. Left alone, run
+# #2 starts from run #1's feature list and builds a chimera of two products.
+# The inspect-complete sentinel is keyed by URL, so the phase correctly re-runs
+# — this is what makes the re-run start from a clean slate. Artifacts are moved
+# aside rather than deleted; a run's output is expensive to reproduce.
+PREVIOUS_TARGET=""
+if [ -f "$TARGET_FILE" ]; then
+  PREVIOUS_TARGET=$(cat "$TARGET_FILE" 2>/dev/null || true)
+fi
+
+if [ -n "$PREVIOUS_TARGET" ] && [ "$PREVIOUS_TARGET" != "$TARGET_URL" ]; then
+  ARCHIVE="$STATE_DIR/archive/$(date +%Y%m%d-%H%M%S)"
+  mkdir -p "$ARCHIVE"
+  echo "Target changed:"
+  echo "  was: $PREVIOUS_TARGET"
+  echo "  now: $TARGET_URL"
+  for artifact in prd.json spec-build.md sitemap.md docs-extract.md report-qa.json \
+                  clone-product-docs screenshots; do
+    if [ -e "$artifact" ]; then
+      mv "$artifact" "$ARCHIVE/"
+    fi
+  done
+  # The journals describe the old product too, and the loops feed the most
+  # recent few straight back into the prompt.
+  if [ -d "$STATE_DIR/progress" ]; then
+    mv "$STATE_DIR/progress" "$ARCHIVE/progress"
+  fi
+  rm -f "$STATE_DIR/inspect-complete" "$STATE_DIR/qa-complete"
+  echo "Archived the previous target's artifacts to $ARCHIVE"
+  echo ""
+fi
+printf '%s\n' "$TARGET_URL" > "$TARGET_FILE"
 
 # Initialize files
 if [ ! -f "prd.json" ]; then
@@ -44,7 +83,7 @@ for ((i=1; i<=$ITERATIONS; i++)); do
   # promise; rc is captured so a crash doesn't trip `set -e` before the retry logic.
   LOG="$LOG_DIR/$(printf '%03d' "$i").log"
   rc=0
-  timeout 1200 claude -p --dangerously-skip-permissions --chrome --model claude-opus-4-8 \
+  timeout 1200 claude -p --dangerously-skip-permissions --chrome --model claude-sonnet-5 \
 "@ralph-to-ralph/prompt-inspect.md @ralph-to-ralph/spec-inspect.md @claude-in-chrome-reference.md @prd.json $PROGRESS_REFS
 
 TARGET URL: $TARGET_URL
@@ -65,7 +104,7 @@ Output <promise>INSPECT_COMPLETE</promise> only if ALL pages are inspected AND s
     echo "Build spec: spec-build.md"
     # Record which target this was, so a later run against a different URL
     # re-inspects instead of inheriting this run's prd.json.
-    printf '%s\n' "$TARGET_URL" > ralph-to-ralph/.state/inspect-complete
+    printf '%s\n' "$TARGET_URL" > "$STATE_DIR/inspect-complete"
     exit 0
   fi
 

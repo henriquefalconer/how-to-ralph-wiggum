@@ -15,6 +15,16 @@ STATE_DIR="ralph-to-ralph/.state"
 QA_SENTINEL="$STATE_DIR/qa-complete"
 DEV_PORT=3015
 
+# The watchdog reads this file to tell "QA verified everything" apart from "QA
+# died before verifying anything". Clear it before *any* other work, including
+# the guards below: a sentinel left by an earlier cycle must never outlive the
+# run it vouched for. Clearing it after the prd.json guard left one path —
+# prd.json missing at QA time — on which this script exits 1 while last cycle's
+# sentinel survives, and the watchdog then reads that as a full pass over a QA
+# run that never started.
+mkdir -p "$STATE_DIR"
+rm -f "$QA_SENTINEL"
+
 if [ ! -f "prd.json" ]; then
   echo "Error: prd.json not found. Run ralph-build.sh first."
   exit 1
@@ -29,12 +39,6 @@ mkdir -p "$PROGRESS_DIR" "$LOG_DIR" "$STATE_DIR"
 if [ ! -f "report-qa.json" ]; then
   echo '[]' > report-qa.json
 fi
-
-# The watchdog reads this file to tell "QA verified everything" apart from "QA
-# died before verifying anything". Clear it up front so only *this* run can
-# vouch for the build — a sentinel left by an earlier cycle must never be
-# mistaken for a verdict on the current one.
-rm -f "$QA_SENTINEL"
 
 # ─── Dev server ───
 #
@@ -119,7 +123,7 @@ for ((i=1; i<=$ITERATIONS; i++)); do
   # promise; rc is captured so a crash doesn't trip `set -e` before the retry logic.
   LOG="$LOG_DIR/$(printf '%03d' "$i").log"
   rc=0
-  timeout 1200 claude -p --dangerously-skip-permissions --chrome --model claude-opus-4-8 \
+  timeout 1200 claude -p --dangerously-skip-permissions --chrome --model claude-sonnet-5 \
 "@ralph-to-ralph/prompt-qa.md @pre-setup.md @spec-build.md @prd.json @report-qa.json @claude-in-chrome-reference.md $PROGRESS_REFS
 
 ITERATION: $i of $ITERATIONS

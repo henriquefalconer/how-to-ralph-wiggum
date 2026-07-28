@@ -7,11 +7,12 @@
 
 setup() {
   REPO="$BATS_TEST_TMPDIR/repo"
-  mkdir -p "$REPO/ralph-to-ralph" "$REPO/bin"
+  mkdir -p "$REPO/ralph-to-ralph/.state" "$REPO/bin"
   cp "$BATS_TEST_DIRNAME/ralph-qa.sh" "$REPO/ralph-to-ralph/"
 
   PROGRESS="$REPO/ralph-to-ralph/.state/progress/qa"
   LOGS="$REPO/ralph-to-ralph/.state/logs/qa"
+  SENTINEL="$REPO/ralph-to-ralph/.state/qa-complete"
 
   export STUB_ARGS="$REPO/claude-args.txt"
   export STUB_CALLS="$REPO/claude-calls.txt"
@@ -43,6 +44,25 @@ exit "${NPX_RC:-0}"
 STUB
   chmod +x "$REPO/bin/npx"
 
+  # The stubbed `npm run dev` never binds a port, so the readiness poll needs a
+  # curl that answers for it. CURL_RC=1 simulates a dev server that never comes up.
+  cat > "$REPO/bin/curl" <<'STUB'
+#!/bin/bash
+exit "${CURL_RC:-0}"
+STUB
+  chmod +x "$REPO/bin/curl"
+
+  # setsid would put the stub in its own process group; not needed here, and it
+  # is not installed everywhere. Run the command straight through.
+  cat > "$REPO/bin/setsid" <<'STUB'
+#!/bin/bash
+exec "$@"
+STUB
+  chmod +x "$REPO/bin/setsid"
+
+  printf '#!/bin/bash\nexit 0\n' > "$REPO/bin/pkill"
+  chmod +x "$REPO/bin/pkill"
+
   # The script waits 5s for the dev server and backs off between retries.
   printf '#!/bin/bash\nexit 0\n' > "$REPO/bin/sleep"
   chmod +x "$REPO/bin/sleep"
@@ -57,6 +77,39 @@ STUB
   run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
   [ "$status" -eq 1 ]
   [[ "$output" == *"prd.json not found"* ]]
+}
+
+@test "QA_COMPLETE writes the sentinel the watchdog treats as proof of a full pass" {
+  export STUB_OUT="<promise>QA_COMPLETE</promise>"
+  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
+  [ "$status" -eq 0 ]
+  [ -f "$SENTINEL" ]
+}
+
+@test "running out of iterations leaves no sentinel" {
+  export STUB_OUT="<promise>NEXT</promise>"
+  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 2
+  [ ! -f "$SENTINEL" ]
+}
+
+@test "clears a stale sentinel even when it exits before QA starts" {
+  # The sentinel is the watchdog's only evidence that QA actually ran. Every
+  # early exit must therefore invalidate the previous cycle's sentinel first —
+  # otherwise the watchdog reads last cycle's verdict as this cycle's.
+  echo "stale verdict from an earlier cycle" > "$SENTINEL"
+  rm "$REPO/prd.json"
+  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
+  [ "$status" -eq 1 ]
+  [ ! -f "$SENTINEL" ]
+}
+
+@test "clears a stale sentinel when the dev server never comes up" {
+  echo "stale verdict from an earlier cycle" > "$SENTINEL"
+  export CURL_RC=1
+  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"never became ready"* ]]
+  [ ! -f "$SENTINEL" ]
 }
 
 @test "seeds report-qa.json when missing" {
@@ -79,7 +132,7 @@ STUB
   run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
   [ "$status" -eq 0 ]
   grep -qx -- "--model" "$STUB_ARGS"
-  grep -qx -- "claude-opus-4-8" "$STUB_ARGS"
+  grep -qx -- "claude-sonnet-5" "$STUB_ARGS"
 }
 
 @test "passes the target url through as QA's source of truth" {

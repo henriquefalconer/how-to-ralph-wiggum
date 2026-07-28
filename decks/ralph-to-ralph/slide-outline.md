@@ -13,17 +13,17 @@
 ## Slide 3: Solution
 - **One sentence:** Ralph-to-Ralph clones real products end-to-end — from browser analysis to deployed production software you own
 - **Key workflow (4 phases):**
-  1. **Inspect** (Ralph Loop #1) — Claude in Chrome + Claude Opus analyzes the target URL → PRD.json + spec-build.md + sitemap + screenshots
+  1. **Inspect** (Ralph Loop #1) — Claude in Chrome + Claude Sonnet analyzes the target URL → PRD.json + spec-build.md + sitemap + screenshots
   2. **Plan** — PRD.json + spec.md derived from the Inspect loop
-  3. **Build** (Ralph Loop #2) — Claude Agent (Opus) → API Routes + Components, Tests (Vitest), Cloud Infra (Neon, Render)
-  4. **QA / Verify** (Ralph Loop #3) — Opus Agents (parallel) → E2E via Claude in Chrome, Bug Fixes + Screenshots, Regression Tests
+  3. **Build** (Ralph Loop #2) — Claude Agent (Sonnet) → API Routes + Components, Tests (Vitest), Cloud Infra (Neon, Render)
+  4. **QA / Verify** (Ralph Loop #3) — Sonnet Agents (parallel) → E2E via Claude in Chrome, Bug Fixes + Screenshots, Regression Tests
 - **Include architecture diagram screenshot**
 
 ## Slide 4: Ralph Setup / Capability
 - **AI agents & tools:**
   - Claude in Chrome (Anthropic browser extension) for inspection & E2E
-  - Claude Opus powering Inspect + Build loops
-  - Opus running parallel QA agents
+  - Claude Sonnet powering Inspect + Build loops
+  - Sonnet running parallel QA agents
 - **Operating discipline:** Strict Watchdog Orchestrator — continuously monitors all Ralph loops, auto-restarts on failure, git commit+push, cron backup. Like keeping a train on the tracks.
 - **Bug fix loop:** Bugs Found → Fix → Retest (up to 5 cycles)
 
