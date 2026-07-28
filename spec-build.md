@@ -123,6 +123,11 @@ rename for clarity but should preserve the same concepts.
 - has many: `fields` (Card Field Values: `{name, value, filled_at, field{id,label}}`)
 - relations: connected cards (via `connector` fields / `throughConnectors`),
   activities/timeline, emails, tasks, attachments
+- **Confirmed (Iteration 3, live UI test):** `title` is set once, at creation
+  time, from the *first field's value on the start form* — it does not
+  re-derive if that field's value later changes, and it is a completely
+  separate value from any same-labeled field owned by a phase (see field
+  scoping note below). Card detail route: `/open-cards/:cardId`.
 
 ### Field (phase field / start form field / table field — shared type system)
 - `id` (aka `field_id`/slug — auto-generated from label, lowercase +
@@ -233,8 +238,8 @@ Provisional core-feature guess (to validate against the real UI next):
 - [x] Site map (Iteration 1) — see `sitemap.md`
 - [x] Home / pipes list (screenshot: `screenshots/inspect/home.jpg`)
 - [x] Phase/field editors (Fases — field config modal, choice-type options editor, phase Opções Avançadas [done/SLA/auto-assign], Condicionais em campos rule builder — screenshot: `screenshots/inspect/phases-editor.jpg`)
-- [ ] Kanban board view (seen empty; need card CRUD + drag-drop test)
-- [ ] Card detail view
+- [x] Kanban board view (card create, drag-drop move, done-phase styling — Iteration 3)
+- [x] Card detail view (Iteration 3)
 - [ ] Start form
 - [ ] Database Tables (list + detail)
 - [ ] Reports/dashboards
@@ -253,3 +258,70 @@ grupo de condições') and two action branches (true/false), evaluated
 top-to-bottom with last-conflicting-rule-wins. Only the 'Ocultar' (hide)
 action was observed this pass — the full action-type list is still TODO for
 a follow-up iteration.
+
+## 11. Kanban Board & Card Detail (Iteration 3, live UI test)
+
+Tested end-to-end on the "Purchase Requests" pipe: created a start-form
+field, created a card from the Kanban board, opened its detail view, edited
+a phase field, moved it between phases both via drag-and-drop and via the
+detail view's quick-mover, and observed done-phase styling.
+
+**Card creation is gated on the start form having ≥1 field.** With an empty
+start form, both the Kanban "Criar novo card" button and a phase column's
+`+` open the *same* "Compartilhar formulário" promo modal (illustration +
+"Comece a criar" CTA) instead of a create-card form — there is no way to
+create a card until the start form has at least one field. Adding one field
+via Gerenciar > Formulário inicial (or the "Editar" shortcut in that promo
+modal) immediately turns "Criar novo card" into a real inline form (title +
+the field(s) + a "Criar novo card" submit button) rendered in a popover
+anchored to the button. Required-field validation is inline: an empty
+required text field shows a red border + "deve ser informado" beneath it on
+submit attempt, submit is blocked, no toast. On success: toast "Card criado
+com sucesso. Para abri-lo, clique **aqui**" (the link opens the new card),
+and the new card appears at the top of its phase's column titled with the
+first field's value.
+
+**Field scoping — same label, independent fields.** A field added to the
+start form (`owner_type: start_form`) and a field with the *identical label*
+added directly to a phase (`owner_type: phase`) are entirely separate Field
+rows with independent values — confirmed by creating "Nome do solicitante"
+in both places and observing two distinct input boxes on the card detail
+view (one read-only under "Formulário Inicial" showing the start-form
+submission, one editable under "Fase atual" showing the phase field,
+initially blank). The clone must NOT dedupe/merge fields by label across
+owner types.
+
+**Card detail view layout** (`/open-cards/:cardId`), three columns:
+- **Left**: card title (h1) · quick-action row ("Adicionar responsável",
+  "Vencimento" [due date], "Adicionar etiquetas") · a tab strip (Form,
+  Atividades, Anexos, Checklists, Comentários, Email, PDF, `+` to add more)
+  · a "Formulário Inicial" section — read-only, shows creator name +
+  relative timestamp ("há poucos segundos") + each start-form field's
+  submitted value · a "Histórico" section — reverse-chronological phase
+  timeline, one card per phase transition with phase name (colored,
+  clickable) + date + relative duration · "Editar visualização do card" link
+  at the bottom to customize which sections render.
+- **Middle**: "Fase atual" badge showing the current phase name + a gear
+  icon (opens that phase's settings) + "Compartilhar" link, then the
+  current phase's own fields rendered as a live editable form (autosaves on
+  blur — no explicit save button, no confirmation toast on this
+  particular save, unlike the field-editor "Configurações atualizadas."
+  toast).
+- **Right**: "Mover card para fase" — a single-click button naming the
+  *next* phase (moves forward one phase in the pipe's order), plus
+  "Configurar mover cards" (link to move-automation config) and "Mover
+  cards com IA" (AI-assisted phase move, out of scope to really implement —
+  model as a no-op/manual action in the clone).
+
+**Move behavior.** Both drag-and-drop on the Kanban board (card → column
+header area) and the detail view's "Mover card para fase" button produce a
+toast ("Card movido com sucesso para <Fase>. Para reabri-lo, clique aqui")
+and a `Histórico` entry. A card in a `done: true` phase renders with a
+checkmark icon + a "<N>min" elapsed-time badge in place of column
+position, and its title text is dimmed/grayed vs. cards in non-done phases.
+
+**Non-cloneable UI quirk (do not reproduce):** phase column card-count
+badges do **not** live-update in the same client session after a
+drag-and-drop or quick-move — they only reflect the correct count after a
+full page reload. This is Pipefy's own client-cache staleness bug, not a
+feature; the clone should update counts synchronously on move.

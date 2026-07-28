@@ -174,9 +174,9 @@
     "id": "feature-004",
     "category": "data",
     "description": "Core data model: Card entity — the unit of work moving through a Pipe's phases, holding Card Field Values",
-    "page": "N/A (backend/API layer)",
-    "ui_details": "TBD — not yet observed in UI.",
-    "behavior": "A Card has id, title, done (bool), updated_at, belongs to a current phase, and has many field values ({name, value, filled_at, field}). Cards move between phases; moving a card updates its current phase and can trigger automations.",
+    "page": "Kanban board (/pipes/:id) + Card detail (/open-cards/:cardId)",
+    "ui_details": "Confirmed (Iteration 3, live test): Kanban 'Criar novo card' / a phase column's '+' is BLOCKED until the pipe's start form has ≥1 field — with an empty start form both open a 'Compartilhar formulário' promo modal instead of a create form. Once the start form has a field, the same buttons open an inline popover create-form (title + fields + 'Criar novo card' submit); required-field validation shows a red border + 'deve ser informado' inline, no toast, submit blocked. On success: toast 'Card criado com sucesso. Para abri-lo, clique aqui' + card appears at top of its phase column titled with the first field's submitted value. Card detail view (3 columns): LEFT = title, quick actions (Adicionar responsável/Vencimento/Adicionar etiquetas), tab strip (Form/Atividades/Anexos/Checklists/Comentários/Email/PDF/+), read-only 'Formulário Inicial' section (creator + relative timestamp + submitted field values), 'Histórico' phase-transition timeline, 'Editar visualização do card' link. MIDDLE = 'Fase atual' badge + gear (phase settings) + Compartilhar, then the current phase's own fields as a live autosave-on-blur form (no save button; no toast on this particular autosave). RIGHT = 'Mover card para fase' one-click button naming the next phase, 'Configurar mover cards', 'Mover cards com IA'. Cards in a done:true phase render a checkmark + '<N>min' badge and dimmed title text.",
+    "behavior": "A Card has id, title, done (bool), updated_at, belongs to a current phase, and has many field values ({name, value, filled_at, field}). Cards move between phases (drag-and-drop on Kanban, or the detail view's quick-mover button); moving a card fires toast 'Card movido com sucesso para <Fase>. Para reabri-lo, clique aqui' and appends a Histórico entry. Card title is set once at creation from the FIRST field's submitted value on the start form and does not re-derive later. CONFIRMED: a start-form field and a phase field with the identical label are separate Field rows with independent values — the clone must not merge/dedupe fields by label across owner types (start_form vs phase). Confirmed non-cloneable client quirk: phase column card-count badges do not live-update after a same-session move — only correct after a full reload; the clone should update counts synchronously instead.",
     "data_model": "cards: id, pipe_id (fk), phase_id (fk), title, done (bool), created_at, updated_at. card_field_values: id, card_id (fk), field_id (fk), value (text), filled_at",
     "priority": 2,
     "core": true,
@@ -205,14 +205,19 @@
             "Drag it into the second column",
             "Release"
           ],
-          "expected": "Card renders under the second column's header; card count badges update on both columns"
+          "expected": "Card renders under the second column's header immediately (counts update synchronously, unlike the target's observed staleness quirk); a toast confirms the move and a Histórico entry is appended on the card detail view"
         },
         {
-          "name": "card cannot move to a phase that rejects it",
+          "name": "create a card via the Kanban 'Criar novo card' popover and open its detail view",
           "steps": [
-            "Attempt to move a card to a phase with unmet required-field conditions, if such a rule exists"
+            "Ensure the pipe's start form has 1 required short-text field",
+            "Click 'Criar novo card' on the Kanban board",
+            "Click submit with the field empty",
+            "Verify inline 'deve ser informado' error, submit blocked",
+            "Fill the field with 'Test Card' and submit",
+            "Click the newly created card"
           ],
-          "expected": "Move is rejected with an inline error matching the target's 'Card could not be moved to phase' error shape"
+          "expected": "Card is created, titled 'Test Card', appears at the top of its phase column; opening it shows the value under 'Formulário Inicial' as read-only and the phase's own fields as a separate editable section"
         }
       ],
       "edge_cases": [

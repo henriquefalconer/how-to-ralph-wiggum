@@ -55,7 +55,7 @@ Page tabs (`/pipes/:id`, `/pipes/:id/flow`, etc.):
 |---|---|---|---|
 | Mapa | (none, default view toggle) | Visual node map | Shows this pipe (and any connected pipes/databases) as boxes on a canvas; "Profundidade de camadas" + "Elementos (N)" controls. Read-only overview. |
 | Fluxo | `/flow` | Visual pipeline builder | Each phase rendered as a column card with quick-add shortcuts: "Adicionar agente de IA", "Adicionar automação", "Atribuir membros", "Adicionar campos". This is the phase/field editor entry point, alternate to Kanban. |
-| Kanban | (root) | Kanban board | **Core view.** Phase columns (here: Caixa de entrada / Fazendo / Concluído — Pipefy's default 3-phase template), card counts per column, "Criar novo card" / "Nova fase" buttons, drag-drop cards between columns (per existing prd feature-004). |
+| Kanban | (root) | Kanban board | **Core view. Inspected iteration 3** — phase columns (here: Caixa de entrada / Fazendo / Concluído — Pipefy's default 3-phase template), card counts per column (client-side staleness quirk on same-session move, see spec-build.md §11), "Criar novo card" (gated on start form having ≥1 field) / "Nova fase" buttons, drag-drop cards between columns, done-phase card styling. Card detail opens at `/open-cards/:cardId` (see prd feature-004, spec-build.md §11). |
 | Lista | `/list` (approx) | Configurable table view | Column-based list of cards; starts with "Nenhuma coluna selecionada — habilite as colunas" empty state; has its own "Criar novo card". |
 | Relatórios | `/reports_v2` | Reports builder | "Crie relatórios rápidos e exportáveis com informações de seus cards"; empty state prompts to build first report. Maps to prd's Report entity. |
 | Formulário | (interfaces path) | Start-form editor | "Vamos começar adicionando alguns campos" + "Adicionar campos" CTA; side panel shows solicitation count, and "Próximos passos" tips (enable request tracking, create standardized emails, analyze reports). |
@@ -85,9 +85,7 @@ Automations sub-tabs (`/pipes/:id/automations`): Automações, Logs. Trigger→a
 builder, matches prd feature-007's webhook/automation model.
 
 ## Not yet inspected (next iterations)
-- Card detail view (need to create at least one card first)
 - Database Table creation + grid view + record detail
-- Kanban drag-and-drop card move (behavioral test)
 - Relatórios / Painéis actually building a chart
 - Emails compose flow
 - Automations rule builder (create one rule)
