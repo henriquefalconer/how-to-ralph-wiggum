@@ -32,13 +32,24 @@ STUB
   [[ "$output" == *"Usage:"* ]]
 }
 
-@test "creates the per-phase state namespaces before starting" {
+@test "creates the run namespace and its single progress file before starting" {
   run "$REPO/ralph-to-ralph/ralph-to-ralph.sh" https://example.com
   [ "$status" -eq 0 ]
-  for phase in inspect build qa; do
-    [ -d "$REPO/ralph-to-ralph/.state/progress/$phase" ]
-    [ -d "$REPO/ralph-to-ralph/.state/logs/$phase" ]
-  done
+  RUN=$(find "$REPO/ralph-to-ralph/.state/runs" -mindepth 1 -maxdepth 1 -type d | head -1)
+  [ -n "$RUN" ]
+  [ -f "$RUN/progress.txt" ]
+  # ONE progress file for the whole run, not one per phase
+  [ "$(find "$REPO/ralph-to-ralph/.state/runs" -name 'progress*.txt' | wc -l)" -eq 1 ]
+}
+
+@test "exports one run id and progress path for every phase to inherit" {
+  run "$REPO/ralph-to-ralph/ralph-to-ralph.sh" https://example.com
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Run id:"* ]]
+  [[ "$output" == *"Progress:"* ]]
+  [[ "$output" == *"tail -f"* ]]
+  grep -q 'export RALPH_RUN_ID' "$BATS_TEST_DIRNAME/ralph-to-ralph.sh"
+  grep -q 'export RALPH_PROGRESS' "$BATS_TEST_DIRNAME/ralph-to-ralph.sh"
 }
 
 @test "hands the target url to the watchdog" {

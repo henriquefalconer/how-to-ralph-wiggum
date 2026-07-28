@@ -8,13 +8,14 @@ This is a **generic product cloning system** — the target could be any SaaS st
 - `spec-inspect.md`: Your instructions — how to inspect, what to capture, what to output.
 - `claude-in-chrome-reference.md`: Claude in Chrome tool reference — use these to control the browser.
 - `prd.json`: Feature list you are building up (append new entries each iteration).
-- `ralph-to-ralph/.state/progress/inspect/NNN.md`: One file per past iteration. The loop feeds
-  you the most recent few — read them first to see what has already been inspected.
-  Your own notes go in the `PROGRESS_FILE` named in this iteration's prompt.
+- The run's progress file (path given as `PROGRESS:` in this iteration's prompt): ONE file for
+  the whole run that every phase and every session appends to. Read its tail
+  (`tail -200 "$PROGRESS"`) to see what has already been inspected — never read it whole.
+  Your own narration goes in the same file. See "Progress Logging — Mandatory" below.
 
 ## This Iteration
 
-1. Read the recent `ralph-to-ralph/.state/progress/inspect/*.md` files you were given to see what has been done.
+1. Read the tail of the run's progress file to see what has been done.
 2. Read `spec-inspect.md` for your full inspection strategy.
 3. Run `read_page` to see the current page state.
 4. Follow the inspection strategy for your current iteration:
@@ -77,13 +78,63 @@ This is a **generic product cloning system** — the target could be any SaaS st
 
 7. Append new feature entries to `prd.json`.
 8. Update `spec-build.md` incrementally with what you discovered.
-9. Write what you did to the `PROGRESS_FILE` for this iteration. Keep it short and
-   self-contained — a later iteration may see this file without the ones around it.
-   Never append to an earlier iteration's file.
+9. Append what you did to the run's progress file, following "Progress Logging — Mandatory" below.
 10. **Commit and push:**
    - `git add -A`
    - Detailed commit message: what was inspected, what was discovered, progress
    - `git push`
+
+## Progress Logging — Mandatory
+
+The run's progress file (its path is given as `PROGRESS:` in this iteration's prompt) has two jobs: (a) the orchestrator's only liveness signal — go too long without an append and the iteration is SIGTERM'd mid-work — and (b) the user's live view of what you are doing, tailed in their terminal. It is ONE file for the whole run: every phase (inspect, build, QA) and every session appends to it, and the orchestrator appends each session's cost/context/subagent ledger to it too. Append with `printf '\n%s\n' "<one-liner>" >> "$PROGRESS"` so each entry sits on its own blank-led line. Read its tail to catch up; never read it whole.
+
+Most importantly, the first thing you should do is append (iteration number should be this iteration's number):
+```
+═══════════════════════════════════════════════════════
+  Ralph-to-Ralph Inspect Iteration N
+═══════════════════════════════════════════════════════
+
+Brief explanation of what you will do (starting with a verb like "Finding most important item to address...", ending in ...)
+
+```
+The first line appended should be "═══════════════════════════════════════════════════════". If the file is empty, make sure the first line is exactly "═══════════════════════════════════════════════════════".
+
+After picking the item to be addressed, append:
+```
+
+Chose X, it's the Y of Z.
+```
+The first line appended should be an empty line.
+
+Whenever something meaningful happens, append a short note. Lean toward narrating more rather than less; silence looks like a stall.
+```
+
+Found/did/finished X. Now doing/investigating Y...
+```
+The first line appended should be an empty line.
+
+After an important finding, append:
+```
+
+Brief explanation of what was done/found. [Then "Continuing task..." or something like that]
+```
+The first line appended should be an empty line.
+
+After finishing the item that was picked to be addressed, append the block BELOW to the progress file FIRST, THEN run `git add -A` and `git commit` so the block is part of the same commit:
+```
+
+## $(date -u +%Y-%m-%dT%H:%M:%S) UTC - Changes committed.
+- What was implemented
+- Files changed
+- **Brief description of changes:**
+  - [change 1]
+  - [change 2]
+  - ...
+---
+```
+The first line appended should be an empty line.
+
+Long commands: split them into one Bash call per step, each with `timeout` (max 600000 ms), and append a progress note before each (silent sessions get terminated) — never chain with `&&`, and never background a command whose result you need: a backgrounded command is killed when the session ends. To wait for something, poll inside ONE call (`until <check>; do sleep 5; done`) or use `Monitor`, whose events come back as new turns.
 
 ## Rules
 - **HARD STOP: Inspect one page OR a group of structurally similar pages per invocation.** E.g., all list/table views together, all detail views together, all settings tabs together. After you commit and push, output the promise and stop.

@@ -7,22 +7,39 @@
 
 setup() {
   REPO="$BATS_TEST_TMPDIR/repo"
-  mkdir -p "$REPO/ralph-to-ralph" "$REPO/bin"
-  cp "$BATS_TEST_DIRNAME/ralph-build.sh" "$REPO/ralph-to-ralph/"
+  mkdir -p "$REPO/ralph-to-ralph/.state" "$REPO/bin"
+  cp "$BATS_TEST_DIRNAME/ralph-build.sh" "$BATS_TEST_DIRNAME/ralph-lib.sh" "$REPO/ralph-to-ralph/"
 
-  PROGRESS="$REPO/ralph-to-ralph/.state/progress/build"
-  LOGS="$REPO/ralph-to-ralph/.state/logs/build"
+  export RALPH_RUN_ID="TESTRUN"
+  RUN_DIR="$REPO/ralph-to-ralph/.state/runs/TESTRUN"
+  PROGRESS_FILE="$RUN_DIR/progress.txt"
 
-  export STUB_ARGS="$REPO/claude-args.txt"
+  export STUB_ARGS="$REPO/claude-args.txt"      # argv, one word per line
+  export STUB_STDIN="$REPO/claude-stdin.txt"    # the assembled prompt
   export STUB_CALLS="$REPO/claude-calls.txt"
   echo 0 > "$STUB_CALLS"
+
+  export HOME="$REPO/home"; mkdir -p "$HOME"
+  export TRANSCRIPT_ROOT="$HOME/.claude/projects/${REPO//\//-}"
+  mkdir -p "$TRANSCRIPT_ROOT"
 
   cat > "$REPO/bin/claude" <<'STUB'
 #!/bin/bash
 printf '%s\n' "$@" >> "$STUB_ARGS"
+cat >> "$STUB_STDIN"
 n=$(( $(cat "$STUB_CALLS") + 1 )); echo "$n" > "$STUB_CALLS"
-out="STUB_OUT_$n"; rc="STUB_RC_$n"
-echo "${!out:-${STUB_OUT:-}}"
+out="STUB_OUT_$n"; rc="STUB_RC_$n"; err="STUB_ERR_$n"
+sid="${STUB_SID:-sid-abc}"
+[ -n "${STUB_PRD_TRUNCATE:-}" ] && echo '[]' > prd.json
+printf '{"message":{"id":"m%d","model":"claude-sonnet-5","usage":{"input_tokens":10,"cache_read_input_tokens":%d,"cache_creation_input_tokens":0}}}\n' \
+  "$n" "$(( n * 1000 ))" >> "$TRANSCRIPT_ROOT/$sid.jsonl"
+python3 -c '
+import json, sys
+print(json.dumps({
+    "session_id": sys.argv[1], "is_error": sys.argv[2] == "1",
+    "result": sys.argv[3], "cwd": sys.argv[4], "total_cost_usd": 0.5,
+    "modelUsage": {"claude-sonnet-5": {"costUSD": 0.5, "contextWindow": 1000000}},
+}))' "$sid" "${!err:-${STUB_ERR:-0}}" "${!out:-${STUB_OUT:-}}" "$PWD"
 exit "${!rc:-${STUB_RC:-0}}"
 STUB
   chmod +x "$REPO/bin/claude"
@@ -63,16 +80,8 @@ STUB
 
 @test "aborts if the agent truncates prd.json to an empty list mid-run" {
   export STUB_OUT="<promise>NEXT</promise>"
-  cat > "$REPO/bin/claude" <<'STUB'
-#!/bin/bash
-printf '%s\n' "$@" >> "$STUB_ARGS"
-n=$(( $(cat "$STUB_CALLS") + 1 )); echo "$n" > "$STUB_CALLS"
-echo '[]' > prd.json
-echo "${STUB_OUT:-}"
-exit 0
-STUB
-  chmod +x "$REPO/bin/claude"
-
+  export STUB_PRD_TRUNCATE=1
+  export RALPH_RESUME_MAX=0
   run "$REPO/ralph-to-ralph/ralph-build.sh" 9
   [ "$status" -eq 1 ]
   [[ "$output" == *"contains no features"* ]]
@@ -122,28 +131,31 @@ STUB
 @test "aborts after MAX_FAILURES consecutive iterations with no promise" {
   export STUB_OUT="thinking out loud, but no promise"
   export RALPH_MAX_FAILURES=2
+  export RALPH_RESUME_MAX=0
   run "$REPO/ralph-to-ralph/ralph-build.sh" 99
   [ "$status" -eq 1 ]
   [ "$(cat "$STUB_CALLS")" -eq 2 ]
   [[ "$output" == *"2 consecutive iterations produced no promise"* ]]
 }
 
-@test "a crashing claude is reported by exit code instead of killing the loop" {
+@test "a crashing claude does not kill the loop" {
   export STUB_OUT="boom"
   export STUB_RC=7
+  export STUB_ERR=1          # a CLI-level failure is not resumable
   export RALPH_MAX_FAILURES=2
   run "$REPO/ralph-to-ralph/ralph-build.sh" 99
   [ "$status" -eq 1 ]
   [ "$(cat "$STUB_CALLS")" -eq 2 ]
-  [[ "$output" == *"claude exited 7"* ]]
+  [[ "$output" == *"2 consecutive iterations produced no promise"* ]]
 }
 
-@test "a clean exit with no promise is diagnosed differently from a crash" {
+@test "a clean exit with no promise is resumed first, then reported" {
   export STUB_OUT="no promise here"
   export RALPH_MAX_FAILURES=1
+  export RALPH_RESUME_MAX=1
   run "$REPO/ralph-to-ralph/ralph-build.sh" 99
   [ "$status" -eq 1 ]
-  [[ "$output" == *"exited cleanly but emitted no promise"* ]]
+  [[ "$output" == *"no promise after 1 resume(s)"* ]]
 }
 
 @test "a promise resets the consecutive-failure counter" {
@@ -152,67 +164,54 @@ STUB
   export STUB_OUT_3="nothing"
   export STUB_OUT_4="<promise>COMPLETE</promise>"
   export RALPH_MAX_FAILURES=2
+  export RALPH_RESUME_MAX=0
   run "$REPO/ralph-to-ralph/ralph-build.sh" 99
   [ "$status" -eq 0 ]
   [ "$(cat "$STUB_CALLS")" -eq 4 ]
 }
 
-@test "tees each iteration to its own transcript under the build log namespace" {
-  export STUB_OUT_1="<promise>NEXT</promise>"
-  export STUB_OUT_2="<promise>COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 9
-  [ -f "$LOGS/001.log" ]
-  [ -f "$LOGS/002.log" ]
-  grep -qF "<promise>NEXT</promise>" "$LOGS/001.log"
-  grep -qF "<promise>COMPLETE</promise>" "$LOGS/002.log"
-}
 
-@test "the transcript is echoed to stdout as well as the log" {
-  export STUB_OUT="<promise>COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 1
-  [[ "$output" == *"<promise>COMPLETE</promise>"* ]]
-}
 
-@test "names a fresh per-iteration progress file each time" {
-  export STUB_OUT_1="<promise>NEXT</promise>"
-  export STUB_OUT_2="<promise>COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 9
-  grep -q "PROGRESS_FILE: ralph-to-ralph/.state/progress/build/001.md" "$STUB_ARGS"
-  grep -q "PROGRESS_FILE: ralph-to-ralph/.state/progress/build/002.md" "$STUB_ARGS"
-}
 
-@test "survives an empty progress dir on the first iteration" {
-  # ls over an empty dir exits non-zero; under pipefail that would be fatal
-  export STUB_OUT="<promise>COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 1
-  [ "$status" -eq 0 ]
-}
 
-@test "feeds back only the five most recent progress files" {
-  mkdir -p "$PROGRESS"
-  for n in 001 002 003 004 005 006 007; do echo "note $n" > "$PROGRESS/$n.md"; done
-  export STUB_OUT="<promise>COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 1
-  [ "$status" -eq 0 ]
-  # oldest two dropped, newest five kept — bounded regardless of run length
-  ! grep -q "progress/build/001.md" "$STUB_ARGS"
-  ! grep -q "progress/build/002.md" "$STUB_ARGS"
-  grep -q -- "@ralph-to-ralph/.state/progress/build/003.md" "$STUB_ARGS"
-  grep -q -- "@ralph-to-ralph/.state/progress/build/007.md" "$STUB_ARGS"
-}
 
-@test "older progress files stay on disk after dropping out of the prompt" {
-  mkdir -p "$PROGRESS"
-  for n in 001 002 003 004 005 006 007; do echo "note $n" > "$PROGRESS/$n.md"; done
-  export STUB_OUT="<promise>COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 1
-  [ -f "$PROGRESS/001.md" ]
-  [ "$(cat "$PROGRESS/001.md")" = "note 001" ]
-}
 
 @test "passes the iteration count and pass tally into the prompt" {
   export STUB_OUT="<promise>COMPLETE</promise>"
   run "$REPO/ralph-to-ralph/ralph-build.sh" 4
-  grep -q "ITERATION: 1 of 4" "$STUB_ARGS"
-  grep -q "PROGRESS: 0/1 features passed" "$STUB_ARGS"
+  grep -q "ITERATION: 1 of 4" "$STUB_STDIN"
+  grep -q "PROGRESS_COUNT: 0/1 features passed" "$STUB_STDIN"
+  grep -q "PROGRESS: .*runs/TESTRUN/progress.txt" "$STUB_STDIN"
+}
+
+# ── the shared session runner, exercised through this phase ──────────────────
+
+@test "a stranded build session is resumed, and the pair writes ONE usage entry" {
+  export STUB_OUT_1="I backgrounded the test run and am waiting on it"
+  export STUB_OUT_2="<promise>COMPLETE</promise>"
+  run "$REPO/ralph-to-ralph/ralph-build.sh" 9
+  [ "$status" -eq 0 ]
+  [ "$(cat "$STUB_CALLS")" -eq 2 ]
+  grep -qx -- "--resume" "$STUB_ARGS"
+  [ "$(grep -c 'Session usage' "$PROGRESS_FILE")" -eq 1 ]
+  grep -q 'resumed 1x' "$PROGRESS_FILE"
+  grep -qF -- 'cost $1.0000' "$PROGRESS_FILE"
+}
+
+@test "build sessions append to the same run-wide progress file as every other phase" {
+  export STUB_OUT_1="<promise>NEXT</promise>"
+  export STUB_OUT_2="<promise>COMPLETE</promise>"
+  run "$REPO/ralph-to-ralph/ralph-build.sh" 9
+  [ "$(find "$RUN_DIR" -name 'progress*.txt' | wc -l)" -eq 1 ]
+  [ "$(grep -c 'Session usage' "$PROGRESS_FILE")" -eq 2 ]
+  grep -q "Phase 2 (Build) starting" "$PROGRESS_FILE"
+  grep -q "Phase 2 (Build) reported COMPLETE" "$PROGRESS_FILE"
+}
+
+@test "the ledger reports context, models and the transcript path" {
+  export STUB_OUT="<promise>COMPLETE</promise>"
+  run "$REPO/ralph-to-ralph/ralph-build.sh" 1
+  grep -q -- '- context .* tok peak of 1M .* inference calls' "$PROGRESS_FILE"
+  grep -q -- '- models sonnet-5 \$0.5000' "$PROGRESS_FILE"
+  grep -qF -- '- transcript: ralph-to-ralph/.state/runs/TESTRUN/001-build-1.json' "$PROGRESS_FILE"
 }

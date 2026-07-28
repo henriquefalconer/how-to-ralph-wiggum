@@ -1,7 +1,7 @@
 #!/bin/bash
 # Phase 1: Inspect a target product with Claude in Chrome and generate a PRD
 # Each iteration = exactly 1 page/feature (enforced by prompt)
-set -euo pipefail
+set -uo pipefail
 cd "$(dirname "$0")/.."
 
 TARGET_URL="${1:?Usage: $0 <target-url> [iterations]}"
@@ -10,16 +10,22 @@ ITERATIONS="${2:-999}"
 MAX_FAILURES="${RALPH_MAX_FAILURES:-3}"   # abort after N consecutive no-promise iterations
 
 STATE_DIR="ralph-to-ralph/.state"
-PROGRESS_DIR="$STATE_DIR/progress/inspect"
-LOG_DIR="$STATE_DIR/logs/inspect"
 TARGET_FILE="$STATE_DIR/inspect-target"
+
+# The session runner: usage accounting, resume-on-missing-promise, and the
+# single run-wide progress file every agent appends to.
+# shellcheck source=ralph-lib.sh
+. "$(dirname "$0")/ralph-lib.sh"
+
+trap 'reap_sessions; exit 130' INT
+trap 'reap_sessions; exit 143' TERM
+trap 'reap_sessions' EXIT
 
 echo "=== RALPH-TO-RALPH: Phase 1 (Inspect) ==="
 echo "Target: $TARGET_URL"
 echo "Iterations: $ITERATIONS"
+echo "Progress: $PROGRESS"
 echo ""
-
-mkdir -p "$STATE_DIR"
 
 # Re-inspecting a *different* product is not enough on its own: every artifact
 # of the previous run is still on disk, and the prompt tells this agent to
@@ -45,11 +51,6 @@ if [ -n "$PREVIOUS_TARGET" ] && [ "$PREVIOUS_TARGET" != "$TARGET_URL" ]; then
       mv "$artifact" "$ARCHIVE/"
     fi
   done
-  # The journals describe the old product too, and the loops feed the most
-  # recent few straight back into the prompt.
-  if [ -d "$STATE_DIR/progress" ]; then
-    mv "$STATE_DIR/progress" "$ARCHIVE/progress"
-  fi
   rm -f "$STATE_DIR/inspect-complete" "$STATE_DIR/qa-complete"
   echo "Archived the previous target's artifacts to $ARCHIVE"
   echo ""
@@ -60,75 +61,71 @@ printf '%s\n' "$TARGET_URL" > "$TARGET_FILE"
 if [ ! -f "prd.json" ]; then
   echo '[]' > prd.json
 fi
-mkdir -p screenshots "$PROGRESS_DIR" "$LOG_DIR"
+mkdir -p screenshots
 
 # The browser is driven with claude-in-chrome from inside the agent's turn, so
 # there is no session for this script to start or stop — the loop just passes
 # --chrome and the agent works in the Chrome window that is already open.
 
+note "═══════════════════════════════════════════════════════"
+note "ralph-to-ralph Phase 1 (Inspect) starting — target=$TARGET_URL model=$MODEL max-iter=$ITERATIONS"
+
 consecutive_failures=0
 
-for ((i=1; i<=$ITERATIONS; i++)); do
+for ((i=1; i<=ITERATIONS; i++)); do
   echo "--- Inspection iteration $i/$ITERATIONS ---"
 
-  # One journal file per iteration, and only the five most recent are fed back
-  # in. Older ones stay on disk under .state/, so the journal cannot grow into the
-  # fresh context each iteration exists to protect.
-  PROGRESS_FILE="$PROGRESS_DIR/$(printf '%03d' "$i").md"
-  # `|| true` because an empty dir makes ls exit non-zero, which pipefail would
-  # otherwise turn into a fatal error on the very first iteration.
-  PROGRESS_REFS=$(ls "$PROGRESS_DIR"/*.md 2>/dev/null | tail -5 | sed 's|^|@|' | tr '\n' ' ') || true
-
-  # tee streams the agent's output live and keeps a transcript to grep for the
-  # promise; rc is captured so a crash doesn't trip `set -e` before the retry logic.
-  LOG="$LOG_DIR/$(printf '%03d' "$i").log"
-  rc=0
-  timeout 1200 claude -p --dangerously-skip-permissions --chrome --model claude-sonnet-5 \
-"@ralph-to-ralph/prompt-inspect.md @ralph-to-ralph/spec-inspect.md @claude-in-chrome-reference.md @prd.json $PROGRESS_REFS
+  PROMPT_FILE="$RUN_DIR/prompt-inspect-$i.txt"
+  {
+    cat <<PROMPT
+@ralph-to-ralph/prompt-inspect.md @ralph-to-ralph/spec-inspect.md @claude-in-chrome-reference.md @prd.json
 
 TARGET URL: $TARGET_URL
 ITERATION: $i of $ITERATIONS
-PROGRESS_FILE: $PROGRESS_FILE
+PROGRESS: $PROGRESS
 
 Inspect exactly ONE page/feature, then commit, push, and stop.
-Write this iteration's notes to $PROGRESS_FILE — that file is yours alone. Never
-append to an earlier iteration's file; the loop only feeds back the most recent few.
 Output <promise>NEXT</promise> when done with this page.
-Output <promise>INSPECT_COMPLETE</promise> only if ALL pages are inspected AND spec-build.md is finalized." \
-    2>&1 | tee "$LOG" || rc=${PIPESTATUS[0]}
+Output <promise>INSPECT_COMPLETE</promise> only if ALL pages are inspected AND spec-build.md is finalized.
 
-  if grep -qF "<promise>INSPECT_COMPLETE</promise>" "$LOG"; then
+## Orchestrator notes (these refine, never override, the instructions above)
+- This is inspect iteration $i. You are a fresh, clean-context session: all continuity is on disk ($PROGRESS, prd.json, spec-build.md, git history). Study before assuming.
+- $PROGRESS is the single progress file for this whole run — every phase and every session appends to it. Read its tail (\`tail -200 $PROGRESS\`) to see what has already been inspected. Do NOT read the whole file; it grows all run.
+- This session is terminated after $WATCHDOG seconds with no append to $PROGRESS. Narrate as you go.
+- Your final message is parsed by the orchestrator for the promise tag ONLY: end with <promise>NEXT</promise> or <promise>INSPECT_COMPLETE</promise> and stop. A missing tag counts as an abnormal exit.
+PROMPT
+  } > "$PROMPT_FILE"
+
+  run_iteration "inspect-$i" "$PROMPT_FILE" 'NEXT|INSPECT_COMPLETE'
+  p="$ITER_PROMISE"
+
+  if [ "$p" = "INSPECT_COMPLETE" ]; then
     echo ""
     echo "=== Inspection complete after $i iterations ==="
     echo "PRD: prd.json"
     echo "Build spec: spec-build.md"
+    note "[ralph] Phase 1 (Inspect) complete after $i iterations."
     # Record which target this was, so a later run against a different URL
     # re-inspects instead of inheriting this run's prd.json.
     printf '%s\n' "$TARGET_URL" > "$STATE_DIR/inspect-complete"
     exit 0
   fi
 
-  if grep -qF "<promise>NEXT</promise>" "$LOG"; then
+  if [ "$p" = "NEXT" ]; then
     consecutive_failures=0
     echo "Page done. Moving to next iteration..."
     continue
   fi
 
-  # No promise = crash, timeout, or an agent that stopped early
-  case "$rc" in
-    0)   reason="claude exited cleanly but emitted no promise — the agent stopped early" ;;
-    124) reason="claude hit the 1200s timeout" ;;
-    127) reason="claude not found on PATH" ;;
-    *)   reason="claude exited $rc" ;;
-  esac
-
+  # No promise, and the resumes inside run_iteration could not get one either.
   consecutive_failures=$((consecutive_failures + 1))
-  echo "WARNING: no promise ($consecutive_failures/$MAX_FAILURES) — $reason. Transcript: $LOG"
+  echo "WARNING: no promise after $RESUMES_USED resume(s) ($consecutive_failures/$MAX_FAILURES). Session JSON: $LAST_JSON"
+  note "[ralph] inspect iteration $i produced no promise after $RESUMES_USED resume(s) ($consecutive_failures/$MAX_FAILURES)."
 
   if [ "$consecutive_failures" -ge "$MAX_FAILURES" ]; then
     echo ""
     echo "=== Aborting: $MAX_FAILURES consecutive iterations produced no promise ==="
-    echo "Something is broken rather than merely slow. Check $LOG."
+    echo "Something is broken rather than merely slow. Check $LAST_JSON.err."
     exit 1
   fi
 

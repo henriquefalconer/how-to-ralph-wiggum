@@ -1,31 +1,40 @@
-#!/usr/bin/env bats
-# Tests for ralph-qa.sh (Phase 3 loop).
-#
-# `claude`, `npm` and `npx` are replaced by stubs. STUB_OUT / STUB_RC set
-# the default claude response; STUB_OUT_<n> / STUB_RC_<n> override the nth call.
-# Run with: npx bats ralph-to-ralph/ralph-qa.test.bats
-
 setup() {
   REPO="$BATS_TEST_TMPDIR/repo"
   mkdir -p "$REPO/ralph-to-ralph/.state" "$REPO/bin"
-  cp "$BATS_TEST_DIRNAME/ralph-qa.sh" "$REPO/ralph-to-ralph/"
+  cp "$BATS_TEST_DIRNAME/ralph-qa.sh" "$BATS_TEST_DIRNAME/ralph-lib.sh" "$REPO/ralph-to-ralph/"
 
-  PROGRESS="$REPO/ralph-to-ralph/.state/progress/qa"
-  LOGS="$REPO/ralph-to-ralph/.state/logs/qa"
+  export RALPH_RUN_ID="TESTRUN"
+  RUN_DIR="$REPO/ralph-to-ralph/.state/runs/TESTRUN"
+  PROGRESS_FILE="$RUN_DIR/progress.txt"
   SENTINEL="$REPO/ralph-to-ralph/.state/qa-complete"
 
-  export STUB_ARGS="$REPO/claude-args.txt"
+  export STUB_ARGS="$REPO/claude-args.txt"      # argv, one word per line
+  export STUB_STDIN="$REPO/claude-stdin.txt"    # the assembled prompt
   export STUB_CALLS="$REPO/claude-calls.txt"
   export NPM_ARGS="$REPO/npm-args.txt"
   export NPX_ARGS="$REPO/npx-args.txt"
   echo 0 > "$STUB_CALLS"
 
+  export HOME="$REPO/home"; mkdir -p "$HOME"
+  export TRANSCRIPT_ROOT="$HOME/.claude/projects/${REPO//\//-}"
+  mkdir -p "$TRANSCRIPT_ROOT"
+
   cat > "$REPO/bin/claude" <<'STUB'
 #!/bin/bash
 printf '%s\n' "$@" >> "$STUB_ARGS"
+cat >> "$STUB_STDIN"
 n=$(( $(cat "$STUB_CALLS") + 1 )); echo "$n" > "$STUB_CALLS"
-out="STUB_OUT_$n"; rc="STUB_RC_$n"
-echo "${!out:-${STUB_OUT:-}}"
+out="STUB_OUT_$n"; rc="STUB_RC_$n"; err="STUB_ERR_$n"
+sid="${STUB_SID:-sid-abc}"
+printf '{"message":{"id":"m%d","model":"claude-sonnet-5","usage":{"input_tokens":10,"cache_read_input_tokens":%d,"cache_creation_input_tokens":0}}}\n' \
+  "$n" "$(( n * 1000 ))" >> "$TRANSCRIPT_ROOT/$sid.jsonl"
+python3 -c '
+import json, sys
+print(json.dumps({
+    "session_id": sys.argv[1], "is_error": sys.argv[2] == "1",
+    "result": sys.argv[3], "cwd": sys.argv[4], "total_cost_usd": 0.5,
+    "modelUsage": {"claude-sonnet-5": {"costUSD": 0.5, "contextWindow": 1000000}},
+}))' "$sid" "${!err:-${STUB_ERR:-0}}" "${!out:-${STUB_OUT:-}}" "$PWD"
 exit "${!rc:-${STUB_RC:-0}}"
 STUB
   chmod +x "$REPO/bin/claude"
@@ -46,26 +55,11 @@ STUB
 
   # The stubbed `npm run dev` never binds a port, so the readiness poll needs a
   # curl that answers for it. CURL_RC=1 simulates a dev server that never comes up.
-  cat > "$REPO/bin/curl" <<'STUB'
-#!/bin/bash
-exit "${CURL_RC:-0}"
-STUB
-  chmod +x "$REPO/bin/curl"
-
-  # setsid would put the stub in its own process group; not needed here, and it
-  # is not installed everywhere. Run the command straight through.
-  cat > "$REPO/bin/setsid" <<'STUB'
-#!/bin/bash
-exec "$@"
-STUB
-  chmod +x "$REPO/bin/setsid"
-
+  printf '#!/bin/bash\nexit "${CURL_RC:-0}"\n' > "$REPO/bin/curl"
+  printf '#!/bin/bash\nexec "$@"\n' > "$REPO/bin/setsid"
   printf '#!/bin/bash\nexit 0\n' > "$REPO/bin/pkill"
-  chmod +x "$REPO/bin/pkill"
-
-  # The script waits 5s for the dev server and backs off between retries.
   printf '#!/bin/bash\nexit 0\n' > "$REPO/bin/sleep"
-  chmod +x "$REPO/bin/sleep"
+  chmod +x "$REPO/bin/curl" "$REPO/bin/setsid" "$REPO/bin/pkill" "$REPO/bin/sleep"
 
   PATH="$REPO/bin:$PATH"
 
@@ -123,8 +117,8 @@ STUB
   export STUB_OUT="<promise>QA_COMPLETE</promise>"
   run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
   grep -qx -- "run dev" "$NPM_ARGS"
-  grep -q -- "CLONE_URL: http://localhost:3015" "$STUB_ARGS"
-  grep -q -- "@claude-in-chrome-reference.md" "$STUB_ARGS"
+  grep -q -- "CLONE_URL: http://localhost:3015" "$STUB_STDIN"
+  grep -q -- "@claude-in-chrome-reference.md" "$STUB_STDIN"
 }
 
 @test "invokes claude with the pinned model" {
@@ -138,14 +132,14 @@ STUB
 @test "passes the target url through as QA's source of truth" {
   export STUB_OUT="<promise>QA_COMPLETE</promise>"
   run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
-  grep -q "TARGET_URL: https://example.com" "$STUB_ARGS"
+  grep -q "TARGET_URL: https://example.com" "$STUB_STDIN"
 }
 
 @test "omits the target-url context when no url is given" {
   export STUB_OUT="<promise>QA_COMPLETE</promise>"
   run "$REPO/ralph-to-ralph/ralph-qa.sh" "" 1
   [ "$status" -eq 0 ]
-  ! grep -q "TARGET_URL:" "$STUB_ARGS"
+  ! grep -q "TARGET_URL:" "$STUB_STDIN"
   [[ "$output" == *"Target: none"* ]]
 }
 
@@ -154,7 +148,7 @@ STUB
   run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 2
   [ "$status" -eq 0 ]
   [ "$(cat "$STUB_CALLS")" -eq 2 ]
-  grep -q "ITERATION: 1 of 2" "$STUB_ARGS"
+  grep -q "ITERATION: 1 of 2" "$STUB_STDIN"
 }
 
 @test "runs the Playwright suite up front when e2e tests exist" {
@@ -186,34 +180,37 @@ STUB
 @test "aborts after MAX_FAILURES consecutive iterations with no promise" {
   export STUB_OUT="no promise"
   export RALPH_MAX_FAILURES=2
+  export RALPH_RESUME_MAX=0
   run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 99
   [ "$status" -eq 1 ]
   [ "$(cat "$STUB_CALLS")" -eq 2 ]
   [[ "$output" == *"2 consecutive iterations produced no promise"* ]]
 }
 
-@test "tees each iteration to its own transcript under the qa log namespace" {
-  export STUB_OUT="<promise>QA_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
-  [ -f "$LOGS/001.log" ]
-  grep -qF "<promise>QA_COMPLETE</promise>" "$LOGS/001.log"
+
+
+
+# ── the shared session runner, exercised through this phase ──────────────────
+
+@test "a stranded QA session is resumed, and the pair writes ONE usage entry" {
+  export STUB_OUT_1="I started the dev server in the background and am waiting"
+  export STUB_OUT_2="<promise>QA_COMPLETE</promise>"
+  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 9
+  [ "$status" -eq 0 ]
+  [ "$(cat "$STUB_CALLS")" -eq 2 ]
+  grep -qx -- "--resume" "$STUB_ARGS"
+  [ "$(grep -c 'Session usage' "$PROGRESS_FILE")" -eq 1 ]
+  grep -q 'resumed 1x' "$PROGRESS_FILE"
+  # a resumed iteration still counts as one completed QA pass
+  [ -f "$SENTINEL" ]
 }
 
-@test "names a fresh per-iteration progress file each time" {
+@test "QA sessions append to the same run-wide progress file as every other phase" {
   export STUB_OUT_1="<promise>NEXT</promise>"
   export STUB_OUT_2="<promise>QA_COMPLETE</promise>"
   run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 9
-  grep -q "PROGRESS_FILE: ralph-to-ralph/.state/progress/qa/001.md" "$STUB_ARGS"
-  grep -q "PROGRESS_FILE: ralph-to-ralph/.state/progress/qa/002.md" "$STUB_ARGS"
-}
-
-@test "feeds back only the five most recent progress files" {
-  mkdir -p "$PROGRESS"
-  for n in 001 002 003 004 005 006 007; do echo "note $n" > "$PROGRESS/$n.md"; done
-  export STUB_OUT="<promise>QA_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
-  [ "$status" -eq 0 ]
-  ! grep -q "progress/qa/001.md" "$STUB_ARGS"
-  grep -q -- "@ralph-to-ralph/.state/progress/qa/003.md" "$STUB_ARGS"
-  grep -q -- "@ralph-to-ralph/.state/progress/qa/007.md" "$STUB_ARGS"
+  [ "$(find "$RUN_DIR" -name 'progress*.txt' | wc -l)" -eq 1 ]
+  [ "$(grep -c 'Session usage' "$PROGRESS_FILE")" -eq 2 ]
+  grep -q "Phase 3 (QA) starting" "$PROGRESS_FILE"
+  grep -q "Phase 3 (QA) reported QA_COMPLETE" "$PROGRESS_FILE"
 }

@@ -1,15 +1,12 @@
 #!/bin/bash
 # Phase 2: Build a clone from the generated PRD and build spec
 # Each iteration = exactly 1 feature (enforced by prompt + NEXT/COMPLETE promises)
-set -euo pipefail
+set -uo pipefail
 cd "$(dirname "$0")/.."
 
 ITERATIONS="${1:-999}"
 
 MAX_FAILURES="${RALPH_MAX_FAILURES:-3}"   # abort after N consecutive no-promise iterations
-
-PROGRESS_DIR="ralph-to-ralph/.state/progress/build"
-LOG_DIR="ralph-to-ralph/.state/logs/build"
 
 if [ ! -f "prd.json" ]; then
   echo "Error: prd.json not found. Run ralph-inspect.sh first."
@@ -21,11 +18,19 @@ if [ ! -f "spec-build.md" ]; then
   exit 1
 fi
 
+# The session runner: usage accounting, resume-on-missing-promise, and the
+# single run-wide progress file every agent appends to.
+# shellcheck source=ralph-lib.sh
+. "$(dirname "$0")/ralph-lib.sh"
+
+trap 'reap_sessions; exit 130' INT
+trap 'reap_sessions; exit 143' TERM
+trap 'reap_sessions' EXIT
+
 echo "=== RALPH-TO-RALPH: Phase 2 (Build) ==="
 echo "Iterations: $ITERATIONS"
+echo "Progress: $PROGRESS"
 echo ""
-
-mkdir -p "$PROGRESS_DIR" "$LOG_DIR"
 
 # A corrupt prd.json must not read as "0 features" — that looks identical to an
 # empty PRD and burns every remaining iteration on a file no agent can use. The
@@ -57,9 +62,12 @@ require_prd() {
 count_passes() { local s; s=$(read_prd 2>/dev/null) || s="0 0"; echo "${s%% *}"; }
 total_tasks()  { local s; s=$(read_prd 2>/dev/null) || s="0 0"; echo "${s##* }"; }
 
+note "═══════════════════════════════════════════════════════"
+note "ralph-to-ralph Phase 2 (Build) starting — model=$MODEL max-iter=$ITERATIONS"
+
 consecutive_failures=0
 
-for ((i=1; i<=$ITERATIONS; i++)); do
+for ((i=1; i<=ITERATIONS; i++)); do
   require_prd
   PASSES=$(count_passes)
   TOTAL=$(total_tasks)
@@ -84,59 +92,52 @@ for ((i=1; i<=$ITERATIONS; i++)); do
     exit 0
   fi
 
-  # One journal file per iteration, and only the five most recent are fed back
-  # in. Older ones stay on disk under .state/, so the journal cannot grow into the
-  # fresh context each iteration exists to protect.
-  PROGRESS_FILE="$PROGRESS_DIR/$(printf '%03d' "$i").md"
-  # `|| true` because an empty dir makes ls exit non-zero, which pipefail would
-  # otherwise turn into a fatal error on the very first iteration.
-  PROGRESS_REFS=$(ls "$PROGRESS_DIR"/*.md 2>/dev/null | tail -5 | sed 's|^|@|' | tr '\n' ' ') || true
-
-  # tee streams the agent's output live and keeps a transcript to grep for the
-  # promise; rc is captured so a crash doesn't trip `set -e` before the retry logic.
-  LOG="$LOG_DIR/$(printf '%03d' "$i").log"
-  rc=0
-  timeout 1200 claude -p --dangerously-skip-permissions --chrome --model claude-sonnet-5 \
-"@ralph-to-ralph/prompt-build.md @pre-setup.md @spec-build.md @prd.json @CLAUDE.md $PROGRESS_REFS
+  PROMPT_FILE="$RUN_DIR/prompt-build-$i.txt"
+  {
+    cat <<PROMPT
+@ralph-to-ralph/prompt-build.md @pre-setup.md @spec-build.md @prd.json @CLAUDE.md
 
 ITERATION: $i of $ITERATIONS
-PROGRESS: $PASSES/$TOTAL features passed
-PROGRESS_FILE: $PROGRESS_FILE
+PROGRESS_COUNT: $PASSES/$TOTAL features passed
+PROGRESS: $PROGRESS
 
 Build exactly ONE feature (the first passes:false entry), then commit, push, and stop.
-Write this iteration's notes to $PROGRESS_FILE — that file is yours alone. Never
-append to an earlier iteration's file; the loop only feeds back the most recent few.
 Output <promise>NEXT</promise> when done with this feature.
-Output <promise>COMPLETE</promise> only if ALL features pass." \
-    2>&1 | tee "$LOG" || rc=${PIPESTATUS[0]}
+Output <promise>COMPLETE</promise> only if ALL features pass.
 
-  if grep -qF "<promise>COMPLETE</promise>" "$LOG"; then
+## Orchestrator notes (these refine, never override, the instructions above)
+- This is build iteration $i. You are a fresh, clean-context session: all continuity is on disk ($PROGRESS, prd.json, spec-build.md, git history). Study before assuming.
+- $PROGRESS is the single progress file for this whole run — every phase and every session appends to it. Read its tail (\`tail -200 $PROGRESS\`) to see what has already been built. Do NOT read the whole file; it grows all run.
+- This session is terminated after $WATCHDOG seconds with no append to $PROGRESS. Narrate as you go.
+- Your final message is parsed by the orchestrator for the promise tag ONLY: end with <promise>NEXT</promise> or <promise>COMPLETE</promise> and stop. A missing tag counts as an abnormal exit.
+PROMPT
+  } > "$PROMPT_FILE"
+
+  run_iteration "build-$i" "$PROMPT_FILE" 'NEXT|COMPLETE'
+  p="$ITER_PROMISE"
+
+  if [ "$p" = "COMPLETE" ]; then
     echo ""
     echo "=== Build complete after $i iterations! All $(total_tasks) features pass. ==="
+    note "[ralph] Phase 2 (Build) reported COMPLETE after $i iterations."
     exit 0
   fi
 
-  if grep -qF "<promise>NEXT</promise>" "$LOG"; then
+  if [ "$p" = "NEXT" ]; then
     consecutive_failures=0
     echo "Feature done. Moving to next iteration..."
     continue
   fi
 
-  # No promise = crash, timeout, or an agent that stopped early
-  case "$rc" in
-    0)   reason="claude exited cleanly but emitted no promise — the agent stopped early" ;;
-    124) reason="claude hit the 1200s timeout" ;;
-    127) reason="claude not found on PATH" ;;
-    *)   reason="claude exited $rc" ;;
-  esac
-
+  # No promise, and the resumes inside run_iteration could not get one either.
   consecutive_failures=$((consecutive_failures + 1))
-  echo "WARNING: no promise ($consecutive_failures/$MAX_FAILURES) — $reason. Transcript: $LOG"
+  echo "WARNING: no promise after $RESUMES_USED resume(s) ($consecutive_failures/$MAX_FAILURES). Session JSON: $LAST_JSON"
+  note "[ralph] build iteration $i produced no promise after $RESUMES_USED resume(s) ($consecutive_failures/$MAX_FAILURES)."
 
   if [ "$consecutive_failures" -ge "$MAX_FAILURES" ]; then
     echo ""
     echo "=== Aborting: $MAX_FAILURES consecutive iterations produced no promise ==="
-    echo "Passes: $(count_passes)/$(total_tasks). Check $LOG."
+    echo "Passes: $(count_passes)/$(total_tasks). Check $LAST_JSON.err."
     exit 1
   fi
 

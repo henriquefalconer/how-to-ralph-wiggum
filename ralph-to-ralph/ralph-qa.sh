@@ -1,7 +1,7 @@
 #!/bin/bash
 # Phase 3: QA evaluation using a fresh Claude agent as independent evaluator
 # Runs Playwright regression first (fast), then Claude in Chrome for visual/interaction QA
-set -euo pipefail
+set -uo pipefail
 cd "$(dirname "$0")/.."
 
 TARGET_URL="${1:-}"
@@ -9,8 +9,6 @@ ITERATIONS="${2:-999}"
 
 MAX_FAILURES="${RALPH_MAX_FAILURES:-3}"   # abort after N consecutive no-promise iterations
 
-PROGRESS_DIR="ralph-to-ralph/.state/progress/qa"
-LOG_DIR="ralph-to-ralph/.state/logs/qa"
 STATE_DIR="ralph-to-ralph/.state"
 QA_SENTINEL="$STATE_DIR/qa-complete"
 DEV_PORT=3015
@@ -30,12 +28,17 @@ if [ ! -f "prd.json" ]; then
   exit 1
 fi
 
+# The session runner: usage accounting, resume-on-missing-promise, and the
+# single run-wide progress file every agent appends to.
+# shellcheck source=ralph-lib.sh
+. "$(dirname "$0")/ralph-lib.sh"
+
 echo "=== RALPH-TO-RALPH: Phase 3 (QA with Claude) ==="
 echo "Target: ${TARGET_URL:-none}"
 echo "Iterations: $ITERATIONS"
+echo "Progress: $PROGRESS"
 echo ""
 
-mkdir -p "$PROGRESS_DIR" "$LOG_DIR" "$STATE_DIR"
 if [ ! -f "report-qa.json" ]; then
   echo '[]' > report-qa.json
 fi
@@ -60,13 +63,15 @@ stop_dev() {
 
 pkill -f "next dev --port $DEV_PORT" 2>/dev/null || true
 
-DEV_LOG="$LOG_DIR/dev-server.log"
+DEV_LOG="$RUN_DIR/dev-server.log"
 setsid npm run dev > "$DEV_LOG" 2>&1 &
 DEV_PID=$!
 # `|| true` inside stop_dev because under `set -e` a failed kill (dev server
 # already gone) would abort the trap and make the phase exit non-zero even on a
 # successful QA_COMPLETE.
-trap stop_dev EXIT
+trap 'stop_dev; reap_sessions; exit 130' INT
+trap 'stop_dev; reap_sessions; exit 143' TERM
+trap 'stop_dev; reap_sessions' EXIT
 echo "Dev server starting (PID: $DEV_PID, log: $DEV_LOG)"
 
 # Poll for readiness instead of sleeping a fixed 5s and hoping. A server that
@@ -105,45 +110,46 @@ TARGET_URL: $TARGET_URL
 When confused about how a feature should work, open $TARGET_URL with claude-in-chrome to check the original product."
 fi
 
+note "═══════════════════════════════════════════════════════"
+note "ralph-to-ralph Phase 3 (QA) starting — target=${TARGET_URL:-none} model=$MODEL max-iter=$ITERATIONS"
+
 consecutive_failures=0
 
-for ((i=1; i<=$ITERATIONS; i++)); do
+for ((i=1; i<=ITERATIONS; i++)); do
   echo "--- QA iteration $i/$ITERATIONS ---"
 
-  # One journal file per iteration, and only the five most recent are fed back
-  # in. Older ones stay on disk under .state/, so the journal cannot grow into the
-  # fresh context each iteration exists to protect.
-  PROGRESS_FILE="$PROGRESS_DIR/$(printf '%03d' "$i").md"
-  # `|| true` because an empty dir makes ls exit non-zero, which pipefail would
-  # otherwise turn into a fatal error on the very first iteration.
-  PROGRESS_REFS=$(ls "$PROGRESS_DIR"/*.md 2>/dev/null | tail -5 | sed 's|^|@|' | tr '\n' ' ') || true
-
-  # Use a fresh Claude agent as an independent evaluator (clean context, skeptical prompt).
-  # tee streams the agent's output live and keeps a transcript to grep for the
-  # promise; rc is captured so a crash doesn't trip `set -e` before the retry logic.
-  LOG="$LOG_DIR/$(printf '%03d' "$i").log"
-  rc=0
-  timeout 1200 claude -p --dangerously-skip-permissions --chrome --model claude-sonnet-5 \
-"@ralph-to-ralph/prompt-qa.md @pre-setup.md @spec-build.md @prd.json @report-qa.json @claude-in-chrome-reference.md $PROGRESS_REFS
+  PROMPT_FILE="$RUN_DIR/prompt-qa-$i.txt"
+  {
+    cat <<PROMPT
+@ralph-to-ralph/prompt-qa.md @pre-setup.md @spec-build.md @prd.json @report-qa.json @claude-in-chrome-reference.md
 
 ITERATION: $i of $ITERATIONS
-PROGRESS_FILE: $PROGRESS_FILE
+PROGRESS: $PROGRESS
 CLONE_URL: http://localhost:3015
 ${TARGET_CONTEXT}
 
 Test exactly ONE feature, then commit, push, and stop.
-Write this iteration's notes to $PROGRESS_FILE — that file is yours alone. Never
-append to an earlier iteration's file; the loop only feeds back the most recent few.
 Output <promise>NEXT</promise> when done with this feature.
-If ALL features have been QA tested and all bugs fixed, output <promise>QA_COMPLETE</promise>." \
-    2>&1 | tee "$LOG" || rc=${PIPESTATUS[0]}
+If ALL features have been QA tested and all bugs fixed, output <promise>QA_COMPLETE</promise>.
 
-  if grep -qF "<promise>QA_COMPLETE</promise>" "$LOG"; then
+## Orchestrator notes (these refine, never override, the instructions above)
+- This is QA iteration $i. You are a fresh, clean-context session and a DIFFERENT agent from the builder: all continuity is on disk ($PROGRESS, prd.json, report-qa.json, git history). Study before assuming.
+- $PROGRESS is the single progress file for this whole run — every phase and every session appends to it. Read its tail (\`tail -200 $PROGRESS\`) to see what has already been tested, and what the build sessions claimed. Do NOT read the whole file; it grows all run.
+- This session is terminated after $WATCHDOG seconds with no append to $PROGRESS. Narrate as you go.
+- Your final message is parsed by the orchestrator for the promise tag ONLY: end with <promise>NEXT</promise> or <promise>QA_COMPLETE</promise> and stop. A missing tag counts as an abnormal exit.
+PROMPT
+  } > "$PROMPT_FILE"
+
+  run_iteration "qa-$i" "$PROMPT_FILE" 'NEXT|QA_COMPLETE'
+  p="$ITER_PROMISE"
+
+  if [ "$p" = "QA_COMPLETE" ]; then
     echo ""
     echo "--- Running final Playwright regression suite ---"
     npx playwright test --reporter=list 2>&1 || echo "Some Playwright tests failed in final regression."
     echo ""
     echo "=== QA complete after $i iterations! ==="
+    note "[ralph] Phase 3 (QA) reported QA_COMPLETE after $i iterations."
     # Positive proof for the watchdog that a full QA pass actually happened.
     # Without it the watchdog can only observe that prd.json is unchanged, which
     # looks identical whether QA approved every feature or died on startup.
@@ -151,27 +157,21 @@ If ALL features have been QA tested and all bugs fixed, output <promise>QA_COMPL
     exit 0
   fi
 
-  if grep -qF "<promise>NEXT</promise>" "$LOG"; then
+  if [ "$p" = "NEXT" ]; then
     consecutive_failures=0
     echo "QA for feature done. Moving to next..."
     continue
   fi
 
-  # No promise = crash, timeout, or an agent that stopped early
-  case "$rc" in
-    0)   reason="claude exited cleanly but emitted no promise — the agent stopped early" ;;
-    124) reason="claude hit the 1200s timeout" ;;
-    127) reason="claude not found on PATH" ;;
-    *)   reason="claude exited $rc" ;;
-  esac
-
+  # No promise, and the resumes inside run_iteration could not get one either.
   consecutive_failures=$((consecutive_failures + 1))
-  echo "WARNING: no promise ($consecutive_failures/$MAX_FAILURES) — $reason. Transcript: $LOG"
+  echo "WARNING: no promise after $RESUMES_USED resume(s) ($consecutive_failures/$MAX_FAILURES). Session JSON: $LAST_JSON"
+  note "[ralph] QA iteration $i produced no promise after $RESUMES_USED resume(s) ($consecutive_failures/$MAX_FAILURES)."
 
   if [ "$consecutive_failures" -ge "$MAX_FAILURES" ]; then
     echo ""
     echo "=== Aborting: $MAX_FAILURES consecutive iterations produced no promise ==="
-    echo "Check $LOG and report-qa.json."
+    echo "Check $LAST_JSON.err and report-qa.json."
     exit 1
   fi
 

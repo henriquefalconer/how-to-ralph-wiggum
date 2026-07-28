@@ -16,6 +16,14 @@ QA_ITERS="${4:-999}"
 
 LOCKFILE="ralph-to-ralph/.state/watchdog.lock"
 
+# One run id for the whole pipeline. Every phase inherits it, so all three write
+# their session JSONs into one directory and append to ONE progress file — the
+# single place to watch a run, and the only way session numbering stays unique
+# across three separate phase processes.
+export RALPH_RUN_ID="${RALPH_RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)}"
+RUN_DIR="ralph-to-ralph/.state/runs/$RALPH_RUN_ID"
+export RALPH_PROGRESS="$RUN_DIR/progress.txt"
+
 echo "========================================="
 echo "  RALPH-TO-RALPH: Product Cloner"
 echo "========================================="
@@ -23,7 +31,11 @@ echo "Target:           $TARGET_URL"
 echo "Inspect iters:    $INSPECT_ITERS"
 echo "Build iters:      $BUILD_ITERS"
 echo "QA iters:         $QA_ITERS"
+echo "Run id:           $RALPH_RUN_ID"
+echo "Progress:         $RALPH_PROGRESS"
 echo "========================================="
+echo ""
+echo "Watch it live with:  tail -f $RALPH_PROGRESS"
 echo ""
 
 # Kill existing watchdog if running
@@ -37,8 +49,10 @@ if [ -f "$LOCKFILE" ]; then
   rm -f "$LOCKFILE"
 fi
 
-# Per-phase state: one journal file per iteration, plus that phase's transcripts.
-mkdir -p ralph-to-ralph/.state/progress/{inspect,build,qa} ralph-to-ralph/.state/logs/{inspect,build,qa}
+# One directory per run: session JSONs, assembled prompts, and the single
+# progress file all three phases append to.
+mkdir -p "$RUN_DIR"
+touch "$RALPH_PROGRESS"
 
 echo "Starting watchdog..."
 echo "=================================="

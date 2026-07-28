@@ -23,7 +23,20 @@ LOCKFILE="$STATE_DIR/watchdog.lock"
 mkdir -p "$STATE_DIR/logs/watchdog"
 LOG_FILE="$STATE_DIR/logs/watchdog/$(date +%Y%m%d-%H%M%S).log"
 
-log() { echo "[$(date '+%H:%M:%S')] $1" | tee -a "$LOG_FILE"; }
+# The orchestrator's own lines belong in the run's single progress file too:
+# it is the one place that shows the whole run, and phase transitions and
+# restarts are exactly the context that makes a session's usage entry readable.
+RALPH_RUN_ID="${RALPH_RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)}"
+RUN_DIR="$STATE_DIR/runs/$RALPH_RUN_ID"
+PROGRESS="${RALPH_PROGRESS:-$RUN_DIR/progress.txt}"
+export RALPH_RUN_ID RALPH_PROGRESS="$PROGRESS"
+mkdir -p "$RUN_DIR"
+touch "$PROGRESS"
+
+log() {
+  echo "[$(date '+%H:%M:%S')] $1" | tee -a "$LOG_FILE"
+  printf '\n[ralph-watchdog %s] %s\n' "$(date -u +%H:%M:%S)" "$1" >> "$PROGRESS"
+}
 
 # Lock file
 if [ -f "$LOCKFILE" ]; then
