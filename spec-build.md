@@ -337,7 +337,7 @@ Provisional core-feature guess (to validate against the real UI next):
 - [x] Database Tables (create flow, field-type palette incl. connection fields, record create/edit, Configurações de database — screenshots: `screenshots/inspect/database-grid.jpg`, `screenshots/inspect/database-record-detail.jpg`)
 - [x] Reports/dashboards (Reports builder — filter/column picker, saved report tiles; Dashboards — chart builder with 8 viz types, live aggregation metrics — Iteration 6; screenshots: `screenshots/inspect/reports-list.jpg`, `screenshots/inspect/dashboard-number-chart.jpg`, `screenshots/inspect/dashboard-panel.jpg`)
 - [x] Automation rule builder (separate from field conditionals — pipe-level Automações tab; 10 triggers × 12 actions, tested end-to-end incl. Logs — screenshot: `screenshots/inspect/automations-builder.jpg`; see §13 and prd feature-010)
-- [ ] Interfaces / Portal builder (prd feature-008, discovered Iteration 1, not yet deep-dived)
+- [x] Interfaces / Portal builder (drag-only element palette, Dados live-query table + viewer-scoped dynamic visibility conditions, Formularios launcher-card, per-page AI Assistant chat widget — Iteration 6 [this run's iteration 6]; see §19 and prd feature-008/feature-020; screenshots: `screenshots/inspect/interfaces-builder.jpg`, `screenshots/inspect/interfaces-live-view-ai-assistant.jpg`)
 - [x] Pipe Settings — Pessoas / Configurações do pipe / Atividades / Ferramentas (Etiquetas + Gerador de PDF) / Lixeira (Iteration 2; see §15 and prd feature-013 through feature-017; screenshots: `screenshots/inspect/pipe-settings-pessoas.jpg`, `screenshots/inspect/pipe-settings-configuracoes.jpg`)
 - [x] Emails compose flow (card-scoped compose, per-thread generated alias vs. pipe inbound alias, email templates with shared 'Conteúdo dinâmico' token picker — Iteration 4; see §17 and prd feature-018; screenshots: `screenshots/inspect/emails-inbox.jpg`, `screenshots/inspect/emails-compose.jpg`)
 - [x] AI Agents creation flow (3-step builder, trigger/instructions/model/skills/effort, Logs/Templates/MCP sub-tabs — Iteration 5; see §18 and prd feature-019; screenshots: `screenshots/inspect/ai-agents-empty.jpg`, `screenshots/inspect/ai-agents-behaviors-builder.jpg`, `screenshots/inspect/ai-agents-templates.jpg`)
@@ -912,3 +912,102 @@ to end (would consume real AI credits) and the MCP connection flow.
 Screenshots: `screenshots/inspect/ai-agents-empty.jpg`,
 `screenshots/inspect/ai-agents-behaviors-builder.jpg`,
 `screenshots/inspect/ai-agents-templates.jpg`.
+
+## 19. Interfaces Builder & Per-Page AI Assistant (Iteration 6, live UI test)
+
+Live-tested the Interfaces no-code page builder end-to-end (prd feature-008,
+previously docs/sitemap-derived only) by creating a real interface
+("Central de Testes") and populating it with both core widget types.
+
+**Creation flow:** `Criar interface` opens a small modal — Nome (text),
+Ícone (icon picker), and a `Privacidade da interface` dropdown with 3
+tiers: `Restrito a pessoas selecionadas` (default) / `Restrito a <org>` /
+`Público para todos com o link`. This exact 3-tier privacy model reappears
+in the `Compartilhar` modal later, so model it as one shared
+`privacy_tier` enum used at both creation and share time. Submitting
+routes straight into the page editor — no separate confirmation step.
+
+**Editor layout:** left sidebar `Gerenciar páginas` (a tab list of pages
+within this interface + `Adicionar página` for multi-page interfaces),
+a center WYSIWYG canvas that mirrors the live page's own chrome, and a
+right panel with 2 tabs — `Adicionar elementos` (the widget palette) and
+`Editar página` (per-page Nome + `Mostrar cabeçalho` toggle). **Elements
+are drag-only**: clicking a palette item does nothing; only
+`left_click_drag` onto the canvas places it — confirmed by testing both
+(build systems driving this UI programmatically must simulate a real
+drag, not a click). The header shows autosave state cycling `Sem
+alterações` → `Última alteração em <timestamp>` → `Alterações salvas`
+(checkmark) — there is no explicit save button anywhere in the builder.
+
+**Element palette** (grouped): *Elementos principais* — Dados,
+Formulários (AI-assist badge), Documento (`Novo` badge + AI-assist
+badge). *Layout e conteúdo* — Texto, Link, Divisor. *Mídia* — Imagem,
+Vídeo, Incorporar. Only Dados and Formulários were deep-dived this
+iteration; Documento/Texto/Link/Divisor/Imagem/Vídeo/Incorporar remain
+TBD for a future pass.
+
+**Dados widget (live-query data table):** binds via `Selecione um pipe ou
+database`, the SAME org-scoped catalog list used by Automations
+(feature-010), Reports (feature-011), Dashboards (feature-012), Email
+templates (feature-018), and Formulários below — now confirmed reused
+across **5 independent features**; build this catalog picker as one
+shared component. Picking a source auto-populates the widget's title
+(editable, toggleable) and the table immediately live-queries and
+renders that source's real records — tested selecting "Purchase
+Requests" and seeing its actual card ("João Silva") render after a brief
+loading-skeleton state. Config surface: `Tornar linhas clicáveis`
+(row-click opens the record), `Permitir que admins exportem os
+registros` (on by default), `Ordenar por` (field + direction), and
+`Visibilidade dos dados › Definir condições` — a filter popover offering
+3 one-click **dynamic, viewer-scoped** presets (`Atribuído ao
+visualizador` → inserts `Responsáveis = Usuário atual`; `Fase atual`;
+`Para esta semana`) plus a full custom AND-chained condition builder with
+`Adicionar grupo de condições` for OR-groups. **Confirmed the dynamic
+condition re-evaluates per logged-in viewer at render time, not at save
+time**: applying `Atribuído ao visualizador` immediately live-re-queried
+the table to `Nenhum registro encontrado` because the test card wasn't
+assigned to the viewing user. This is the build-critical finding of this
+widget — visibility filters must support a `$CURRENT_USER`-style token
+resolved against the request's authenticated viewer, not the page
+author. Removing all conditions requires a confirm dialog.
+
+**Formulários widget (start-form launcher):** binds via the same
+pipe/database picker, plus page-scoped Nome/Descrição/imagem overrides
+explicitly labelled "Alterações afetarão apenas esta página" — these are
+presentation overrides only, they do not write back to the underlying
+pipe. Once bound it renders as a clickable icon+name card. In the LIVE
+view, clicking it opens the target pipe's real public start form as a
+modal (confirmed: real `Nome do solicitante` field + `Criar novo card`
+submit) — i.e. this widget is a **launcher for actual card creation**,
+not a duplicated/mocked form renderer. Cancelled before submitting to
+avoid creating a spurious card.
+
+**New discovery — per-page AI Assistant.** Every published/live
+Interfaces page auto-mounts a floating "AI Assistant" (Beta) chat widget,
+bottom-right. On a viewer's first visit to a given page it auto-expands
+to a full panel: headline "Encontre respostas e avance com suas
+solicitações", 4 canned prompt chips (`Ver minhas solicitações` /
+`Iniciar solicitação` / `Resumir políticas e informações` / `Mostrar o
+que posso fazer aqui`), a freeform `Perguntar algo...` input, and a
+disclaimer footer. On later visits it stays collapsed to a small pill
+until clicked. The builder's own copy on the Formulários/Documento
+element panels ("O Assistente de IA aprende com este elemento para
+responder perguntas dos usuários") confirms the assistant's context is
+**scoped to that specific page's bound elements**, not the whole org.
+Did not send a real prompt (avoids an AI-credit cost) — added as new prd
+feature-020, modeled per project rules as a lightweight scoped Q&A stub
+(canned/templated answers over the page's bound pipe/database data)
+rather than real LLM orchestration.
+
+**Sharing:** `Compartilhar` opens a 2-tab modal — `Visibilidade` (the
+same 3-tier privacy dropdown + a copyable public URL) and `Gerenciar
+pessoas` (not deep-dived — presumably the invite list for the
+`restricted_people` tier). `Ver ao vivo` opens the published page in the
+same tab, with the URL simply dropping the `/edit` suffix.
+
+**Not triggered, by design:** submitting the Formulários launcher's start
+form (would create a real card) and sending a real AI Assistant prompt
+(would incur AI credits).
+
+Screenshots: `screenshots/inspect/interfaces-builder.jpg`,
+`screenshots/inspect/interfaces-live-view-ai-assistant.jpg`.

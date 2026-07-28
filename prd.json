@@ -456,42 +456,73 @@
   {
     "id": "feature-008",
     "category": "ui",
-    "description": "Interfaces builder: no-code page composer that arranges pipe/database data into a custom page (used to build the org's self-service 'Portal')",
-    "page": "Interfaces (org-level) / Portal",
-    "ui_details": "Discovered in sitemap iteration (see sitemap.md). Empty state: 'Arraste e solte dados de pipes e databases para criar páginas...' with a single 'Criar interface' CTA. The default 'Portal' page it produces is a hero banner + search bar + department cards (linking out to specific pipes' start forms) + a forms section + a company-docs section.",
-    "behavior": "Not yet tested (creation flow, widget types, drag-drop behavior all TODO for a future iteration).",
-    "data_model": "interfaces: id, org_id (fk), name. interface_pages: id, interface_id (fk), title, layout (jsonb — ordered list of widget blocks, each referencing a pipe_id/table_id or static content)",
+    "description": "Interfaces builder: no-code page composer that arranges pipe/database data into a custom page (used to build the org's self-service 'Portal', or any internal tool/dashboard)",
+    "page": "Interfaces (org-level, /interfaces/:interfaceId/pages/:pageId/edit) / Portal",
+    "ui_details": "CONFIRMED live iteration 6. Empty state: 'Arraste e solte dados de pipes e databases...' + 'Criar interface' CTA. Creation modal: Nome (text), Icone (icon picker), Privacidade da interface (3-tier dropdown: Restrito a pessoas selecionadas / Restrito a <org name> / Publico para todos com o link -- same 3-tier privacy model reused at share-time). Submitting routes straight into the page editor (no intermediate confirmation). Editor layout: left sidebar 'Gerenciar paginas' (page-tab list + 'Adicionar pagina' for multi-page interfaces), center WYSIWYG canvas (mirrors the live page chrome -- Pipefy top bar included), right panel with 2 tabs: 'Adicionar elementos' (a palette, DRAG-ONLY -- clicking an element name does nothing, only left_click_drag onto the canvas places it) and 'Editar pagina' (per-page Nome + Mostrar cabecalho toggle). Element palette, grouped: Elementos principais (Dados, Formularios [has an AI-assist badge], Documento ['Novo' badge, also AI-assist badge]); Layout e conteudo (Texto, Link, Divisor); Midia (Imagem, Video, Incorporar). Header shows autosave state cycling 'Sem alteracoes' -> 'Ultima alteracao em <timestamp>' -> 'Alteracoes salvas (checkmark)' -- no explicit save button/action anywhere in the builder. Top-right: 'Compartilhar' (opens a 2-tab modal: Visibilidade [same privacy dropdown + a copyable public URL] and Gerenciar pessoas) and 'Ver ao vivo' (opens the published page in the SAME tab, URL drops the /edit suffix).",
+    "behavior": "CONFIRMED live iteration 6, 2 widget types tested end-to-end. (1) Dados widget: dragged onto canvas, right panel shows 'Selecione um pipe ou database' (same catalog list used by Automations/Reports/Dashboards/Email templates/Formularios -- confirmed 5th reuse of this org-scoped pipe+database picker). Picking a pipe auto-populates the widget title (editable, toggleable via 'Exibir titulo'), and the table immediately live-queries and renders that pipe's real cards (tested: selecting 'Purchase Requests' rendered its 1 real card, 'Joao Silva', with a loading skeleton row first). Config: 'Comportamento do registro' > 'Tornar linhas clicaveis' toggle (opens the record on click), 'Visualizacao da tabela' > 'Permitir que admins exportem os registros' toggle (on by default), 'Ordenar por' field+direction picker, and 'Visibilidade dos dados' > 'Definir condicoes' -- a filter popover with 3 one-click DYNAMIC presets ('Atribuido ao visualizador' inserts a Responsaveis=Usuario atual condition, 'Fase atual', 'Para esta semana') plus a full custom condition builder (field/operator/value rows, AND-chained, 'Adicionar grupo de condicoes' for OR-groups). Tested 'Atribuido ao visualizador': the table live-re-queried to 'Nenhum registro encontrado' because the viewing user (me) isn't assigned to the one existing card -- confirms row-level visibility is evaluated per-viewer at render time, not baked in at save time. Removing conditions requires a confirm dialog ('Essa acao removera todos os filtros configurados'). (2) Formularios widget: dragged onto canvas, right panel offers 'Selecione um formulario' (same pipe/database picker), plus page-scoped Nome/Descricao/imagem overrides (explicitly labelled 'Alteracoes afetarao apenas esta pagina' -- i.e. these are presentation overrides, not writes to the underlying pipe). Once bound, the widget renders as a clickable card (icon + name). Clicking it in the LIVE view opens the target pipe's actual public start form as a modal (confirmed: showed the real 'Nome do solicitante' field and a 'Criar novo card' submit button) -- i.e. this widget is a launcher for real card creation, not a duplicated form renderer. Cancelled before submitting to avoid creating a spurious card. NEW DISCOVERY: every published/live Interface page auto-mounts a floating 'AI Assistant' (Beta) chat widget bottom-right. On first visit to a page it auto-expands to a full panel with a headline ('Encontre respostas e avance com suas solicitacoes'), 4 canned prompt chips (Ver minhas solicitacoes / Iniciar solicitacao / Resumir politicas e informacoes / Mostrar o que posso fazer aqui), and a freeform 'Perguntar algo...' textbox; on later visits it collapses to a small pill button. The BUILDER'S copy on the Formularios/Documento elements explicitly says 'O Assistente de IA aprende com este elemento para responder perguntas dos usuarios' -- i.e. this assistant's context is scoped to whichever pipe/database/document widgets exist on that specific page, not the whole org. Per project rules this should be modeled as a simple scoped Q&A stub (canned responses referencing the page's bound entities), not real multi-turn LLM orchestration.",
+    "data_model": "interfaces: id, org_id (fk), name, icon, privacy_tier (enum: restricted_people | restricted_org | public_link), created_at. interface_pages: id, interface_id (fk), name, show_header (bool), order. interface_page_elements: id, page_id (fk), type (enum: data_table | form_link | document | text | link | divider | image | video | embed), order, config (jsonb -- for data_table: {source_type: pipe|database, source_id, show_title, title_override, clickable_rows, allow_export, sort_field, sort_direction, visibility_conditions: [{field, operator, value}], visibility_condition_groups}; for form_link: {source_type, source_id, name_override, description_override, image_url}). interface_shares: interface_id (fk), shared_with_type (enum: person | group), shared_with_id -- populated only when privacy_tier=restricted_people.",
     "priority": 10,
     "core": false,
     "passes": false,
     "tests": {
       "unit": [
         {
-          "name": "interface page layout stores ordered widget blocks",
-          "description": "Saving a page persists its widget list in the order the user arranged them",
-          "input": "savePageLayout(pageId, [{type:'department_grid'}, {type:'form_link', pipeId:'p1'}])",
-          "expected_output": "interface_pages.layout is an array of exactly 2 blocks in that order"
+          "name": "viewer-scoped visibility condition resolves 'current user' token at query time",
+          "description": "A data_table element with visibility_conditions=[{field:'assignee_id', operator:'eq', value:'$CURRENT_USER'}] must substitute the actual logged-in viewer's id on every render, not the id of the interface's author",
+          "input": "renderDataTable(element, {viewerId: 'user_42'}) where element.config.visibility_conditions has value '$CURRENT_USER'",
+          "expected_output": "the executed query filters assignee_id = 'user_42'; a different viewerId produces a different filtered result set from the same saved element"
+        },
+        {
+          "name": "interface privacy_tier gates page access",
+          "description": "restricted_people pages are only visible to users in interface_shares; restricted_org pages to any org member; public_link pages to anyone with the URL",
+          "input": "canViewPage(page, {privacy_tier:'restricted_people'}, userNotInShares)",
+          "expected_output": "returns false; the same call with privacy_tier='public_link' and no auth returns true"
+        },
+        {
+          "name": "element order persists as an ordered array, not implied by insertion",
+          "description": "Reordering elements on the canvas must update each element's stored order field",
+          "input": "reorderElements(pageId, [elementC.id, elementA.id, elementB.id])",
+          "expected_output": "interface_page_elements rows for that page have order values 0,1,2 matching elementC,elementA,elementB"
         }
       ],
       "e2e": [
         {
-          "name": "create a new Interfaces page",
+          "name": "create an interface, add a live data table, and confirm it reflects real pipe data",
           "steps": [
             "Navigate to /interfaces",
-            "Click 'Criar interface'",
-            "Add a pipe's start-form link as a widget",
-            "Save"
+            "Click 'Criar interface', fill Nome='Test Portal', submit",
+            "Drag the 'Dados' element onto the canvas",
+            "Select a pipe with at least 1 card from 'Selecione um pipe ou database'"
           ],
-          "expected": "New page appears in the Interfaces list and is viewable at its own URL"
+          "expected": "The table renders that pipe's real card titles (not placeholder/mock rows) with a '<N> registro(s)' count matching the pipe's actual card count"
+        },
+        {
+          "name": "Formularios element opens the bound pipe's start form and creates a real card on submit",
+          "steps": [
+            "On a page with a Formularios element bound to a pipe, click 'Ver ao vivo'",
+            "Click the form launcher card",
+            "Fill the start form's required field(s)",
+            "Click the submit button"
+          ],
+          "expected": "A modal closes and a new card appears in the bound pipe's first phase with the submitted field value as its title/attribute"
         }
       ],
       "edge_cases": [
         {
           "name": "empty interfaces list",
           "steps": [
-            "Navigate to /interfaces with zero pages created"
+            "Navigate to /interfaces with zero interfaces created"
           ],
           "expected": "Empty state message and 'Criar interface' CTA shown, no error"
+        },
+        {
+          "name": "removing all visibility conditions requires confirmation and reverts to full unfiltered dataset",
+          "steps": [
+            "Add a visibility condition to a Dados element",
+            "Click 'Excluir tudo' in the conditions popover",
+            "Confirm the 'Essa acao removera todos os filtros configurados' dialog"
+          ],
+          "expected": "The condition badge count disappears from 'Definir condicoes' and the table immediately re-renders with all records visible again, no reload needed"
         }
       ]
     }
@@ -1033,6 +1064,56 @@
             "Navigate to a pipe's Agentes de IA > Logs sub-tab with zero prior executions"
           ],
           "expected": "Table headers render (Agente, Comportamento, Card processado, Status, Horário de início) with the empty-state message 'Ainda não há dados de execução disponíveis...' and no rows"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-020",
+    "category": "ui",
+    "description": "Interfaces AI Assistant: a floating chat widget auto-mounted on every published/live Interfaces page, scoped to answer questions using that page's bound pipes/databases/documents",
+    "page": "Any live Interfaces page (e.g. /interfaces/:interfaceId/pages/:pageId)",
+    "ui_details": "CONFIRMED live iteration 6, discovered while testing feature-008 (Interfaces builder). A pill button ('AI Assistant', gradient purple/pink, sparkle icon) floats bottom-right on every published Interfaces page. On a viewer's FIRST visit to a given page it auto-expands to a full side panel (~500px wide, gradient background) with: header 'AI Assistant' + 'Beta' badge + overflow/expand/collapse controls; headline 'Encontre respostas e avance com suas solicitacoes'; 4 canned prompt chips (Ver minhas solicitacoes, Iniciar solicitacao, Resumir politicas e informacoes, Mostrar o que posso fazer aqui); a freeform 'Perguntar algo...' input with a send button; a footer disclaimer 'A IA pode cometer erros. Revise as informacoes importantes.' + 'Enviar feedback' link. On subsequent visits it stays collapsed to the pill until clicked. The BUILDER shows a matching promo banner ('Interfaces ainda mais inteligentes' Beta) the first time a page is edited, and an inline hint on the Formularios/Documento element config panels: 'O Assistente de IA aprende com este elemento para responder perguntas dos usuarios.'",
+    "behavior": "Scope is per-page, not per-org: the assistant's context is built from whichever Dados/Formularios/Documento elements exist on that specific page (confirmed via the builder's own copy on those element types). Did not send a real prompt (would incur an AI-credit cost, out of scope to trigger) -- text-input and prompt-chip behavior after submission is UNCONFIRMED and should be treated as TBD. Per project rules (no real multi-LLM orchestration), the clone should model this as a lightweight scoped Q&A stub: given the page's bound pipe/database schemas + record data, answer simple canned/templated queries (e.g. 'Ver minhas solicitacoes' -> filter the page's bound data tables to records assigned to the current viewer) rather than a general-purpose LLM chat.",
+    "data_model": "No new persisted entity -- reads interface_page_elements for the current page (see feature-008's data model) to determine its answer scope. Optionally: interface_ai_conversations: id, page_id (fk), viewer_id, messages (jsonb array of {role, content, ts}) if conversation history needs to persist across visits (unconfirmed whether the real product persists this).",
+    "priority": 10,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "assistant scope resolves only the current page's bound sources",
+          "description": "Given a page with one Dados element bound to pipe A, the assistant's answerable scope must include pipe A's schema/data and exclude every other pipe/database in the org",
+          "input": "getAssistantScope(pageId) where page has 1 element bound to pipeA.id",
+          "expected_output": "returns [{type:'pipe', id: pipeA.id}] only"
+        },
+        {
+          "name": "'Ver minhas solicitacoes' canned prompt filters to the current viewer",
+          "description": "Clicking the preset chip should produce the same result as a Dados widget's 'Atribuido ao visualizador' visibility condition",
+          "input": "resolveCannedPrompt('ver_minhas_solicitacoes', {viewerId:'user_42', scope:[pipeA]})",
+          "expected_output": "returns pipeA cards where assignee_id = 'user_42'"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "AI Assistant widget appears on a live Interfaces page and is collapsible",
+          "steps": [
+            "Publish an Interfaces page with at least one Dados element",
+            "Navigate to the page's live URL as a first-time viewer",
+            "Observe the panel auto-expanded state",
+            "Click the collapse control"
+          ],
+          "expected": "Panel collapses to a floating pill button; page content underneath remains fully interactive"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "page with zero bound elements shows an assistant with an empty/no-data scope",
+          "steps": [
+            "Publish an Interfaces page with only a Texto element (no Dados/Formularios/Documento)",
+            "Open the AI Assistant panel"
+          ],
+          "expected": "Assistant still renders (no crash) but has no pipe/database data to answer from -- canned prompts should degrade gracefully rather than error"
         }
       ]
     }
