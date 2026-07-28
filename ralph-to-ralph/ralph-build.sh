@@ -8,8 +8,8 @@ ITERATIONS="${1:-999}"
 
 MAX_FAILURES="${RALPH_MAX_FAILURES:-3}"   # abort after N consecutive no-promise iterations
 
-PROGRESS_DIR="ralph_to_ralph/.state/progress/build"
-LOG_DIR="ralph_to_ralph/.state/logs/build"
+PROGRESS_DIR="ralph-to-ralph/.state/progress/build"
+LOG_DIR="ralph-to-ralph/.state/logs/build"
 
 if [ ! -f "prd.json" ]; then
   echo "Error: prd.json not found. Run ralph-inspect.sh first."
@@ -60,7 +60,7 @@ for ((i=1; i<=$ITERATIONS; i++)); do
   LOG="$LOG_DIR/$(printf '%03d' "$i").log"
   rc=0
   timeout 1200 claude -p --dangerously-skip-permissions --chrome --model claude-opus-4-8 \
-"@ralph_to_ralph/prompt-build.md @pre-setup.md @spec-build.md @prd.json @CLAUDE.md $PROGRESS_REFS
+"@ralph-to-ralph/prompt-build.md @pre-setup.md @spec-build.md @prd.json @CLAUDE.md $PROGRESS_REFS
 
 ITERATION: $i of $ITERATIONS
 PROGRESS: $PASSES/$TOTAL features passed

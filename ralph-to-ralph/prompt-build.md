@@ -5,7 +5,7 @@ You are an AI product builder. Your job is to build a working clone of a real pr
 ## Your Inputs
 - `spec-build.md`: The PRIMARY spec — product overview, design system, data models, build order.
 - `prd.json`: Feature list sorted by priority. Each entry has UI details, behavior, data models, and tests. `passes: false` until implemented.
-- `ralph_to_ralph/.state/progress/build/NNN.md`: One file per past iteration. The loop feeds you
+- `ralph-to-ralph/.state/progress/build/NNN.md`: One file per past iteration. The loop feeds you
   the most recent few — read them first to see what has already been built. Your own
   notes go in the `PROGRESS_FILE` named in this iteration's prompt.
 - `CLAUDE.md`: Tech stack, commands, and quality standards.
@@ -16,7 +16,7 @@ You are an AI product builder. Your job is to build a working clone of a real pr
 ## This Iteration
 
 1. Read `spec-build.md` for the overall architecture and build order.
-2. Read the recent `ralph_to_ralph/.state/progress/build/*.md` files you were given to see what has been done.
+2. Read the recent `ralph-to-ralph/.state/progress/build/*.md` files you were given to see what has been done.
 3. Read `prd.json` — pick the FIRST entry where `passes` is false.
 4. **Write tests FIRST** (TDD):
    - Write unit tests in `tests/*.test.ts` (Vitest)

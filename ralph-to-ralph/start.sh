@@ -1,11 +1,11 @@
 #!/bin/bash
 # Start the Ralph-to-Ralph cloning loop
-# Usage: ./ralph_to_ralph/start.sh <target-url>
+# Usage: ./ralph-to-ralph/start.sh <target-url>
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 TARGET_URL="${1:?Usage: $0 <target-url>}"
-LOCKFILE="ralph_to_ralph/.state/watchdog.lock"
+LOCKFILE="ralph-to-ralph/.state/watchdog.lock"
 
 echo "=== Ralph-to-Ralph ==="
 echo "Target: $TARGET_URL"
@@ -23,8 +23,8 @@ if [ -f "$LOCKFILE" ]; then
 fi
 
 # Per-phase state: one journal file per iteration, plus that phase's transcripts.
-mkdir -p ralph_to_ralph/.state/progress/{inspect,build,qa} ralph_to_ralph/.state/logs/{inspect,build,qa}
+mkdir -p ralph-to-ralph/.state/progress/{inspect,build,qa} ralph-to-ralph/.state/logs/{inspect,build,qa}
 
 echo "Starting watchdog..."
 echo "=================================="
-./ralph_to_ralph/ralph-watchdog.sh "$TARGET_URL"
+./ralph-to-ralph/ralph-watchdog.sh "$TARGET_URL"

@@ -9,8 +9,8 @@ ITERATIONS="${2:-999}"
 
 MAX_FAILURES="${RALPH_MAX_FAILURES:-3}"   # abort after N consecutive no-promise iterations
 
-PROGRESS_DIR="ralph_to_ralph/.state/progress/inspect"
-LOG_DIR="ralph_to_ralph/.state/logs/inspect"
+PROGRESS_DIR="ralph-to-ralph/.state/progress/inspect"
+LOG_DIR="ralph-to-ralph/.state/logs/inspect"
 
 echo "=== RALPH-TO-RALPH: Phase 1 (Inspect) ==="
 echo "Target: $TARGET_URL"
@@ -45,7 +45,7 @@ for ((i=1; i<=$ITERATIONS; i++)); do
   LOG="$LOG_DIR/$(printf '%03d' "$i").log"
   rc=0
   timeout 1200 claude -p --dangerously-skip-permissions --chrome --model claude-opus-4-8 \
-"@ralph_to_ralph/prompt-inspect.md @ralph_to_ralph/spec-inspect.md @claude-in-chrome-reference.md @prd.json $PROGRESS_REFS
+"@ralph-to-ralph/prompt-inspect.md @ralph-to-ralph/spec-inspect.md @claude-in-chrome-reference.md @prd.json $PROGRESS_REFS
 
 TARGET URL: $TARGET_URL
 ITERATION: $i of $ITERATIONS
@@ -63,7 +63,7 @@ Output <promise>INSPECT_COMPLETE</promise> only if ALL pages are inspected AND s
     echo "=== Inspection complete after $i iterations ==="
     echo "PRD: prd.json"
     echo "Build spec: spec-build.md"
-    touch ralph_to_ralph/.state/inspect-complete
+    touch ralph-to-ralph/.state/inspect-complete
     exit 0
   fi
 

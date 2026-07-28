@@ -19,7 +19,7 @@ echo "========================================="
 echo ""
 
 # Per-phase state: one journal file per iteration, plus that phase's transcripts.
-mkdir -p ralph_to_ralph/.state/progress/{inspect,build,qa} ralph_to_ralph/.state/logs/{inspect,build,qa}
+mkdir -p ralph-to-ralph/.state/progress/{inspect,build,qa} ralph-to-ralph/.state/logs/{inspect,build,qa}
 mkdir -p screenshots
 
 # Initialize PRD if not exists
@@ -29,19 +29,19 @@ fi
 
 echo ">>> Phase 1: Inspect (Claude in Chrome)"
 echo ""
-./ralph_to_ralph/ralph-inspect.sh "$TARGET_URL" "$INSPECT_ITERS"
+./ralph-to-ralph/ralph-inspect.sh "$TARGET_URL" "$INSPECT_ITERS"
 
 echo ""
 echo ">>> Phase 2: Build (Claude)"
 echo ""
-./ralph_to_ralph/ralph-build.sh "$BUILD_ITERS"
+./ralph-to-ralph/ralph-build.sh "$BUILD_ITERS"
 
 echo ""
 echo ">>> Phase 3: QA (Claude as independent evaluator)"
 echo ""
 # ralph-qa.sh takes <target-url> [iterations] — passing only the iteration count
 # made "999" the target URL and silently left iterations at the 999 default.
-./ralph_to_ralph/ralph-qa.sh "$TARGET_URL" "$QA_ITERS"
+./ralph-to-ralph/ralph-qa.sh "$TARGET_URL" "$QA_ITERS"
 
 echo ""
 echo "========================================="

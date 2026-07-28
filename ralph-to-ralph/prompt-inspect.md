@@ -8,13 +8,13 @@ This is a **generic product cloning system** — the target could be any SaaS st
 - `spec-inspect.md`: Your instructions — how to inspect, what to capture, what to output.
 - `claude-in-chrome-reference.md`: Claude in Chrome tool reference — use these to control the browser.
 - `prd.json`: Feature list you are building up (append new entries each iteration).
-- `ralph_to_ralph/.state/progress/inspect/NNN.md`: One file per past iteration. The loop feeds
+- `ralph-to-ralph/.state/progress/inspect/NNN.md`: One file per past iteration. The loop feeds
   you the most recent few — read them first to see what has already been inspected.
   Your own notes go in the `PROGRESS_FILE` named in this iteration's prompt.
 
 ## This Iteration
 
-1. Read the recent `ralph_to_ralph/.state/progress/inspect/*.md` files you were given to see what has been done.
+1. Read the recent `ralph-to-ralph/.state/progress/inspect/*.md` files you were given to see what has been done.
 2. Read `spec-inspect.md` for your full inspection strategy.
 3. Run `read_page` to see the current page state.
 4. Follow the inspection strategy for your current iteration:

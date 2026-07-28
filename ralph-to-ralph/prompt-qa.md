@@ -35,7 +35,7 @@ The original product is your **source of truth**.
 ## Your Inputs
 - `spec-build.md`: The product spec.
 - `prd.json`: Feature list with expected behavior, UI details, and tests.
-- `ralph_to_ralph/.state/progress/qa/NNN.md`: One file per past iteration. The loop feeds you the
+- `ralph-to-ralph/.state/progress/qa/NNN.md`: One file per past iteration. The loop feeds you the
   most recent few — read them first to see what has already been tested. Your own notes
   go in the `PROGRESS_FILE` named in this iteration's prompt.
 - `report-qa.json`: Your test results (you create and maintain this).
@@ -46,7 +46,7 @@ The original product is your **source of truth**.
 
 ## This Iteration
 
-1. Read the recent `ralph_to_ralph/.state/progress/qa/*.md` files you were given to see what has been tested.
+1. Read the recent `ralph-to-ralph/.state/progress/qa/*.md` files you were given to see what has been tested.
 2. Read `prd.json` to find the next feature to test (first entry you haven't QA'd yet). Note its `category`.
 
 ### Step 1: Automated checks
@@ -83,7 +83,7 @@ Also run full `make test-e2e` to catch cross-feature regressions.
    - Create API key → authenticates real requests?
 
    The clone serves its own REST API — hit it directly. The dev API key and the available
-   routes are recorded in the recent `ralph_to_ralph/.state/progress/build/*.md` notes:
+   routes are recorded in the recent `ralph-to-ralph/.state/progress/build/*.md` notes:
    ```bash
    curl -X POST http://localhost:3015/api/<endpoint> \
      -H "Authorization: Bearer <dev-api-key>" \
@@ -111,7 +111,7 @@ Also run full `make test-e2e` to catch cross-feature regressions.
 <important if="this is the deployment feature">
 ### Step 5: Deployment Verification
 12. Is the app live? Does the deployed version match localhost? A live URL, if one exists,
-    is recorded in the recent `ralph_to_ralph/.state/progress/build/*.md` notes.
+    is recorded in the recent `ralph-to-ralph/.state/progress/build/*.md` notes.
 13. Test live URL with same curl/SDK commands — same tests, different base URL.
 </important>
 

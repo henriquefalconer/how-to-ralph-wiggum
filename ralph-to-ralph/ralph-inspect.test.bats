@@ -3,15 +3,15 @@
 #
 # `claude` is replaced by a stub. STUB_OUT / STUB_RC set the default
 # claude response; STUB_OUT_<n> / STUB_RC_<n> override the nth invocation.
-# Run with: npx bats ralph_to_ralph/ralph-inspect.test.bats
+# Run with: npx bats ralph-to-ralph/ralph-inspect.test.bats
 
 setup() {
   REPO="$BATS_TEST_TMPDIR/repo"
-  mkdir -p "$REPO/ralph_to_ralph" "$REPO/bin"
-  cp "$BATS_TEST_DIRNAME/ralph-inspect.sh" "$REPO/ralph_to_ralph/"
+  mkdir -p "$REPO/ralph-to-ralph" "$REPO/bin"
+  cp "$BATS_TEST_DIRNAME/ralph-inspect.sh" "$REPO/ralph-to-ralph/"
 
-  PROGRESS="$REPO/ralph_to_ralph/.state/progress/inspect"
-  LOGS="$REPO/ralph_to_ralph/.state/logs/inspect"
+  PROGRESS="$REPO/ralph-to-ralph/.state/progress/inspect"
+  LOGS="$REPO/ralph-to-ralph/.state/logs/inspect"
 
   export STUB_ARGS="$REPO/claude-args.txt"
   export STUB_CALLS="$REPO/claude-calls.txt"
@@ -34,14 +34,14 @@ STUB
 }
 
 @test "requires a target url" {
-  run "$REPO/ralph_to_ralph/ralph-inspect.sh"
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh"
   [ "$status" -ne 0 ]
   [[ "$output" == *"Usage:"* ]]
 }
 
 @test "seeds prd.json and the state namespaces on first run" {
   export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph_to_ralph/ralph-inspect.sh" https://example.com 1
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 1
   [ "$status" -eq 0 ]
   [ "$(cat "$REPO/prd.json")" = "[]" ]
   [ -d "$PROGRESS" ]
@@ -51,7 +51,7 @@ STUB
 
 @test "drives the browser through claude-in-chrome, not a separate session" {
   export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph_to_ralph/ralph-inspect.sh" https://example.com 1
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 1
   [ "$status" -eq 0 ]
   # --chrome hands the agent the already-signed-in Chrome window
   grep -qx -- "--chrome" "$STUB_ARGS"
@@ -60,7 +60,7 @@ STUB
 
 @test "invokes claude with the pinned model" {
   export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph_to_ralph/ralph-inspect.sh" https://example.com 1
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 1
   [ "$status" -eq 0 ]
   grep -qx -- "--model" "$STUB_ARGS"
   grep -qx -- "claude-opus-4-8" "$STUB_ARGS"
@@ -68,32 +68,32 @@ STUB
 
 @test "passes the target url and iteration into the prompt" {
   export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph_to_ralph/ralph-inspect.sh" https://example.com 7
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 7
   grep -q "TARGET URL: https://example.com" "$STUB_ARGS"
   grep -q "ITERATION: 1 of 7" "$STUB_ARGS"
 }
 
 @test "INSPECT_COMPLETE writes the sentinel the watchdog polls for" {
   export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph_to_ralph/ralph-inspect.sh" https://example.com 3
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 3
   [ "$status" -eq 0 ]
-  [ -f "$REPO/ralph_to_ralph/.state/inspect-complete" ]
+  [ -f "$REPO/ralph-to-ralph/.state/inspect-complete" ]
   [ "$(cat "$STUB_CALLS")" -eq 1 ]
 }
 
 @test "NEXT keeps iterating and leaves no sentinel when the budget runs out" {
   export STUB_OUT="<promise>NEXT</promise>"
-  run "$REPO/ralph_to_ralph/ralph-inspect.sh" https://example.com 3
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 3
   [ "$status" -eq 0 ]
   [ "$(cat "$STUB_CALLS")" -eq 3 ]
-  [ ! -f "$REPO/ralph_to_ralph/.state/inspect-complete" ]
+  [ ! -f "$REPO/ralph-to-ralph/.state/inspect-complete" ]
   [[ "$output" == *"may be incomplete"* ]]
 }
 
 @test "NEXT then INSPECT_COMPLETE stops at the completing iteration" {
   export STUB_OUT_1="<promise>NEXT</promise>"
   export STUB_OUT_2="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph_to_ralph/ralph-inspect.sh" https://example.com 9
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 9
   [ "$status" -eq 0 ]
   [ "$(cat "$STUB_CALLS")" -eq 2 ]
   [[ "$output" == *"complete after 2 iterations"* ]]
@@ -102,7 +102,7 @@ STUB
 @test "aborts after MAX_FAILURES consecutive iterations with no promise" {
   export STUB_OUT="no promise in here"
   export RALPH_MAX_FAILURES=2
-  run "$REPO/ralph_to_ralph/ralph-inspect.sh" https://example.com 99
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 99
   [ "$status" -eq 1 ]
   [ "$(cat "$STUB_CALLS")" -eq 2 ]
   [[ "$output" == *"2 consecutive iterations produced no promise"* ]]
@@ -112,14 +112,14 @@ STUB
   export STUB_OUT="hung"
   export STUB_RC=124
   export RALPH_MAX_FAILURES=1
-  run "$REPO/ralph_to_ralph/ralph-inspect.sh" https://example.com 99
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 99
   [ "$status" -eq 1 ]
   [[ "$output" == *"hit the 1200s timeout"* ]]
 }
 
 @test "tees each iteration to its own transcript under the inspect log namespace" {
   export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph_to_ralph/ralph-inspect.sh" https://example.com 1
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 1
   [ -f "$LOGS/001.log" ]
   grep -qF "<promise>INSPECT_COMPLETE</promise>" "$LOGS/001.log"
 }
@@ -127,18 +127,18 @@ STUB
 @test "names a fresh per-iteration progress file each time" {
   export STUB_OUT_1="<promise>NEXT</promise>"
   export STUB_OUT_2="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph_to_ralph/ralph-inspect.sh" https://example.com 9
-  grep -q "PROGRESS_FILE: ralph_to_ralph/.state/progress/inspect/001.md" "$STUB_ARGS"
-  grep -q "PROGRESS_FILE: ralph_to_ralph/.state/progress/inspect/002.md" "$STUB_ARGS"
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 9
+  grep -q "PROGRESS_FILE: ralph-to-ralph/.state/progress/inspect/001.md" "$STUB_ARGS"
+  grep -q "PROGRESS_FILE: ralph-to-ralph/.state/progress/inspect/002.md" "$STUB_ARGS"
 }
 
 @test "feeds back only the five most recent progress files" {
   mkdir -p "$PROGRESS"
   for n in 001 002 003 004 005 006 007; do echo "note $n" > "$PROGRESS/$n.md"; done
   export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph_to_ralph/ralph-inspect.sh" https://example.com 1
+  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 1
   [ "$status" -eq 0 ]
   ! grep -q "progress/inspect/001.md" "$STUB_ARGS"
-  grep -q -- "@ralph_to_ralph/.state/progress/inspect/003.md" "$STUB_ARGS"
-  grep -q -- "@ralph_to_ralph/.state/progress/inspect/007.md" "$STUB_ARGS"
+  grep -q -- "@ralph-to-ralph/.state/progress/inspect/003.md" "$STUB_ARGS"
+  grep -q -- "@ralph-to-ralph/.state/progress/inspect/007.md" "$STUB_ARGS"
 }
