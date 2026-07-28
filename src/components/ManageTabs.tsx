@@ -7,22 +7,30 @@ export function ManageTabs({
   dictionary,
 }: {
   pipeId: string;
-  active: "phases" | "automations";
+  active: "phases" | "automations" | "reports";
   dictionary: Dictionary;
 }) {
-  const tabs: { key: "phases" | "automations"; href: string; label: string }[] =
-    [
-      {
-        key: "phases",
-        href: `/pipes/${pipeId}/settings/phases`,
-        label: dictionary.manageTabs.phases,
-      },
-      {
-        key: "automations",
-        href: `/pipes/${pipeId}/automations`,
-        label: dictionary.manageTabs.automations,
-      },
-    ];
+  const tabs: {
+    key: "phases" | "automations" | "reports";
+    href: string;
+    label: string;
+  }[] = [
+    {
+      key: "phases",
+      href: `/pipes/${pipeId}/settings/phases`,
+      label: dictionary.manageTabs.phases,
+    },
+    {
+      key: "automations",
+      href: `/pipes/${pipeId}/automations`,
+      label: dictionary.manageTabs.automations,
+    },
+    {
+      key: "reports",
+      href: `/pipes/${pipeId}/reports_v2`,
+      label: dictionary.manageTabs.reports,
+    },
+  ];
 
   return (
     <nav

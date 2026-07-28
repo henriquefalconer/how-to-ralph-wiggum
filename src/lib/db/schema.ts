@@ -2,6 +2,7 @@ import type {
   ConditionGroup,
   ConditionalAction,
 } from "@/lib/field-conditional-types";
+import type { ReportFilterGroup } from "@/lib/report-types";
 import {
   boolean,
   doublePrecision,
@@ -409,3 +410,22 @@ export const interfaceShares = pgTable(
     }),
   ],
 );
+
+export const reports = pgTable("reports", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  pipeId: uuid("pipe_id")
+    .notNull()
+    .references(() => pipes.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  // Array of AND-groups; a group is an array of {fieldId, operator, value}
+  // checks. OR across groups, same shape as field_conditionals' condition
+  // groups. Re-evaluated against live card data every time the report is
+  // opened — never a frozen snapshot.
+  filters: jsonb("filters").$type<ReportFilterGroup[]>().notNull().default([]),
+  visibleColumnFieldIds: jsonb("visible_column_field_ids")
+    .$type<string[]>()
+    .notNull()
+    .default([]),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});

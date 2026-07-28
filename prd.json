@@ -588,7 +588,7 @@
     "data_model": "reports: id, pipe_id (fk), name, filters (jsonb — array of AND-groups, each an array of {field_id, operator, value}), visible_column_field_ids (jsonb array), created_at, updated_at",
     "priority": 8,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {

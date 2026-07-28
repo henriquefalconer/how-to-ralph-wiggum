@@ -184,6 +184,7 @@ export interface Dictionary {
   manageTabs: {
     phases: string;
     automations: string;
+    reports: string;
   };
   automations: {
     heading: string;
@@ -301,6 +302,66 @@ export interface Dictionary {
     delete: string;
     deleteConfirm: string;
     requiredError: string;
+  };
+  reports: {
+    heading: string;
+    searchPlaceholder: string;
+    sortByLabel: string;
+    newReportTile: string;
+    emptyStateTitle: string;
+    emptyStateCta: string;
+    resultsCountOne: string;
+    resultsCountOther: string;
+    backToBoard: string;
+    backToList: string;
+    deleteReport: string;
+    deleteConfirm: string;
+    builder: {
+      heading: string;
+      addFilterButton: string;
+      fieldGroupGeneral: string;
+      fieldGroupCardAttributes: string;
+      fieldGroupPhase: string;
+      cardAttributes: {
+        title: string;
+        currentPhase: string;
+        createdAt: string;
+        updatedAt: string;
+        done: string;
+      };
+      operators: {
+        is: string;
+        is_not: string;
+        contains: string;
+        not_contains: string;
+        is_unknown: string;
+        exists: string;
+      };
+      valuePlaceholder: string;
+      applyFilter: string;
+      andConnector: string;
+      addOrGroup: string;
+      removeFilter: string;
+      columnsButton: string;
+      columnPickerHeading: string;
+      formulasButton: string;
+      formulasDisabledTooltip: string;
+      exportButton: string;
+      exportModalTitle: string;
+      exportEmailOption: string;
+      exportDownloadOption: string;
+      cancel: string;
+      noResults: string;
+      defaultColumnTitle: string;
+      defaultColumnPhase: string;
+      defaultColumnCreatedAt: string;
+      saveButton: string;
+      saveModalTitle: string;
+      nameLabel: string;
+      namePlaceholder: string;
+      save: string;
+      requiredError: string;
+    };
   };
   interfaces: {
     heading: string;
@@ -556,6 +617,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     manageTabs: {
       phases: "Phases",
       automations: "Automations",
+      reports: "Reports",
     },
     automations: {
       heading: "Automations",
@@ -678,6 +740,67 @@ export const dictionaries: Record<Locale, Dictionary> = {
       deleteConfirm:
         "Are you sure you want to delete this conditional? This action cannot be undone.",
       requiredError: "must be filled in",
+    },
+    reports: {
+      heading: "Reports",
+      searchPlaceholder: "Search reports",
+      sortByLabel: "Sort by: Name",
+      newReportTile: "Create new report",
+      emptyStateTitle: "No reports created yet",
+      emptyStateCta: "Create new report",
+      resultsCountOne: "{n} result",
+      resultsCountOther: "{n} results",
+      backToBoard: "Back to board",
+      backToList: "Back to reports",
+      deleteReport: "Delete report",
+      deleteConfirm:
+        "Are you sure you want to delete this report? This action cannot be undone.",
+      builder: {
+        heading: "New report",
+        addFilterButton: "Add filter",
+        fieldGroupGeneral: "General",
+        fieldGroupCardAttributes: "Card attributes",
+        fieldGroupPhase: "{phase}",
+        cardAttributes: {
+          title: "Title",
+          currentPhase: "Current phase",
+          createdAt: "Created at",
+          updatedAt: "Updated at",
+          done: "Finished",
+        },
+        operators: {
+          is: "is",
+          is_not: "is not",
+          contains: "contains",
+          not_contains: "does not contain",
+          is_unknown: "is unknown",
+          exists: "exists",
+        },
+        valuePlaceholder: "Value",
+        applyFilter: "Apply",
+        andConnector: "and",
+        addOrGroup: "or",
+        removeFilter: "Remove filter",
+        columnsButton: "Columns",
+        columnPickerHeading: "Visible columns",
+        formulasButton: "Formulas",
+        formulasDisabledTooltip: "Choose fields to build formulas",
+        exportButton: "Export",
+        exportModalTitle: "Export report",
+        exportEmailOption: "Email",
+        exportDownloadOption: "Download",
+        cancel: "Cancel",
+        noResults: "0 results",
+        defaultColumnTitle: "Title",
+        defaultColumnPhase: "Current phase",
+        defaultColumnCreatedAt: "Created at",
+        saveButton: "Save",
+        saveModalTitle: "Name this report",
+        nameLabel: "Report name",
+        namePlaceholder: "Name this report",
+        save: "Save",
+        requiredError: "must be filled in",
+      },
     },
     interfaces: {
       heading: "Interfaces",
@@ -937,6 +1060,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     manageTabs: {
       phases: "Fases",
       automations: "Automações",
+      reports: "Relatórios",
     },
     automations: {
       heading: "Automações",
@@ -1059,6 +1183,67 @@ export const dictionaries: Record<Locale, Dictionary> = {
       deleteConfirm:
         "Tem certeza de que deseja excluir esta condicional? Esta ação não pode ser desfeita.",
       requiredError: "deve ser preenchido",
+    },
+    reports: {
+      heading: "Relatórios",
+      searchPlaceholder: "Buscar relatórios",
+      sortByLabel: "Ordenar por: Nome",
+      newReportTile: "Criar novo relatório",
+      emptyStateTitle: "Nenhum relatório criado ainda",
+      emptyStateCta: "Criar novo relatório",
+      resultsCountOne: "{n} resultado",
+      resultsCountOther: "{n} resultados",
+      backToBoard: "Voltar para o quadro",
+      backToList: "Voltar para relatórios",
+      deleteReport: "Excluir relatório",
+      deleteConfirm:
+        "Tem certeza que deseja excluir este relatório? Esta ação não pode ser desfeita.",
+      builder: {
+        heading: "Novo relatório",
+        addFilterButton: "Adicionar filtro",
+        fieldGroupGeneral: "Geral",
+        fieldGroupCardAttributes: "Atributos do Card",
+        fieldGroupPhase: "{phase}",
+        cardAttributes: {
+          title: "Título",
+          currentPhase: "Fase atual",
+          createdAt: "Criado em",
+          updatedAt: "Atualizado em",
+          done: "Finalizado",
+        },
+        operators: {
+          is: "é",
+          is_not: "não é",
+          contains: "contém",
+          not_contains: "não contém",
+          is_unknown: "é desconhecido",
+          exists: "existe",
+        },
+        valuePlaceholder: "Valor",
+        applyFilter: "Aplicar",
+        andConnector: "e",
+        addOrGroup: "ou",
+        removeFilter: "Remover filtro",
+        columnsButton: "Colunas",
+        columnPickerHeading: "Colunas visíveis",
+        formulasButton: "Fórmulas",
+        formulasDisabledTooltip: "Escolha os campos para fazer fórmulas",
+        exportButton: "Exportar",
+        exportModalTitle: "Exportar relatório",
+        exportEmailOption: "Email",
+        exportDownloadOption: "Download",
+        cancel: "Cancelar",
+        noResults: "0 resultados",
+        defaultColumnTitle: "Título",
+        defaultColumnPhase: "Fase atual",
+        defaultColumnCreatedAt: "Criado em",
+        saveButton: "Salvar",
+        saveModalTitle: "Dê um nome a este relatório",
+        nameLabel: "Nome do relatório",
+        namePlaceholder: "Nomeie este relatório",
+        save: "Salvar",
+        requiredError: "precisa ser preenchido",
+      },
     },
     interfaces: {
       heading: "Interfaces",
@@ -1319,6 +1504,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     manageTabs: {
       phases: "Fases",
       automations: "Automatizaciones",
+      reports: "Informes",
     },
     automations: {
       heading: "Automatizaciones",
@@ -1441,6 +1627,67 @@ export const dictionaries: Record<Locale, Dictionary> = {
       deleteConfirm:
         "¿Seguro que deseas eliminar esta condicional? Esta acción no se puede deshacer.",
       requiredError: "debe completarse",
+    },
+    reports: {
+      heading: "Informes",
+      searchPlaceholder: "Buscar informes",
+      sortByLabel: "Ordenar por: Nombre",
+      newReportTile: "Crear nuevo informe",
+      emptyStateTitle: "Aún no se ha creado ningún informe",
+      emptyStateCta: "Crear nuevo informe",
+      resultsCountOne: "{n} resultado",
+      resultsCountOther: "{n} resultados",
+      backToBoard: "Volver al tablero",
+      backToList: "Volver a informes",
+      deleteReport: "Eliminar informe",
+      deleteConfirm:
+        "¿Seguro que deseas eliminar este informe? Esta acción no se puede deshacer.",
+      builder: {
+        heading: "Nuevo informe",
+        addFilterButton: "Agregar filtro",
+        fieldGroupGeneral: "General",
+        fieldGroupCardAttributes: "Atributos de la tarjeta",
+        fieldGroupPhase: "{phase}",
+        cardAttributes: {
+          title: "Título",
+          currentPhase: "Fase actual",
+          createdAt: "Creado el",
+          updatedAt: "Actualizado el",
+          done: "Finalizado",
+        },
+        operators: {
+          is: "es",
+          is_not: "no es",
+          contains: "contiene",
+          not_contains: "no contiene",
+          is_unknown: "se desconoce",
+          exists: "existe",
+        },
+        valuePlaceholder: "Valor",
+        applyFilter: "Aplicar",
+        andConnector: "y",
+        addOrGroup: "o",
+        removeFilter: "Quitar filtro",
+        columnsButton: "Columnas",
+        columnPickerHeading: "Columnas visibles",
+        formulasButton: "Fórmulas",
+        formulasDisabledTooltip: "Elige los campos para crear fórmulas",
+        exportButton: "Exportar",
+        exportModalTitle: "Exportar informe",
+        exportEmailOption: "Correo electrónico",
+        exportDownloadOption: "Descargar",
+        cancel: "Cancelar",
+        noResults: "0 resultados",
+        defaultColumnTitle: "Título",
+        defaultColumnPhase: "Fase actual",
+        defaultColumnCreatedAt: "Creado el",
+        saveButton: "Guardar",
+        saveModalTitle: "Ponle un nombre a este informe",
+        nameLabel: "Nombre del informe",
+        namePlaceholder: "Nombra este informe",
+        save: "Guardar",
+        requiredError: "debe completarse",
+      },
     },
     interfaces: {
       heading: "Interfaces",
@@ -1692,6 +1939,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     manageTabs: {
       phases: "阶段",
       automations: "自动化",
+      reports: "报表",
     },
     automations: {
       heading: "自动化",
@@ -1810,6 +2058,66 @@ export const dictionaries: Record<Locale, Dictionary> = {
       delete: "删除",
       deleteConfirm: "确定要删除此条件吗？此操作无法撤销。",
       requiredError: "为必填项",
+    },
+    reports: {
+      heading: "报表",
+      searchPlaceholder: "搜索报表",
+      sortByLabel: "排序方式：名称",
+      newReportTile: "创建新报表",
+      emptyStateTitle: "尚未创建报表",
+      emptyStateCta: "创建新报表",
+      resultsCountOne: "{n} 条结果",
+      resultsCountOther: "{n} 条结果",
+      backToBoard: "返回看板",
+      backToList: "返回报表列表",
+      deleteReport: "删除报表",
+      deleteConfirm: "确定要删除此报表吗？此操作无法撤销。",
+      builder: {
+        heading: "新建报表",
+        addFilterButton: "添加筛选条件",
+        fieldGroupGeneral: "常规",
+        fieldGroupCardAttributes: "卡片属性",
+        fieldGroupPhase: "{phase}",
+        cardAttributes: {
+          title: "标题",
+          currentPhase: "当前阶段",
+          createdAt: "创建时间",
+          updatedAt: "更新时间",
+          done: "已完成",
+        },
+        operators: {
+          is: "是",
+          is_not: "不是",
+          contains: "包含",
+          not_contains: "不包含",
+          is_unknown: "未知",
+          exists: "存在",
+        },
+        valuePlaceholder: "值",
+        applyFilter: "应用",
+        andConnector: "且",
+        addOrGroup: "或",
+        removeFilter: "移除筛选条件",
+        columnsButton: "列",
+        columnPickerHeading: "可见列",
+        formulasButton: "公式",
+        formulasDisabledTooltip: "选择字段以创建公式",
+        exportButton: "导出",
+        exportModalTitle: "导出报表",
+        exportEmailOption: "邮件",
+        exportDownloadOption: "下载",
+        cancel: "取消",
+        noResults: "0 条结果",
+        defaultColumnTitle: "标题",
+        defaultColumnPhase: "当前阶段",
+        defaultColumnCreatedAt: "创建时间",
+        saveButton: "保存",
+        saveModalTitle: "为此报表命名",
+        nameLabel: "报表名称",
+        namePlaceholder: "为此报表命名",
+        save: "保存",
+        requiredError: "为必填项",
+      },
     },
     interfaces: {
       heading: "界面",
@@ -2071,6 +2379,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     manageTabs: {
       phases: "Phasen",
       automations: "Automatisierungen",
+      reports: "Berichte",
     },
     automations: {
       heading: "Automatisierungen",
@@ -2195,6 +2504,68 @@ export const dictionaries: Record<Locale, Dictionary> = {
       deleteConfirm:
         "Möchtest du diese Bedingung wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
       requiredError: "muss ausgefüllt werden",
+    },
+    reports: {
+      heading: "Berichte",
+      searchPlaceholder: "Berichte durchsuchen",
+      sortByLabel: "Sortieren nach: Name",
+      newReportTile: "Neuen Bericht erstellen",
+      emptyStateTitle: "Noch keine Berichte erstellt",
+      emptyStateCta: "Neuen Bericht erstellen",
+      resultsCountOne: "{n} Ergebnis",
+      resultsCountOther: "{n} Ergebnisse",
+      backToBoard: "Zurück zum Board",
+      backToList: "Zurück zu den Berichten",
+      deleteReport: "Bericht löschen",
+      deleteConfirm:
+        "Möchten Sie diesen Bericht wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      builder: {
+        heading: "Neuer Bericht",
+        addFilterButton: "Filter hinzufügen",
+        fieldGroupGeneral: "Allgemein",
+        fieldGroupCardAttributes: "Karteneigenschaften",
+        fieldGroupPhase: "{phase}",
+        cardAttributes: {
+          title: "Titel",
+          currentPhase: "Aktuelle Phase",
+          createdAt: "Erstellt am",
+          updatedAt: "Aktualisiert am",
+          done: "Abgeschlossen",
+        },
+        operators: {
+          is: "ist",
+          is_not: "ist nicht",
+          contains: "enthält",
+          not_contains: "enthält nicht",
+          is_unknown: "ist unbekannt",
+          exists: "existiert",
+        },
+        valuePlaceholder: "Wert",
+        applyFilter: "Anwenden",
+        andConnector: "und",
+        addOrGroup: "oder",
+        removeFilter: "Filter entfernen",
+        columnsButton: "Spalten",
+        columnPickerHeading: "Sichtbare Spalten",
+        formulasButton: "Formeln",
+        formulasDisabledTooltip:
+          "Wählen Sie Felder aus, um Formeln zu erstellen",
+        exportButton: "Exportieren",
+        exportModalTitle: "Bericht exportieren",
+        exportEmailOption: "E-Mail",
+        exportDownloadOption: "Herunterladen",
+        cancel: "Abbrechen",
+        noResults: "0 Ergebnisse",
+        defaultColumnTitle: "Titel",
+        defaultColumnPhase: "Aktuelle Phase",
+        defaultColumnCreatedAt: "Erstellt am",
+        saveButton: "Speichern",
+        saveModalTitle: "Benennen Sie diesen Bericht",
+        nameLabel: "Berichtsname",
+        namePlaceholder: "Benennen Sie diesen Bericht",
+        save: "Speichern",
+        requiredError: "muss ausgefüllt werden",
+      },
     },
     interfaces: {
       heading: "Oberflächen",
@@ -2457,6 +2828,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     manageTabs: {
       phases: "Phases",
       automations: "Automatisations",
+      reports: "Rapports",
     },
     automations: {
       heading: "Automatisations",
@@ -2581,6 +2953,68 @@ export const dictionaries: Record<Locale, Dictionary> = {
       deleteConfirm:
         "Voulez-vous vraiment supprimer cette condition ? Cette action est irréversible.",
       requiredError: "doit être rempli",
+    },
+    reports: {
+      heading: "Rapports",
+      searchPlaceholder: "Rechercher des rapports",
+      sortByLabel: "Trier par : Nom",
+      newReportTile: "Créer un nouveau rapport",
+      emptyStateTitle: "Aucun rapport créé pour le moment",
+      emptyStateCta: "Créer un nouveau rapport",
+      resultsCountOne: "{n} résultat",
+      resultsCountOther: "{n} résultats",
+      backToBoard: "Retour au tableau",
+      backToList: "Retour aux rapports",
+      deleteReport: "Supprimer le rapport",
+      deleteConfirm:
+        "Voulez-vous vraiment supprimer ce rapport ? Cette action est irréversible.",
+      builder: {
+        heading: "Nouveau rapport",
+        addFilterButton: "Ajouter un filtre",
+        fieldGroupGeneral: "Général",
+        fieldGroupCardAttributes: "Attributs de la carte",
+        fieldGroupPhase: "{phase}",
+        cardAttributes: {
+          title: "Titre",
+          currentPhase: "Phase actuelle",
+          createdAt: "Créé le",
+          updatedAt: "Mis à jour le",
+          done: "Terminé",
+        },
+        operators: {
+          is: "est",
+          is_not: "n'est pas",
+          contains: "contient",
+          not_contains: "ne contient pas",
+          is_unknown: "est inconnu",
+          exists: "existe",
+        },
+        valuePlaceholder: "Valeur",
+        applyFilter: "Appliquer",
+        andConnector: "et",
+        addOrGroup: "ou",
+        removeFilter: "Retirer le filtre",
+        columnsButton: "Colonnes",
+        columnPickerHeading: "Colonnes visibles",
+        formulasButton: "Formules",
+        formulasDisabledTooltip:
+          "Choisissez des champs pour créer des formules",
+        exportButton: "Exporter",
+        exportModalTitle: "Exporter le rapport",
+        exportEmailOption: "E-mail",
+        exportDownloadOption: "Télécharger",
+        cancel: "Annuler",
+        noResults: "0 résultat",
+        defaultColumnTitle: "Titre",
+        defaultColumnPhase: "Phase actuelle",
+        defaultColumnCreatedAt: "Créé le",
+        saveButton: "Enregistrer",
+        saveModalTitle: "Nommez ce rapport",
+        nameLabel: "Nom du rapport",
+        namePlaceholder: "Nommez ce rapport",
+        save: "Enregistrer",
+        requiredError: "doit être rempli",
+      },
     },
     interfaces: {
       heading: "Interfaces",
@@ -2839,6 +3273,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     manageTabs: {
       phases: "フェーズ",
       automations: "オートメーション",
+      reports: "レポート",
     },
     automations: {
       heading: "オートメーション",
@@ -2961,6 +3396,67 @@ export const dictionaries: Record<Locale, Dictionary> = {
       deleteConfirm:
         "この条件を削除してもよろしいですか？この操作は元に戻せません。",
       requiredError: "は必須項目です",
+    },
+    reports: {
+      heading: "レポート",
+      searchPlaceholder: "レポートを検索",
+      sortByLabel: "並び替え：名前",
+      newReportTile: "新しいレポートを作成",
+      emptyStateTitle: "レポートはまだありません",
+      emptyStateCta: "新しいレポートを作成",
+      resultsCountOne: "{n} 件の結果",
+      resultsCountOther: "{n} 件の結果",
+      backToBoard: "ボードに戻る",
+      backToList: "レポート一覧に戻る",
+      deleteReport: "レポートを削除",
+      deleteConfirm:
+        "このレポートを削除してもよろしいですか？この操作は元に戻せません。",
+      builder: {
+        heading: "新しいレポート",
+        addFilterButton: "フィルターを追加",
+        fieldGroupGeneral: "一般",
+        fieldGroupCardAttributes: "カードの属性",
+        fieldGroupPhase: "{phase}",
+        cardAttributes: {
+          title: "タイトル",
+          currentPhase: "現在のフェーズ",
+          createdAt: "作成日",
+          updatedAt: "更新日",
+          done: "完了",
+        },
+        operators: {
+          is: "が次の値である",
+          is_not: "が次の値ではない",
+          contains: "を含む",
+          not_contains: "を含まない",
+          is_unknown: "が不明",
+          exists: "が存在する",
+        },
+        valuePlaceholder: "値",
+        applyFilter: "適用",
+        andConnector: "かつ",
+        addOrGroup: "または",
+        removeFilter: "フィルターを削除",
+        columnsButton: "列",
+        columnPickerHeading: "表示する列",
+        formulasButton: "数式",
+        formulasDisabledTooltip: "数式を作成するフィールドを選択してください",
+        exportButton: "エクスポート",
+        exportModalTitle: "レポートをエクスポート",
+        exportEmailOption: "メール",
+        exportDownloadOption: "ダウンロード",
+        cancel: "キャンセル",
+        noResults: "0 件の結果",
+        defaultColumnTitle: "タイトル",
+        defaultColumnPhase: "現在のフェーズ",
+        defaultColumnCreatedAt: "作成日",
+        saveButton: "保存",
+        saveModalTitle: "このレポートの名前を付けてください",
+        nameLabel: "レポート名",
+        namePlaceholder: "このレポートに名前を付ける",
+        save: "保存",
+        requiredError: "は必須項目です",
+      },
     },
     interfaces: {
       heading: "インターフェース",
@@ -3216,6 +3712,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     manageTabs: {
       phases: "चरण",
       automations: "ऑटोमेशन",
+      reports: "रिपोर्ट",
     },
     automations: {
       heading: "ऑटोमेशन",
@@ -3337,6 +3834,67 @@ export const dictionaries: Record<Locale, Dictionary> = {
       deleteConfirm:
         "क्या आप वाकई इस कंडीशनल को हटाना चाहते हैं? यह कार्रवाई पूर्ववत नहीं की जा सकती।",
       requiredError: "भरना आवश्यक है",
+    },
+    reports: {
+      heading: "रिपोर्ट",
+      searchPlaceholder: "रिपोर्ट खोजें",
+      sortByLabel: "इसके अनुसार क्रमबद्ध करें: नाम",
+      newReportTile: "नई रिपोर्ट बनाएं",
+      emptyStateTitle: "अभी तक कोई रिपोर्ट नहीं बनाई गई",
+      emptyStateCta: "नई रिपोर्ट बनाएं",
+      resultsCountOne: "{n} परिणाम",
+      resultsCountOther: "{n} परिणाम",
+      backToBoard: "बोर्ड पर वापस जाएं",
+      backToList: "रिपोर्ट पर वापस जाएं",
+      deleteReport: "रिपोर्ट हटाएं",
+      deleteConfirm:
+        "क्या आप वाकई इस रिपोर्ट को हटाना चाहते हैं? इस क्रिया को पूर्ववत नहीं किया जा सकता।",
+      builder: {
+        heading: "नई रिपोर्ट",
+        addFilterButton: "फ़िल्टर जोड़ें",
+        fieldGroupGeneral: "सामान्य",
+        fieldGroupCardAttributes: "कार्ड विशेषताएं",
+        fieldGroupPhase: "{phase}",
+        cardAttributes: {
+          title: "शीर्षक",
+          currentPhase: "वर्तमान चरण",
+          createdAt: "बनाया गया",
+          updatedAt: "अपडेट किया गया",
+          done: "पूर्ण",
+        },
+        operators: {
+          is: "है",
+          is_not: "नहीं है",
+          contains: "में शामिल है",
+          not_contains: "में शामिल नहीं है",
+          is_unknown: "अज्ञात है",
+          exists: "मौजूद है",
+        },
+        valuePlaceholder: "मान",
+        applyFilter: "लागू करें",
+        andConnector: "और",
+        addOrGroup: "या",
+        removeFilter: "फ़िल्टर हटाएं",
+        columnsButton: "कॉलम",
+        columnPickerHeading: "दृश्यमान कॉलम",
+        formulasButton: "सूत्र",
+        formulasDisabledTooltip: "सूत्र बनाने के लिए फ़ील्ड चुनें",
+        exportButton: "निर्यात करें",
+        exportModalTitle: "रिपोर्ट निर्यात करें",
+        exportEmailOption: "ईमेल",
+        exportDownloadOption: "डाउनलोड",
+        cancel: "रद्द करें",
+        noResults: "0 परिणाम",
+        defaultColumnTitle: "शीर्षक",
+        defaultColumnPhase: "वर्तमान चरण",
+        defaultColumnCreatedAt: "बनाया गया",
+        saveButton: "सहेजें",
+        saveModalTitle: "इस रिपोर्ट को नाम दें",
+        nameLabel: "रिपोर्ट का नाम",
+        namePlaceholder: "इस रिपोर्ट को नाम दें",
+        save: "सहेजें",
+        requiredError: "भरना आवश्यक है",
+      },
     },
     interfaces: {
       heading: "इंटरफ़ेस",
@@ -3590,6 +4148,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     manageTabs: {
       phases: "المراحل",
       automations: "الأتمتة",
+      reports: "التقارير",
     },
     automations: {
       heading: "الأتمتة",
@@ -3711,6 +4270,67 @@ export const dictionaries: Record<Locale, Dictionary> = {
       deleteConfirm:
         "هل أنت متأكد من حذف هذا الشرط؟ لا يمكن التراجع عن هذا الإجراء.",
       requiredError: "يجب تعبئته",
+    },
+    reports: {
+      heading: "التقارير",
+      searchPlaceholder: "البحث في التقارير",
+      sortByLabel: "الترتيب حسب: الاسم",
+      newReportTile: "إنشاء تقرير جديد",
+      emptyStateTitle: "لم يتم إنشاء أي تقرير بعد",
+      emptyStateCta: "إنشاء تقرير جديد",
+      resultsCountOne: "{n} نتيجة",
+      resultsCountOther: "{n} نتائج",
+      backToBoard: "العودة إلى اللوحة",
+      backToList: "العودة إلى التقارير",
+      deleteReport: "حذف التقرير",
+      deleteConfirm:
+        "هل أنت متأكد أنك تريد حذف هذا التقرير؟ لا يمكن التراجع عن هذا الإجراء.",
+      builder: {
+        heading: "تقرير جديد",
+        addFilterButton: "إضافة فلتر",
+        fieldGroupGeneral: "عام",
+        fieldGroupCardAttributes: "سمات البطاقة",
+        fieldGroupPhase: "{phase}",
+        cardAttributes: {
+          title: "العنوان",
+          currentPhase: "المرحلة الحالية",
+          createdAt: "تاريخ الإنشاء",
+          updatedAt: "تاريخ التحديث",
+          done: "منتهي",
+        },
+        operators: {
+          is: "يساوي",
+          is_not: "لا يساوي",
+          contains: "يحتوي على",
+          not_contains: "لا يحتوي على",
+          is_unknown: "غير معروف",
+          exists: "موجود",
+        },
+        valuePlaceholder: "القيمة",
+        applyFilter: "تطبيق",
+        andConnector: "و",
+        addOrGroup: "أو",
+        removeFilter: "إزالة الفلتر",
+        columnsButton: "الأعمدة",
+        columnPickerHeading: "الأعمدة المرئية",
+        formulasButton: "الصيغ",
+        formulasDisabledTooltip: "اختر الحقول لإنشاء الصيغ",
+        exportButton: "تصدير",
+        exportModalTitle: "تصدير التقرير",
+        exportEmailOption: "البريد الإلكتروني",
+        exportDownloadOption: "تنزيل",
+        cancel: "إلغاء",
+        noResults: "0 نتائج",
+        defaultColumnTitle: "العنوان",
+        defaultColumnPhase: "المرحلة الحالية",
+        defaultColumnCreatedAt: "تاريخ الإنشاء",
+        saveButton: "حفظ",
+        saveModalTitle: "قم بتسمية هذا التقرير",
+        nameLabel: "اسم التقرير",
+        namePlaceholder: "قم بتسمية هذا التقرير",
+        save: "حفظ",
+        requiredError: "يجب تعبئته",
+      },
     },
     interfaces: {
       heading: "الواجهات",
@@ -3966,6 +4586,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     manageTabs: {
       phases: "Фазы",
       automations: "Автоматизации",
+      reports: "Отчёты",
     },
     automations: {
       heading: "Автоматизации",
@@ -4087,6 +4708,67 @@ export const dictionaries: Record<Locale, Dictionary> = {
       deleteConfirm:
         "Вы уверены, что хотите удалить это условие? Это действие нельзя отменить.",
       requiredError: "обязательно для заполнения",
+    },
+    reports: {
+      heading: "Отчёты",
+      searchPlaceholder: "Поиск отчётов",
+      sortByLabel: "Сортировать по: Имя",
+      newReportTile: "Создать новый отчёт",
+      emptyStateTitle: "Отчёты ещё не созданы",
+      emptyStateCta: "Создать новый отчёт",
+      resultsCountOne: "{n} результат",
+      resultsCountOther: "{n} результатов",
+      backToBoard: "Назад к доске",
+      backToList: "Назад к отчётам",
+      deleteReport: "Удалить отчёт",
+      deleteConfirm:
+        "Вы уверены, что хотите удалить этот отчёт? Это действие нельзя отменить.",
+      builder: {
+        heading: "Новый отчёт",
+        addFilterButton: "Добавить фильтр",
+        fieldGroupGeneral: "Общее",
+        fieldGroupCardAttributes: "Атрибуты карточки",
+        fieldGroupPhase: "{phase}",
+        cardAttributes: {
+          title: "Название",
+          currentPhase: "Текущий этап",
+          createdAt: "Дата создания",
+          updatedAt: "Дата обновления",
+          done: "Завершено",
+        },
+        operators: {
+          is: "равно",
+          is_not: "не равно",
+          contains: "содержит",
+          not_contains: "не содержит",
+          is_unknown: "неизвестно",
+          exists: "существует",
+        },
+        valuePlaceholder: "Значение",
+        applyFilter: "Применить",
+        andConnector: "и",
+        addOrGroup: "или",
+        removeFilter: "Удалить фильтр",
+        columnsButton: "Столбцы",
+        columnPickerHeading: "Видимые столбцы",
+        formulasButton: "Формулы",
+        formulasDisabledTooltip: "Выберите поля для создания формул",
+        exportButton: "Экспорт",
+        exportModalTitle: "Экспортировать отчёт",
+        exportEmailOption: "Эл. почта",
+        exportDownloadOption: "Скачать",
+        cancel: "Отмена",
+        noResults: "0 результатов",
+        defaultColumnTitle: "Название",
+        defaultColumnPhase: "Текущий этап",
+        defaultColumnCreatedAt: "Дата создания",
+        saveButton: "Сохранить",
+        saveModalTitle: "Назовите этот отчёт",
+        nameLabel: "Название отчёта",
+        namePlaceholder: "Назовите этот отчёт",
+        save: "Сохранить",
+        requiredError: "обязательно для заполнения",
+      },
     },
     interfaces: {
       heading: "Интерфейсы",
