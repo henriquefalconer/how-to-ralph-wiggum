@@ -50,6 +50,7 @@ Phase 1: Inspect (Claude in Chrome) → Phase 2: Build (Claude + Playwright E2E)
 - **Drizzle** — `drizzle.config.ts`, `npm run db:generate`, `npm run db:migrate`
 
 ## Environment
+- **Missing tools** — if a command the workflow calls for isn't on `PATH` (`make`, and anything else), install it with whatever package manager this machine has rather than working around it or silently skipping the step.
 - **GitHub CLI** — installed as a Windows binary, **not** on `PATH` as `gh`. Invoke it by full path:
   ```bash
   "/mnt/c/Program Files/GitHub CLI/gh.exe" auth status
