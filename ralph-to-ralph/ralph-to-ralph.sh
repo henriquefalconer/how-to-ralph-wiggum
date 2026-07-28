@@ -1,12 +1,20 @@
 #!/bin/bash
-# Full pipeline: Inspect → Build → QA
-set -e
+# Start the Ralph-to-Ralph cloning loop: Inspect → Build → QA, under the watchdog.
+#
+# The watchdog is what separates this from running the three phases by hand: it
+# restarts a phase that stops early, cycles Build ↔ QA while features still
+# fail, and commits between phases.
+#
+# Usage: ./ralph-to-ralph/ralph-to-ralph.sh <target-url> [inspect-iters] [build-iters] [qa-iters]
+set -euo pipefail
 cd "$(dirname "$0")/.."
 
 TARGET_URL="${1:?Usage: $0 <target-url> [inspect-iters] [build-iters] [qa-iters]}"
 INSPECT_ITERS="${2:-999}"
 BUILD_ITERS="${3:-999}"
 QA_ITERS="${4:-999}"
+
+LOCKFILE="ralph-to-ralph/.state/watchdog.lock"
 
 echo "========================================="
 echo "  RALPH-TO-RALPH: Product Cloner"
@@ -18,36 +26,20 @@ echo "QA iters:         $QA_ITERS"
 echo "========================================="
 echo ""
 
-# Per-phase state: one journal file per iteration, plus that phase's transcripts.
-mkdir -p ralph-to-ralph/.state/progress/{inspect,build,qa} ralph-to-ralph/.state/logs/{inspect,build,qa}
-mkdir -p screenshots
-
-# Initialize PRD if not exists
-if [ ! -f "prd.json" ]; then
-  echo '[]' > prd.json
+# Kill existing watchdog if running
+if [ -f "$LOCKFILE" ]; then
+  PID=$(cat "$LOCKFILE" 2>/dev/null)
+  if kill -0 "$PID" 2>/dev/null; then
+    echo "Stopping existing watchdog (PID $PID)..."
+    kill "$PID" 2>/dev/null || true
+    sleep 2
+  fi
+  rm -f "$LOCKFILE"
 fi
 
-echo ">>> Phase 1: Inspect (Claude in Chrome)"
-echo ""
-./ralph-to-ralph/ralph-inspect.sh "$TARGET_URL" "$INSPECT_ITERS"
+# Per-phase state: one journal file per iteration, plus that phase's transcripts.
+mkdir -p ralph-to-ralph/.state/progress/{inspect,build,qa} ralph-to-ralph/.state/logs/{inspect,build,qa}
 
-echo ""
-echo ">>> Phase 2: Build (Claude)"
-echo ""
-./ralph-to-ralph/ralph-build.sh "$BUILD_ITERS"
-
-echo ""
-echo ">>> Phase 3: QA (Claude as independent evaluator)"
-echo ""
-# ralph-qa.sh takes <target-url> [iterations] — passing only the iteration count
-# made "999" the target URL and silently left iterations at the 999 default.
-./ralph-to-ralph/ralph-qa.sh "$TARGET_URL" "$QA_ITERS"
-
-echo ""
-echo "========================================="
-echo "  RALPH-TO-RALPH: Complete!"
-echo "========================================="
-echo "  PRD: prd.json"
-echo "  Spec: spec-build.md"
-echo "  QA Report: report-qa.json"
-echo "========================================="
+echo "Starting watchdog..."
+echo "=================================="
+./ralph-to-ralph/ralph-watchdog.sh "$TARGET_URL" "$INSPECT_ITERS" "$BUILD_ITERS" "$QA_ITERS"

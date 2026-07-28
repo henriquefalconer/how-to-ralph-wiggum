@@ -6,12 +6,17 @@
 #   2. Run build loop → restart if it stops before all passed
 #   3. Run QA loop → if bugs found, restart build then QA
 #
-# Usage: ./ralph-to-ralph/ralph-watchdog.sh <target-url>
+# Usage: ./ralph-to-ralph/ralph-watchdog.sh <target-url> [inspect-iters] [build-iters] [qa-iters]
+#
+# The iteration budgets are per attempt: a restarted phase gets a fresh budget.
 
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-TARGET_URL="${1:?Usage: $0 <target-url>}"
+TARGET_URL="${1:?Usage: $0 <target-url> [inspect-iters] [build-iters] [qa-iters]}"
+INSPECT_ITERS="${2:-999}"
+BUILD_ITERS="${3:-999}"
+QA_ITERS="${4:-999}"
 STATE_DIR="ralph-to-ralph/.state"
 LOCKFILE="$STATE_DIR/watchdog.lock"
 
@@ -78,7 +83,7 @@ while ! inspect_done; do
   fi
 
   log "Phase 1: Running inspect loop... (attempt $((inspect_restarts + 1)))"
-  ./ralph-to-ralph/ralph-inspect.sh "$TARGET_URL" || true
+  ./ralph-to-ralph/ralph-inspect.sh "$TARGET_URL" "$INSPECT_ITERS" || true
   cron_backup
 
   if inspect_done; then
@@ -109,7 +114,7 @@ for ((cycle=1; cycle<=MAX_CYCLES; cycle++)); do
     fi
 
     log "Phase 2: Building... $(count_passes)/$(total_tasks) passes (attempt $((build_restarts + 1)))"
-    ./ralph-to-ralph/ralph-build.sh || true
+    ./ralph-to-ralph/ralph-build.sh "$BUILD_ITERS" || true
     cron_backup
 
     if all_passed; then
@@ -125,7 +130,7 @@ for ((cycle=1; cycle<=MAX_CYCLES; cycle++)); do
 
   # ─── PHASE 3: QA ───
   log "Phase 3: Starting QA..."
-  ./ralph-to-ralph/ralph-qa.sh "$TARGET_URL" || true
+  ./ralph-to-ralph/ralph-qa.sh "$TARGET_URL" "$QA_ITERS" || true
   cron_backup
 
   AFTER_QA=$(count_passes)

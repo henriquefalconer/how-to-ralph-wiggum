@@ -82,7 +82,7 @@ A strict watchdog wraps the entire pipeline, ensuring all Ralph loops stay stabl
 ./scripts/preflight.sh
 
 # 2. Point the pipeline at a target product
-./ralph-to-ralph/start.sh https://example.com
+./ralph-to-ralph/ralph-to-ralph.sh https://example.com
 ```
 
 The watchdog takes it from there — inspect, build, QA — committing after

@@ -91,6 +91,21 @@ STUB
   [[ "$output" == *"PASSED + QA VERIFIED"* ]]
 }
 
+@test "forwards the iteration budgets to each phase" {
+  run "$REPO/ralph-to-ralph/ralph-watchdog.sh" https://example.com 3 4 5
+  [ "$status" -eq 0 ]
+  [ "$(sed -n 2p "$INSPECT_ARGS")" = "3" ]
+  [ "$(sed -n 1p "$BUILD_ARGS")" = "4" ]
+  [ "$(sed -n 2p "$QA_ARGS")" = "5" ]
+}
+
+@test "defaults each phase budget to 999 when none is given" {
+  run "$REPO/ralph-to-ralph/ralph-watchdog.sh" https://example.com
+  [ "$(sed -n 2p "$INSPECT_ARGS")" = "999" ]
+  [ "$(sed -n 1p "$BUILD_ARGS")" = "999" ]
+  [ "$(sed -n 2p "$QA_ARGS")" = "999" ]
+}
+
 @test "passes the target url to inspect and QA" {
   run "$REPO/ralph-to-ralph/ralph-watchdog.sh" https://example.com
   [ "$(sed -n 1p "$INSPECT_ARGS")" = "https://example.com" ]
@@ -109,7 +124,8 @@ STUB
   export INSPECT_NEVER_COMPLETES=1
   run "$REPO/ralph-to-ralph/ralph-watchdog.sh" https://example.com
   [ "$status" -eq 1 ]
-  [ "$(wc -l < "$INSPECT_ARGS")" -eq 5 ]
+  # one invocation per attempt (each writes url + budget, so count the url)
+  [ "$(grep -c "https://example.com" "$INSPECT_ARGS")" -eq 5 ]
   [[ "$output" == *"Hit max restarts"* ]]
   [ ! -f "$BUILD_ARGS" ]
 }
@@ -121,7 +137,7 @@ STUB
   [[ "$output" == *"Hit max restarts (10)"* ]]
   [ -f "$QA_ARGS" ]
   # build+QA cycle repeats up to MAX_CYCLES when features never pass
-  [ "$(wc -l < "$QA_ARGS")" -eq 5 ]
+  [ "$(grep -c "https://example.com" "$QA_ARGS")" -eq 5 ]
 }
 
 @test "writes a timestamped run log under the watchdog log namespace" {

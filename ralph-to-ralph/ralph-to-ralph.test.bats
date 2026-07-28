@@ -1,28 +1,29 @@
 #!/usr/bin/env bats
-# Tests for ralph-to-ralph.sh (the three-phase pipeline entry point).
+# Tests for ralph-to-ralph.sh — the single entry point.
 #
-# The phase scripts are replaced by stubs that record the arguments they were
-# handed — this is where the QA argument-order bug lived.
+# It is a launcher: it clears a stale watchdog, creates the state namespaces,
+# and hands the run to ralph-watchdog.sh (stubbed here) with the iteration
+# budgets. The watchdog's restart logic is covered in ralph-watchdog.test.bats.
 # Run with: npx bats ralph-to-ralph/ralph-to-ralph.test.bats
 
 setup() {
   REPO="$BATS_TEST_TMPDIR/repo"
-  mkdir -p "$REPO/ralph-to-ralph"
+  mkdir -p "$REPO/ralph-to-ralph/.state" "$REPO/bin"
   cp "$BATS_TEST_DIRNAME/ralph-to-ralph.sh" "$REPO/ralph-to-ralph/"
 
-  export INSPECT_ARGS="$REPO/inspect-args.txt"
-  export BUILD_ARGS="$REPO/build-args.txt"
-  export QA_ARGS="$REPO/qa-args.txt"
-
-  for phase in inspect build qa; do
-    upper=$(echo "$phase" | tr '[:lower:]' '[:upper:]')
-    cat > "$REPO/ralph-to-ralph/ralph-$phase.sh" <<STUB
+  export WATCHDOG_ARGS="$REPO/watchdog-args.txt"
+  cat > "$REPO/ralph-to-ralph/ralph-watchdog.sh" <<'STUB'
 #!/bin/bash
-printf '%s\n' "\$@" >> "\$${upper}_ARGS"
-exit \${${upper}_RC:-0}
+printf '%s\n' "$@" >> "$WATCHDOG_ARGS"
+exit "${WATCHDOG_RC:-0}"
 STUB
-    chmod +x "$REPO/ralph-to-ralph/ralph-$phase.sh"
-  done
+  chmod +x "$REPO/ralph-to-ralph/ralph-watchdog.sh"
+
+  printf '#!/bin/bash\nexit 0\n' > "$REPO/bin/sleep"
+  chmod +x "$REPO/bin/sleep"
+  PATH="$REPO/bin:$PATH"
+
+  LOCKFILE="$REPO/ralph-to-ralph/.state/watchdog.lock"
 }
 
 @test "requires a target url" {
@@ -31,66 +32,75 @@ STUB
   [[ "$output" == *"Usage:"* ]]
 }
 
-@test "creates the per-phase state namespaces and screenshot dir" {
-  run "$REPO/ralph-to-ralph/ralph-to-ralph.sh" https://example.com 1 1 1
+@test "creates the per-phase state namespaces before starting" {
+  run "$REPO/ralph-to-ralph/ralph-to-ralph.sh" https://example.com
   [ "$status" -eq 0 ]
   for phase in inspect build qa; do
     [ -d "$REPO/ralph-to-ralph/.state/progress/$phase" ]
     [ -d "$REPO/ralph-to-ralph/.state/logs/$phase" ]
   done
-  [ -d "$REPO/screenshots" ]
 }
 
-@test "seeds prd.json when absent and leaves an existing one alone" {
-  run "$REPO/ralph-to-ralph/ralph-to-ralph.sh" https://example.com 1 1 1
-  [ "$(cat "$REPO/prd.json")" = "[]" ]
-
-  echo '[{"id":"f1"}]' > "$REPO/prd.json"
-  run "$REPO/ralph-to-ralph/ralph-to-ralph.sh" https://example.com 1 1 1
-  [ "$(cat "$REPO/prd.json")" = '[{"id":"f1"}]' ]
-}
-
-@test "runs the three phases in order" {
-  run "$REPO/ralph-to-ralph/ralph-to-ralph.sh" https://example.com 1 1 1
+@test "hands the target url to the watchdog" {
+  run "$REPO/ralph-to-ralph/ralph-to-ralph.sh" https://example.com
   [ "$status" -eq 0 ]
-  [ -f "$INSPECT_ARGS" ]
-  [ -f "$BUILD_ARGS" ]
-  [ -f "$QA_ARGS" ]
-  [[ "$output" == *"Phase 1: Inspect"* ]]
-  [[ "$output" == *"Phase 2: Build"* ]]
-  [[ "$output" == *"Phase 3: QA"* ]]
+  [ "$(sed -n 1p "$WATCHDOG_ARGS")" = "https://example.com" ]
 }
 
-@test "hands inspect the target url and its iteration budget" {
+@test "forwards the per-phase iteration budgets" {
   run "$REPO/ralph-to-ralph/ralph-to-ralph.sh" https://example.com 3 4 5
-  [ "$(sed -n 1p "$INSPECT_ARGS")" = "https://example.com" ]
-  [ "$(sed -n 2p "$INSPECT_ARGS")" = "3" ]
-}
-
-@test "hands build only its iteration budget" {
-  run "$REPO/ralph-to-ralph/ralph-to-ralph.sh" https://example.com 3 4 5
-  [ "$(sed -n 1p "$BUILD_ARGS")" = "4" ]
-}
-
-@test "hands QA the target url first and the iteration budget second" {
-  # Regression: QA used to receive the iteration count as $1, which
-  # ralph-qa.sh reads as TARGET_URL — "5" became the target product URL and
-  # the iteration budget silently fell back to its 999 default.
-  run "$REPO/ralph-to-ralph/ralph-to-ralph.sh" https://example.com 3 4 5
-  [ "$(sed -n 1p "$QA_ARGS")" = "https://example.com" ]
-  [ "$(sed -n 2p "$QA_ARGS")" = "5" ]
+  [ "$status" -eq 0 ]
+  [ "$(sed -n 2p "$WATCHDOG_ARGS")" = "3" ]
+  [ "$(sed -n 3p "$WATCHDOG_ARGS")" = "4" ]
+  [ "$(sed -n 4p "$WATCHDOG_ARGS")" = "5" ]
 }
 
 @test "defaults every phase budget to 999" {
   run "$REPO/ralph-to-ralph/ralph-to-ralph.sh" https://example.com
-  [ "$(sed -n 2p "$INSPECT_ARGS")" = "999" ]
-  [ "$(sed -n 1p "$BUILD_ARGS")" = "999" ]
-  [ "$(sed -n 2p "$QA_ARGS")" = "999" ]
+  [ "$(sed -n 2p "$WATCHDOG_ARGS")" = "999" ]
+  [ "$(sed -n 3p "$WATCHDOG_ARGS")" = "999" ]
+  [ "$(sed -n 4p "$WATCHDOG_ARGS")" = "999" ]
 }
 
-@test "a failing phase stops the pipeline" {
-  export BUILD_RC=1
-  run "$REPO/ralph-to-ralph/ralph-to-ralph.sh" https://example.com 1 1 1
+@test "echoes the budgets it is running with" {
+  run "$REPO/ralph-to-ralph/ralph-to-ralph.sh" https://example.com 3 4 5
+  [[ "$output" == *"Inspect iters:    3"* ]]
+  [[ "$output" == *"Build iters:      4"* ]]
+  [[ "$output" == *"QA iters:         5"* ]]
+}
+
+@test "clears a stale lockfile left by a dead process" {
+  echo 999999 > "$LOCKFILE"
+  run "$REPO/ralph-to-ralph/ralph-to-ralph.sh" https://example.com
+  [ "$status" -eq 0 ]
+  [ -f "$WATCHDOG_ARGS" ]
+}
+
+@test "stops a live watchdog before starting a new one" {
+  # A real process we own, so kill -0 succeeds and the kill path is taken.
+  # Not `sleep` — that is stubbed out to return immediately.
+  tail -f /dev/null &
+  local victim=$!
+  echo "$victim" > "$LOCKFILE"
+
+  run "$REPO/ralph-to-ralph/ralph-to-ralph.sh" https://example.com
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Stopping existing watchdog"* ]]
+  [ ! -f "$LOCKFILE" ]
+  [ -f "$WATCHDOG_ARGS" ]
+
+  kill "$victim" 2>/dev/null || true
+}
+
+@test "runs cleanly when no lockfile exists" {
+  [ ! -f "$LOCKFILE" ]
+  run "$REPO/ralph-to-ralph/ralph-to-ralph.sh" https://example.com
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"Stopping existing watchdog"* ]]
+}
+
+@test "surfaces a watchdog failure" {
+  export WATCHDOG_RC=1
+  run "$REPO/ralph-to-ralph/ralph-to-ralph.sh" https://example.com
   [ "$status" -ne 0 ]
-  [ ! -f "$QA_ARGS" ]
 }
