@@ -698,14 +698,12 @@ para "Nome do solicitante"`). See `prd.json` feature-015.
   immediately with no reload needed. Supersedes feature-001's original
   placeholder `labels: {id, name, color}` model with a UI-confirmed one. See
   `prd.json` feature-016.
-- **Gerador de PDF**: a template list (toggle-enabled rows, e.g. "Introdução
-  (exemplo)") + "Criar novo modelo" — lets a pipe define PDF export templates
-  for its cards. Not deep-dived (low priority, maps loosely to feature-004's
-  card detail "PDF" tab); noted for completeness only.
-- **Apps** / **Conexões**: not deep-dived this pass — Apps is a third-party
-  marketplace (out of scope, same as Integrações), Conexões configures
-  pipe-to-pipe/table data connections (overlaps with the `connector` field
-  type already modeled in §Field).
+- **Conexões** and **Gerador de PDF** deep-dived iteration 7 — see §20 below
+  for the full flow (both confirmed end-to-end with a real created
+  connection and a real rendered/downloadable PDF template). See `prd.json`
+  feature-021 (Conexões) and feature-022 (Gerador de PDF).
+- **Apps**: not deep-dived — third-party marketplace, out of scope (same as
+  Integrações).
 
 ### Lixeira (trash) — modal, tagged "Beta"
 Single "Cards" tab. Subtext: "Os cards ficam aqui por 15 dias. Depois disso,
@@ -1011,3 +1009,108 @@ form (would create a real card) and sending a real AI Assistant prompt
 
 Screenshots: `screenshots/inspect/interfaces-builder.jpg`,
 `screenshots/inspect/interfaces-live-view-ai-assistant.jpg`.
+
+## 20. Ferramentas > Conexões & Gerador de PDF (Iteration 7, live UI test)
+
+Deep-dived the two remaining un-tested Ferramentas sub-tabs (see §15). Both
+confirmed end-to-end with real created objects.
+
+### Conexões — pipe-to-pipe / pipe-to-database data connections
+Empty state: single illustration + "Criar conexão" CTA. The creation form:
+- **Nome da conexão** — free-text label for the connection (shown later in
+  the pipe's top-nav "Conexões" dropdown and as the card-tab title).
+- **Selecione um pipe ou database para conectar** — a single-select dropdown
+  grouped into two sections: **Pipes** (other pipes in the org) and
+  **Tabelas** (Database Tables, feature-005). Confirms connections target
+  either object type through one unified UI.
+- **Escolha o que as pessoas podem fazer com a conexão** — 3-way radio:
+  "Pesquisar cards ou registros existentes" (search-only) / "Criar novos
+  cards ou registros" (create-only) / "Pesquisar e criar" (both). Governs
+  whether the card-level connection widget offers search, create, or both.
+- **Número de cards ou registros que podem ser conectados** — 2-way radio:
+  "Um único card ou registro por card principal" (1:1) vs "Vários cards ou
+  registros por card principal" (1:N).
+- **Opções avançadas** (5 toggles, all off by default):
+  1. Um card conectado deve ser criado para que o card pai possa ser movido
+     para a próxima fase
+  2. Um card conectado deve ser criado para que o card pai possa ser movido
+     para a fase final
+  3. O card pai não pode ser movido para a próxima fase até que todos os
+     cards conectados tenham atingido a fase final
+  4. O card pai não pode ser movido para a fase final até que todos os
+     cards conectados tenham atingido a fase final
+  5. Preencher automaticamente os campos de um card com informações do card
+     conectado (auto-fill from the connected record)
+
+Created a real connection named "Fornecedores" targeting the "Suppliers"
+database (feature-005's fixture). Confirmed effects:
+- It immediately appears in the pipe's top-nav **Conexões** dropdown menu
+  (alongside a permanent "Gerenciar conexões" item) — a per-pipe list of
+  named shortcuts to each configured connection.
+- It also appears back in the "Gerenciar conexões" list modal (search box +
+  row per connection + delete/trash icon per row), which carries the caption
+  "Atualmente, apenas as conexões com databases são exibidas na parte
+  superior do pipe" (only database-target connections surface in the top
+  nav — pipe-to-pipe connections presumably do not get a nav shortcut).
+- On an existing card (`João Silva`), a new **"Fornecedores"** pill appeared
+  in the card's tab row (alongside Form/Atividades/Anexos/Checklists/
+  Comentários/Email/PDF), titled with the connection name. Its content pane
+  is titled with the *target* object's name ("Suppliers") and shows an empty
+  state ("Melhore a colaboração integrando seus processos e times...") plus
+  a **"Criar novo Fornecedores"** button — i.e. the button label is the
+  connection name, confirming the card-level widget lets a user create (or,
+  depending on the radio above, search-attach) a record in the connected
+  database/pipe directly from the card.
+
+Data model: a Connection belongs to a pipe, has `name`, `target_type`
+(`pipe`|`database`), `target_id`, `permission` (`search`|`create`|`both`),
+`cardinality` (`single`|`multiple`), and the 5 boolean advanced flags above.
+A connected record is a join between a source card and a target
+card/database-record, created via the card-level widget.
+
+### Gerador de PDF — pipe-scoped PDF export templates
+The Ferramentas panel's PDF row opens a template list modal: two pre-seeded
+example rows both named "Introdução (exemplo)" with an enabled (blue) toggle
+each, plus a **"Criar novo modelo"** button. New templates default to their
+toggle **off** (disabled) until explicitly turned on.
+
+"Criar novo modelo" opens a full-page rich-text template editor
+(`/pipes/:id/pdf_templates/new`):
+- Editable title at top-left ("Título indefinido" placeholder), Cancelar/
+  Salvar in the top-right.
+- Toolbar: **Campo dinâmico** (dynamic field / token picker — the same
+  grouped, searchable, phase-grouped component confirmed in Automations,
+  Reports, Emails, and AI Agents; this is the 6th confirmed reuse of this
+  component), text color, Bold, Italic, H1, H2, Underline, align
+  left/center/right, link, bulleted list, numbered list, image, table,
+  page-break.
+- The token picker groups fields by phase (e.g. "Caixa de entrada" /
+  "Start form"), inserting a field as an inline chip into the document body
+  (WYSIWYG canvas below the toolbar, styled like a paper page).
+
+Created a real template ("Recibo de Compra") with a single inserted
+"Nome do solicitante" token and saved it — it appeared in the template list
+(toggle off by default) and, once toggled on, in the card detail's **PDF**
+tab dropdown ("Opções" → "Criar ou Editar seus modelos de Pdf's" / a
+"Modelos" list of all templates including the two seeded examples).
+Clicking the template from a real card (`João Silva`) navigated to
+`/pipes/:id/cards/:cardId/pdf_templates/:templateId/preview` — a live
+preview that resolved the token to the card's actual field value ("João
+Silva"), with **"Fechar"** and **"Baixar PDF"** actions. Confirms the PDF
+generator is a per-card, server-rendered document merge (title, styled rich
+text, one or more dynamic-field tokens → real card data), downloadable as an
+actual PDF file.
+
+Data model: a PdfTemplate belongs to a pipe, has `title`, `enabled`
+(boolean), and `body` (rich-text/HTML with embedded field-token
+placeholders, e.g. `{{field:solicitante_nome}}`). Rendering a template for a
+given card substitutes tokens with that card's field values and produces a
+downloadable PDF.
+
+See `prd.json` feature-021 (Conexões) and feature-022 (Gerador de PDF).
+
+Screenshots: `screenshots/inspect/ferramentas-panel.jpg`,
+`screenshots/inspect/conexoes-list-created.jpg`,
+`screenshots/inspect/gerador-pdf-list.jpg`,
+`screenshots/inspect/gerador-pdf-card-preview.jpg`,
+`screenshots/inspect/conexoes-card-tab-empty.jpg`.

@@ -73,7 +73,7 @@ Page tabs (`/pipes/:id`, `/pipes/:id/flow`, etc.):
 | Email | Pipe email settings (redundant with Emails tab's "Configurações"). **Inspected iteration 4** — 5 cards: inbound-alias toggle + Opções avançadas, Templates de email (Meus templates / Template de email padrão), Envie emails via Pipefy (custom SMTP), Automação de email (external link into feature-010), Receber emails e solicitações (same concept as the inbound toggle). See prd feature-018, spec-build.md §17. |
 | Configurações do pipe | General pipe settings. **Inspected iteration 2** — icon/name/tags, item naming, default view, "Título do card" field picker (drives `card.title` — corrects the iteration-3 "first field" assumption, see spec-build.md Card section), Kanban/connected-card field pickers, pipe-wide expiration alert, visibility, AI-tool toggles, edit-permission toggles, clone/delete pipe. See prd feature-014. |
 | Atividades | Activity/audit log for the pipe. **Inspected iteration 2** — 2-tab log (Atividade de cards / Alterações de configuração), searchable by author, exportable, live (no reload needed). See prd feature-015. |
-| Ferramentas | Tool panel: Apps (marketplace, out of scope) / Conexões (not deep-dived) / Etiquetas / Gerador de PDF. **Etiquetas inspected iteration 2** — created a real label, name+hex-color model confirmed (prd feature-016). Gerador de PDF noted but not deep-dived (template list + toggle + "Criar novo modelo"). |
+| Ferramentas | Tool panel: Apps (marketplace, out of scope) / Conexões / Etiquetas / Gerador de PDF. **Etiquetas inspected iteration 2** — created a real label, name+hex-color model confirmed (prd feature-016). **Conexões + Gerador de PDF inspected iteration 7** — created a real Conexão (pipe/database link with permission/cardinality/phase-gating options, surfaces as a card-level tab) and a real PDF template (rich-text + dynamic-field tokens, rendered per-card into a downloadable PDF). See prd feature-021/feature-022, spec-build.md §20. |
 | Lixeira (beta) | Deleted-cards trash/restore. **Inspected iteration 2** — 15-day retention, single Cards tab, empty state confirmed; restore flow not exercised (would require deleting the pipe's only test card). See prd feature-017. |
 
 AI Agents sub-tabs (`/pipes/:id/ai_agents`): Agentes de IA, Logs, Templates, MCP (new).
@@ -91,6 +91,5 @@ confirmed via Logs and the card detail view. See prd feature-010 and spec-build.
 ## Not yet inspected (next iterations)
 - `/my-tasks` (org-level "my work" list) — confirm relation to Tarefas e Solicitações
 - Account/notification menus (low priority, auth-adjacent)
-- Ferramentas > Conexões and > Gerador de PDF (noted structurally in iteration 2, not deep-dived)
 - Lixeira restore flow (currently empty; needs a disposable throwaway card to test)
 - Interfaces: Documento/Texto/Link/Divisor/Imagem/Vídeo/Incorporar element types (only Dados + Formulários deep-dived iteration 6), and the "Gerenciar pessoas" tab of the Compartilhar modal

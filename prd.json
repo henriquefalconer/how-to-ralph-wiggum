@@ -1117,5 +1117,105 @@
         }
       ]
     }
+  },
+  {
+    "id": "feature-021",
+    "category": "crud",
+    "description": "Connections (Conexões): named pipe-scoped links to another pipe or Database Table, configuring search/create permission, cardinality, and phase-advance gating, surfaced as a card-level tab for creating/searching connected records",
+    "page": "Gerenciar (top nav) > Ferramentas > Conexões — modal, list, and creation form; connected records surface as a pill tab on the card detail view (/open-cards/:cardId)",
+    "ui_details": "CONFIRMED live iteration 7. Empty state: illustration + single 'Criar conexão' CTA. Creation form fields: 'Nome da conexão' (free text), 'Selecione um pipe ou database para conectar' (single-select dropdown grouped into 'Pipes' and 'Tabelas' sections), 'Escolha o que as pessoas podem fazer com a conexão' (3-way radio: search-only / create-only / search-and-create), 'Número de cards ou registros que podem ser conectados' (2-way radio: single vs multiple), and an 'Opções avançadas' expandable section with 5 toggles (require connected-record creation to advance to next/final phase; block phase advance until all connected records reach final phase, ×2; auto-fill card fields from the connected record). Saved connections list in a 'Gerenciar conexões' modal (search box, one row per connection with a delete icon) and, if targeting a database, as a shortcut in the pipe's top-nav 'Conexões' dropdown.",
+    "behavior": "Created a real connection 'Fornecedores' -> Suppliers database. It immediately appeared (a) in the top-nav Conexões dropdown as a named shortcut plus a permanent 'Gerenciar conexões' item, (b) in the Gerenciar-conexões list with a caption noting only database-target connections show in the top nav, and (c) as a new 'Fornecedores' pill tab on an existing card, titled with the target object's name ('Suppliers') and showing an empty state with a 'Criar novo <connection name>' button that lets the user create/attach a connected record directly from the card. Behavior of the 5 advanced toggles (phase-advance gating, auto-fill) was configured but not exercised end-to-end (would require completing a connected record and attempting a phase move).",
+    "data_model": "Connection: id, pipe_id (fk), name, target_type ('pipe'|'database'), target_id, permission ('search'|'create'|'both'), cardinality ('single'|'multiple'), require_for_next_phase (bool), require_for_final_phase (bool), block_next_phase_until_target_done (bool), block_final_phase_until_target_done (bool), autofill_from_target (bool). ConnectedRecord: id, connection_id (fk), source_card_id (fk), target_card_id/target_record_id (fk), created_at.",
+    "priority": 9,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "connection creation persists all configured fields",
+          "description": "Saving a connection form should persist name, target, permission, cardinality, and every advanced toggle exactly as set",
+          "input": "createConnection({pipeId, name:'Fornecedores', targetType:'database', targetId:'suppliersDbId', permission:'search', cardinality:'single', advanced:{requireForNextPhase:false,...}})",
+          "expected_output": "returns a Connection row with all fields matching the input"
+        },
+        {
+          "name": "only database-target connections are returned for the top-nav dropdown",
+          "description": "The top-nav Conexões dropdown query must filter out pipe-target connections per the observed UI caption",
+          "input": "listNavConnections(pipeId) with 2 connections, one target_type='pipe' and one target_type='database'",
+          "expected_output": "returns only the target_type='database' connection"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "creating a connection surfaces a new tab on an existing card",
+          "steps": [
+            "Navigate to a pipe, Gerenciar > Ferramentas > Conexões",
+            "Click 'Criar conexão', fill name 'Fornecedores', select the Suppliers database, keep defaults",
+            "Click 'Salvar conexão'",
+            "Open an existing card"
+          ],
+          "expected": "A 'Fornecedores' pill tab appears in the card's tab row; clicking it shows an empty state titled 'Suppliers' with a 'Criar novo Fornecedores' button"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "deleting a connection removes its card-level tab",
+          "steps": [
+            "Open 'Gerenciar conexões', click the delete icon on the 'Fornecedores' connection",
+            "Reopen the previously-tabbed card"
+          ],
+          "expected": "The 'Fornecedores' pill tab no longer appears on the card"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-022",
+    "category": "data",
+    "description": "PDF Generator (Gerador de PDF): pipe-scoped rich-text document templates with embedded dynamic-field tokens, rendered per-card into a downloadable PDF",
+    "page": "Gerenciar (top nav) > Ferramentas > Gerador de PDF — template list modal (/pipes/:id/pdf_templates), template editor (/pipes/:id/pdf_templates/new), per-card preview (/pipes/:id/cards/:cardId/pdf_templates/:templateId/preview); triggered from the card detail's 'PDF' tab",
+    "ui_details": "CONFIRMED live iteration 7. Template list modal shows existing templates as toggle rows (2 pre-seeded 'Introdução (exemplo)' rows, enabled by default) plus a 'Criar novo modelo' button; new templates default to disabled until toggled on. The editor is a full-page WYSIWYG: editable title top-left, Cancelar/Salvar top-right, and a toolbar with 'Campo dinâmico' (the same grouped/searchable/phase-grouped dynamic-field token picker reused across Automations, Reports, Emails, and AI Agents), text color, Bold, Italic, H1, H2, Underline, align left/center/right, link, bulleted/numbered list, image, table, and page-break. Inserted tokens render as inline chips in a paper-styled document canvas.",
+    "behavior": "Created a real template 'Recibo de Compra' with one inserted 'Nome do solicitante' token and saved it. It appeared in the template list (toggle off by default) and, after toggling on, in an existing card's 'PDF' tab menu under a 'Modelos' list alongside the 2 seeded examples (plus an 'Opções > Criar ou Editar seus modelos de Pdf's' shortcut back to the list). Selecting the template from the card ('João Silva') navigated to a live preview page that resolved the token to the card's real field value ('João Silva'), with 'Fechar' and 'Baixar PDF' actions — confirming server-side merge of the template body with that card's field data, downloadable as an actual PDF.",
+    "data_model": "PdfTemplate: id, pipe_id (fk), title, enabled (bool), body (rich-text/HTML with embedded field-token placeholders e.g. {{field:field_id}}), created_at, updated_at. Rendering: given a card_id and template_id, resolve every token against that card's field values and produce a PDF (e.g. via a headless HTML-to-PDF render step).",
+    "priority": 9,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "token resolution substitutes real card field values",
+          "description": "Rendering a template body containing a field token must replace it with that specific card's value for the referenced field",
+          "input": "renderTemplateBody('<p>{{field:solicitante_nome}}</p>', {solicitante_nome:'João Silva'})",
+          "expected_output": "'<p>João Silva</p>'"
+        },
+        {
+          "name": "new template defaults to disabled",
+          "description": "A freshly created PdfTemplate must have enabled=false until explicitly toggled on",
+          "input": "createPdfTemplate({pipeId, title:'Recibo de Compra', body:'...'})",
+          "expected_output": "returns a PdfTemplate with enabled === false"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "create, enable, and export a PDF from a card",
+          "steps": [
+            "Gerenciar > Ferramentas > Gerador de PDF > 'Criar novo modelo'",
+            "Set title 'Recibo de Compra', insert the 'Nome do solicitante' dynamic field, click Salvar",
+            "In the list, toggle 'Recibo de Compra' on",
+            "Open a card, click the 'PDF' tab, select 'Recibo de Compra'"
+          ],
+          "expected": "A preview page opens showing the card's real solicitant name in place of the token, with a working 'Baixar PDF' button"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "disabled template does not appear in the card's PDF menu",
+          "steps": [
+            "Create a template and leave its list toggle off",
+            "Open any card's 'PDF' tab menu"
+          ],
+          "expected": "The disabled template is absent from the card-level 'Modelos' list"
+        }
+      ]
+    }
   }
 ]
