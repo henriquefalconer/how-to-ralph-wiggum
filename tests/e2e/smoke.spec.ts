@@ -50,4 +50,35 @@ test.describe("smoke", () => {
     await page.waitForURL(/\/settings\/phases\/.+/);
     await expect(page.getByTestId("phase-switcher")).toBeVisible();
   });
+
+  test("creating a card from the Kanban board opens its detail page", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.getByTestId("create-pipe-tile").click();
+    await page.getByTestId("create-from-scratch").click();
+    await page.getByTestId("pipe-name-input").fill(`Smoke Cards ${Date.now()}`);
+    await page.getByTestId("submit-create-pipe").click();
+    await page.waitForURL(/\/pipes\/.+/);
+
+    const pipeId = page.url().match(/\/pipes\/([^/]+)/)?.[1] ?? "";
+    await page.request.post(`/api/pipes/${pipeId}/start-form/fields`, {
+      data: { label: "Title", type: "short_text", required: true },
+    });
+    await page.reload();
+
+    await page.getByTestId("create-card-button").click();
+    await page.getByTestId("create-card-field-input").fill("Smoke Card");
+    await page.getByTestId("submit-create-card").click();
+    await expect(
+      page.getByTestId("card-tile").filter({ hasText: "Smoke Card" }),
+    ).toBeVisible();
+
+    await page
+      .getByTestId("card-tile")
+      .filter({ hasText: "Smoke Card" })
+      .click();
+    await page.waitForURL(/\/open-cards\/.+/);
+    await expect(page.getByTestId("card-title")).toBeVisible();
+  });
 });

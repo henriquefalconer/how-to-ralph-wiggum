@@ -22,6 +22,9 @@ export const pipes = pgTable("pipes", {
     .references(() => organizations.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   color: text("color").notNull(),
+  // References fields.id within the (owner_type='start_form', owner_id=pipes.id) scope.
+  // Not a DB-level FK (fields has a composite PK keyed by scope, not a surrogate id).
+  titleFieldId: text("title_field_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -106,3 +109,59 @@ export const fields = pgTable(
     primaryKey({ columns: [table.ownerType, table.ownerId, table.id] }),
   ],
 );
+
+export const cards = pgTable("cards", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  pipeId: uuid("pipe_id")
+    .notNull()
+    .references(() => pipes.id, { onDelete: "cascade" }),
+  phaseId: uuid("phase_id")
+    .notNull()
+    .references(() => phases.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  done: boolean("done").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const cardFieldValues = pgTable(
+  "card_field_values",
+  {
+    cardId: uuid("card_id")
+      .notNull()
+      .references(() => cards.id, { onDelete: "cascade" }),
+    // Together with fieldId these mirror fields' composite scope key
+    // (owner_type='start_form', owner_id=pipe.id) or (owner_type='phase', owner_id=phase.id).
+    fieldOwnerType: text("field_owner_type", {
+      enum: fieldOwnerTypes,
+    }).notNull(),
+    fieldOwnerId: uuid("field_owner_id").notNull(),
+    fieldId: text("field_id").notNull(),
+    value: text("value").notNull().default(""),
+    filledAt: timestamp("filled_at").defaultNow().notNull(),
+  },
+  (table) => [
+    primaryKey({
+      columns: [
+        table.cardId,
+        table.fieldOwnerType,
+        table.fieldOwnerId,
+        table.fieldId,
+      ],
+    }),
+  ],
+);
+
+export const cardTransitions = pgTable("card_transitions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  cardId: uuid("card_id")
+    .notNull()
+    .references(() => cards.id, { onDelete: "cascade" }),
+  fromPhaseId: uuid("from_phase_id").references(() => phases.id, {
+    onDelete: "set null",
+  }),
+  toPhaseId: uuid("to_phase_id")
+    .notNull()
+    .references(() => phases.id, { onDelete: "cascade" }),
+  movedAt: timestamp("moved_at").defaultNow().notNull(),
+});

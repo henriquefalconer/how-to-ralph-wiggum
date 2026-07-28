@@ -194,7 +194,7 @@
     "data_model": "cards: id, pipe_id (fk), phase_id (fk), title (derived live from pipe.title_field_id's value), done (bool), created_at, updated_at. card_field_values: id, card_id (fk), field_id (fk), value (text), filled_at. pipes gains: title_field_id (fk, nullable, defaults to the start form's first field)",
     "priority": 2,
     "core": true,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {

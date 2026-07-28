@@ -1,5 +1,6 @@
 import { KanbanBoard } from "@/components/KanbanBoard";
 import { TopNav } from "@/components/TopNav";
+import { listCardsForPipe, listStartFormFields } from "@/lib/cards";
 import { getTranslations } from "@/lib/i18n";
 import { getPipeWithPhases } from "@/lib/pipes";
 import Link from "next/link";
@@ -17,6 +18,10 @@ export default async function PipePage({
   }
 
   const { pipe, phases } = result;
+  const [cards, startFormFields] = await Promise.all([
+    listCardsForPipe(pipe.id),
+    listStartFormFields(pipe.id),
+  ]);
 
   return (
     <main className="min-h-screen bg-[#F5F6F8]">
@@ -42,6 +47,8 @@ export default async function PipePage({
       <KanbanBoard
         pipeId={pipe.id}
         initialPhases={phases}
+        initialCards={cards}
+        startFormFields={startFormFields}
         dictionary={dictionary}
       />
       <div className="px-6 pb-6">

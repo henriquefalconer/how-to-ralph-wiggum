@@ -1,0 +1,248 @@
+import { db } from "@/lib/db";
+import {
+  cardFieldValues,
+  cardTransitions,
+  cards,
+  phases,
+  pipes,
+} from "@/lib/db/schema";
+import { listFields } from "@/lib/fields";
+import { and, asc, desc, eq } from "drizzle-orm";
+
+export type Card = typeof cards.$inferSelect;
+export type CardTransition = typeof cardTransitions.$inferSelect;
+
+export interface CardWithCounts extends Card {
+  phaseId: string;
+}
+
+export async function listStartFormFields(pipeId: string) {
+  return listFields("start_form", pipeId);
+}
+
+async function computeTitle(
+  pipeId: string,
+  values: Record<string, string>,
+): Promise<string> {
+  const [pipe] = await db.select().from(pipes).where(eq(pipes.id, pipeId));
+  const startFormFields = await listFields("start_form", pipeId);
+
+  const titleFieldId = pipe?.titleFieldId ?? startFormFields[0]?.id ?? null;
+  if (!titleFieldId) return "";
+
+  return (values[titleFieldId] ?? "").trim();
+}
+
+export async function listCardsForPipe(pipeId: string): Promise<Card[]> {
+  return db
+    .select()
+    .from(cards)
+    .where(eq(cards.pipeId, pipeId))
+    .orderBy(desc(cards.createdAt));
+}
+
+export async function createCard(
+  pipeId: string,
+  phaseId: string,
+  values: Record<string, string>,
+): Promise<Card> {
+  const [phase] = await db
+    .select()
+    .from(phases)
+    .where(and(eq(phases.id, phaseId), eq(phases.pipeId, pipeId)));
+  if (!phase) {
+    throw new Error("Phase not found for this pipe");
+  }
+
+  const startFormFields = await listFields("start_form", pipeId);
+  for (const field of startFormFields) {
+    if (field.required && !(values[field.id] ?? "").trim()) {
+      throw new Error(`"${field.label}" is required`);
+    }
+  }
+
+  const title = await computeTitle(pipeId, values);
+  if (!title) {
+    throw new Error("Card title is required");
+  }
+
+  const [card] = await db
+    .insert(cards)
+    .values({ pipeId, phaseId, title, done: phase.done })
+    .returning();
+
+  if (startFormFields.length > 0) {
+    await db.insert(cardFieldValues).values(
+      startFormFields.map((field) => ({
+        cardId: card.id,
+        fieldOwnerType: "start_form" as const,
+        fieldOwnerId: pipeId,
+        fieldId: field.id,
+        value: values[field.id] ?? "",
+      })),
+    );
+  }
+
+  return card;
+}
+
+export interface CardDetail {
+  card: Card;
+  pipe: typeof pipes.$inferSelect;
+  phase: typeof phases.$inferSelect;
+  nextPhase: typeof phases.$inferSelect | null;
+  pipePhases: (typeof phases.$inferSelect)[];
+  startForm: {
+    field: Awaited<ReturnType<typeof listFields>>[number];
+    value: string;
+  }[];
+  phaseFields: {
+    field: Awaited<ReturnType<typeof listFields>>[number];
+    value: string;
+  }[];
+  history: CardTransition[];
+}
+
+export async function getCardDetail(
+  cardId: string,
+): Promise<CardDetail | null> {
+  const [card] = await db.select().from(cards).where(eq(cards.id, cardId));
+  if (!card) return null;
+
+  const [pipe] = await db.select().from(pipes).where(eq(pipes.id, card.pipeId));
+  const [phase] = await db
+    .select()
+    .from(phases)
+    .where(eq(phases.id, card.phaseId));
+  if (!pipe || !phase) return null;
+
+  const pipePhases = await db
+    .select()
+    .from(phases)
+    .where(eq(phases.pipeId, pipe.id))
+    .orderBy(asc(phases.position));
+  const currentIndex = pipePhases.findIndex((p) => p.id === phase.id);
+  const nextPhase =
+    currentIndex >= 0 && currentIndex < pipePhases.length - 1
+      ? pipePhases[currentIndex + 1]
+      : null;
+
+  const startFormFields = await listFields("start_form", pipe.id);
+  const phaseFieldsList = await listFields("phase", phase.id);
+
+  const values = await db
+    .select()
+    .from(cardFieldValues)
+    .where(eq(cardFieldValues.cardId, cardId));
+  const valueMap = new Map(
+    values.map((v) => [
+      `${v.fieldOwnerType}:${v.fieldOwnerId}:${v.fieldId}`,
+      v.value,
+    ]),
+  );
+
+  const startForm = startFormFields.map((field) => ({
+    field,
+    value: valueMap.get(`start_form:${pipe.id}:${field.id}`) ?? "",
+  }));
+  const phaseFieldsOut = phaseFieldsList.map((field) => ({
+    field,
+    value: valueMap.get(`phase:${phase.id}:${field.id}`) ?? "",
+  }));
+
+  const history = await db
+    .select()
+    .from(cardTransitions)
+    .where(eq(cardTransitions.cardId, cardId))
+    .orderBy(asc(cardTransitions.movedAt));
+
+  return {
+    card,
+    pipe,
+    phase,
+    nextPhase,
+    pipePhases,
+    startForm,
+    phaseFields: phaseFieldsOut,
+    history,
+  };
+}
+
+export async function moveCardToPhase(
+  cardId: string,
+  toPhaseId: string,
+): Promise<Card> {
+  const [card] = await db.select().from(cards).where(eq(cards.id, cardId));
+  if (!card) {
+    throw new Error("Card not found");
+  }
+
+  const [toPhase] = await db
+    .select()
+    .from(phases)
+    .where(and(eq(phases.id, toPhaseId), eq(phases.pipeId, card.pipeId)));
+  if (!toPhase) {
+    throw new Error("Target phase not found for this pipe");
+  }
+
+  if (toPhase.id === card.phaseId) {
+    return card;
+  }
+
+  const fromPhaseId = card.phaseId;
+
+  const [updated] = await db.transaction(async (tx) => {
+    const [updatedCard] = await tx
+      .update(cards)
+      .set({ phaseId: toPhaseId, done: toPhase.done, updatedAt: new Date() })
+      .where(eq(cards.id, cardId))
+      .returning();
+
+    await tx.insert(cardTransitions).values({
+      cardId,
+      fromPhaseId,
+      toPhaseId,
+    });
+
+    return [updatedCard];
+  });
+
+  return updated;
+}
+
+export async function setPhaseFieldValue(
+  cardId: string,
+  fieldId: string,
+  value: string,
+): Promise<void> {
+  const [card] = await db.select().from(cards).where(eq(cards.id, cardId));
+  if (!card) {
+    throw new Error("Card not found");
+  }
+
+  const phaseFields = await listFields("phase", card.phaseId);
+  const field = phaseFields.find((f) => f.id === fieldId);
+  if (!field) {
+    throw new Error("Field not found on the card's current phase");
+  }
+
+  await db
+    .insert(cardFieldValues)
+    .values({
+      cardId,
+      fieldOwnerType: "phase",
+      fieldOwnerId: card.phaseId,
+      fieldId,
+      value,
+      filledAt: new Date(),
+    })
+    .onConflictDoUpdate({
+      target: [
+        cardFieldValues.cardId,
+        cardFieldValues.fieldOwnerType,
+        cardFieldValues.fieldOwnerId,
+        cardFieldValues.fieldId,
+      ],
+      set: { value, filledAt: new Date() },
+    });
+}

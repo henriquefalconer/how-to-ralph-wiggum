@@ -119,6 +119,26 @@ export interface Dictionary {
       time: string;
     };
   };
+  card: {
+    shareFormTitle: string;
+    shareFormBody: string;
+    shareFormClose: string;
+    submit: string;
+    cancel: string;
+    requiredError: string;
+    createSuccessToast: string;
+    moveSuccessToast: string;
+    detail: {
+      startFormHeading: string;
+      currentPhaseHeading: string;
+      historyHeading: string;
+      historyEmpty: string;
+      historyEntry: string;
+      moveButton: string;
+      noPhaseFields: string;
+      backToBoard: string;
+    };
+  };
 }
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -234,6 +254,28 @@ export const dictionaries: Record<Locale, Dictionary> = {
         short_text: "Short text",
         statement: "Statement",
         time: "Time",
+      },
+    },
+    card: {
+      shareFormTitle: "Share the card creation form",
+      shareFormBody:
+        "This pipe's start form doesn't have any fields yet. Add at least one field before creating cards.",
+      shareFormClose: "Close",
+      submit: "Create new card",
+      cancel: "Cancel",
+      requiredError: "must be filled in",
+      createSuccessToast: "Card created successfully. Click here to open it",
+      moveSuccessToast:
+        "Card moved successfully to {phase}. Click here to reopen it",
+      detail: {
+        startFormHeading: "Start Form",
+        currentPhaseHeading: "Current phase",
+        historyHeading: "History",
+        historyEmpty: "No phase changes yet",
+        historyEntry: "Moved to {phase}",
+        moveButton: "Move to {phase}",
+        noPhaseFields: "No fields in this phase",
+        backToBoard: "Back to board",
       },
     },
   },
@@ -356,6 +398,28 @@ export const dictionaries: Record<Locale, Dictionary> = {
         time: "Hora",
       },
     },
+    card: {
+      shareFormTitle: "Compartilhar formulário",
+      shareFormBody:
+        "Este pipe ainda não tem campos no formulário de início. Adicione ao menos um campo para poder criar cards.",
+      shareFormClose: "Fechar",
+      submit: "Criar novo card",
+      cancel: "Cancelar",
+      requiredError: "deve ser informado",
+      createSuccessToast: "Card criado com sucesso. Para abri-lo, clique aqui",
+      moveSuccessToast:
+        "Card movido com sucesso para {phase}. Para reabri-lo, clique aqui",
+      detail: {
+        startFormHeading: "Formulário Inicial",
+        currentPhaseHeading: "Fase atual",
+        historyHeading: "Histórico",
+        historyEmpty: "Nenhuma movimentação ainda",
+        historyEntry: "Movido para {phase}",
+        moveButton: "Mover para {phase}",
+        noPhaseFields: "Nenhum campo nesta fase",
+        backToBoard: "Voltar ao quadro",
+      },
+    },
   },
   es: {
     nav: {
@@ -476,6 +540,29 @@ export const dictionaries: Record<Locale, Dictionary> = {
         time: "Hora",
       },
     },
+    card: {
+      shareFormTitle: "Compartir formulario",
+      shareFormBody:
+        "Este pipe todavía no tiene campos en el formulario de inicio. Añade al menos un campo para poder crear tarjetas.",
+      shareFormClose: "Cerrar",
+      submit: "Crear nueva tarjeta",
+      cancel: "Cancelar",
+      requiredError: "debe completarse",
+      createSuccessToast:
+        "Tarjeta creada con éxito. Haz clic aquí para abrirla",
+      moveSuccessToast:
+        "Tarjeta movida con éxito a {phase}. Haz clic aquí para volver a abrirla",
+      detail: {
+        startFormHeading: "Formulario inicial",
+        currentPhaseHeading: "Fase actual",
+        historyHeading: "Historial",
+        historyEmpty: "Todavía no hay movimientos",
+        historyEntry: "Movida a {phase}",
+        moveButton: "Mover a {phase}",
+        noPhaseFields: "No hay campos en esta fase",
+        backToBoard: "Volver al tablero",
+      },
+    },
   },
   zh: {
     nav: {
@@ -588,6 +675,27 @@ export const dictionaries: Record<Locale, Dictionary> = {
         short_text: "短文本",
         statement: "说明文字",
         time: "时间",
+      },
+    },
+    card: {
+      shareFormTitle: "分享表单",
+      shareFormBody:
+        "该流程的初始表单还没有任何字段。请先添加至少一个字段才能创建卡片。",
+      shareFormClose: "关闭",
+      submit: "创建新卡片",
+      cancel: "取消",
+      requiredError: "必须填写",
+      createSuccessToast: "卡片创建成功。点击此处打开",
+      moveSuccessToast: "卡片已成功移动到{phase}。点击此处重新打开",
+      detail: {
+        startFormHeading: "初始表单",
+        currentPhaseHeading: "当前阶段",
+        historyHeading: "历史记录",
+        historyEmpty: "暂无变更记录",
+        historyEntry: "已移动到{phase}",
+        moveButton: "移动到{phase}",
+        noPhaseFields: "此阶段没有字段",
+        backToBoard: "返回看板",
       },
     },
   },
@@ -712,6 +820,29 @@ export const dictionaries: Record<Locale, Dictionary> = {
         time: "Uhrzeit",
       },
     },
+    card: {
+      shareFormTitle: "Formular teilen",
+      shareFormBody:
+        "Dieser Pipe hat noch keine Felder im Startformular. Füge mindestens ein Feld hinzu, um Karten erstellen zu können.",
+      shareFormClose: "Schließen",
+      submit: "Neue Karte erstellen",
+      cancel: "Abbrechen",
+      requiredError: "muss ausgefüllt werden",
+      createSuccessToast:
+        "Karte erfolgreich erstellt. Hier klicken, um sie zu öffnen",
+      moveSuccessToast:
+        "Karte erfolgreich zu {phase} verschoben. Hier klicken, um sie erneut zu öffnen",
+      detail: {
+        startFormHeading: "Startformular",
+        currentPhaseHeading: "Aktuelle Phase",
+        historyHeading: "Verlauf",
+        historyEmpty: "Noch keine Phasenwechsel",
+        historyEntry: "Verschoben nach {phase}",
+        moveButton: "Nach {phase} verschieben",
+        noPhaseFields: "Keine Felder in dieser Phase",
+        backToBoard: "Zurück zum Board",
+      },
+    },
   },
   fr: {
     nav: {
@@ -834,6 +965,28 @@ export const dictionaries: Record<Locale, Dictionary> = {
         time: "Heure",
       },
     },
+    card: {
+      shareFormTitle: "Partager le formulaire",
+      shareFormBody:
+        "Ce pipe n'a pas encore de champs dans le formulaire de démarrage. Ajoutez au moins un champ pour pouvoir créer des cartes.",
+      shareFormClose: "Fermer",
+      submit: "Créer une nouvelle carte",
+      cancel: "Annuler",
+      requiredError: "doit être renseigné",
+      createSuccessToast: "Carte créée avec succès. Cliquez ici pour l'ouvrir",
+      moveSuccessToast:
+        "Carte déplacée avec succès vers {phase}. Cliquez ici pour la rouvrir",
+      detail: {
+        startFormHeading: "Formulaire de démarrage",
+        currentPhaseHeading: "Phase actuelle",
+        historyHeading: "Historique",
+        historyEmpty: "Aucun déplacement pour l'instant",
+        historyEntry: "Déplacée vers {phase}",
+        moveButton: "Déplacer vers {phase}",
+        noPhaseFields: "Aucun champ dans cette phase",
+        backToBoard: "Retour au tableau",
+      },
+    },
   },
   ja: {
     nav: {
@@ -948,6 +1101,29 @@ export const dictionaries: Record<Locale, Dictionary> = {
         short_text: "短文",
         statement: "説明文",
         time: "時刻",
+      },
+    },
+    card: {
+      shareFormTitle: "フォームを共有",
+      shareFormBody:
+        "このパイプの開始フォームにはまだフィールドがありません。カードを作成するには、少なくとも1つのフィールドを追加してください。",
+      shareFormClose: "閉じる",
+      submit: "新しいカードを作成",
+      cancel: "キャンセル",
+      requiredError: "入力が必要です",
+      createSuccessToast:
+        "カードが正常に作成されました。ここをクリックして開く",
+      moveSuccessToast:
+        "カードは{phase}に正常に移動しました。ここをクリックして再度開く",
+      detail: {
+        startFormHeading: "開始フォーム",
+        currentPhaseHeading: "現在のフェーズ",
+        historyHeading: "履歴",
+        historyEmpty: "まだ移動履歴はありません",
+        historyEntry: "{phase}に移動しました",
+        moveButton: "{phase}に移動",
+        noPhaseFields: "このフェーズにフィールドはありません",
+        backToBoard: "ボードに戻る",
       },
     },
   },
@@ -1065,6 +1241,28 @@ export const dictionaries: Record<Locale, Dictionary> = {
         time: "समय",
       },
     },
+    card: {
+      shareFormTitle: "फ़ॉर्म साझा करें",
+      shareFormBody:
+        "इस पाइप के प्रारंभिक फ़ॉर्म में अभी तक कोई फ़ील्ड नहीं है। कार्ड बनाने के लिए कम से कम एक फ़ील्ड जोड़ें।",
+      shareFormClose: "बंद करें",
+      submit: "नया कार्ड बनाएं",
+      cancel: "रद्द करें",
+      requiredError: "भरा जाना आवश्यक है",
+      createSuccessToast: "कार्ड सफलतापूर्वक बनाया गया। इसे खोलने के लिए यहां क्लिक करें",
+      moveSuccessToast:
+        "कार्ड सफलतापूर्वक {phase} में ले जाया गया। इसे फिर से खोलने के लिए यहां क्लिक करें",
+      detail: {
+        startFormHeading: "प्रारंभिक फ़ॉर्म",
+        currentPhaseHeading: "वर्तमान चरण",
+        historyHeading: "इतिहास",
+        historyEmpty: "अभी तक कोई बदलाव नहीं",
+        historyEntry: "{phase} में ले जाया गया",
+        moveButton: "{phase} में ले जाएं",
+        noPhaseFields: "इस चरण में कोई फ़ील्ड नहीं है",
+        backToBoard: "बोर्ड पर वापस जाएं",
+      },
+    },
   },
   ar: {
     nav: {
@@ -1178,6 +1376,28 @@ export const dictionaries: Record<Locale, Dictionary> = {
         short_text: "نص قصير",
         statement: "نص توضيحي",
         time: "الوقت",
+      },
+    },
+    card: {
+      shareFormTitle: "مشاركة النموذج",
+      shareFormBody:
+        "لا يحتوي نموذج البدء لهذا الأنبوب على أي حقول بعد. أضف حقلاً واحدًا على الأقل لإنشاء البطاقات.",
+      shareFormClose: "إغلاق",
+      submit: "إنشاء بطاقة جديدة",
+      cancel: "إلغاء",
+      requiredError: "يجب تعبئته",
+      createSuccessToast: "تم إنشاء البطاقة بنجاح. انقر هنا لفتحها",
+      moveSuccessToast:
+        "تم نقل البطاقة بنجاح إلى {phase}. انقر هنا لإعادة فتحها",
+      detail: {
+        startFormHeading: "نموذج البدء",
+        currentPhaseHeading: "المرحلة الحالية",
+        historyHeading: "السجل",
+        historyEmpty: "لا توجد تحركات بعد",
+        historyEntry: "تم النقل إلى {phase}",
+        moveButton: "نقل إلى {phase}",
+        noPhaseFields: "لا توجد حقول في هذه المرحلة",
+        backToBoard: "العودة إلى اللوحة",
       },
     },
   },
@@ -1294,6 +1514,29 @@ export const dictionaries: Record<Locale, Dictionary> = {
         short_text: "Короткий текст",
         statement: "Информационный текст",
         time: "Время",
+      },
+    },
+    card: {
+      shareFormTitle: "Поделиться формой",
+      shareFormBody:
+        "В стартовой форме этого пайпа пока нет полей. Добавьте хотя бы одно поле, чтобы создавать карточки.",
+      shareFormClose: "Закрыть",
+      submit: "Создать карточку",
+      cancel: "Отмена",
+      requiredError: "обязательно для заполнения",
+      createSuccessToast:
+        "Карточка успешно создана. Нажмите здесь, чтобы открыть",
+      moveSuccessToast:
+        "Карточка успешно перемещена на этап {phase}. Нажмите здесь, чтобы открыть снова",
+      detail: {
+        startFormHeading: "Стартовая форма",
+        currentPhaseHeading: "Текущий этап",
+        historyHeading: "История",
+        historyEmpty: "Пока нет перемещений",
+        historyEntry: "Перемещено на этап {phase}",
+        moveButton: "Переместить на этап {phase}",
+        noPhaseFields: "На этом этапе нет полей",
+        backToBoard: "Вернуться к доске",
       },
     },
   },

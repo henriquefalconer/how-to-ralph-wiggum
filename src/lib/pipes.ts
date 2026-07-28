@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { organizations, phases, pipes } from "@/lib/db/schema";
+import { cards, organizations, phases, pipes } from "@/lib/db/schema";
 import type { Dictionary } from "@/lib/i18n";
 import { asc, count, eq } from "drizzle-orm";
 
@@ -42,12 +42,21 @@ export async function listPipes(orgId: string): Promise<PipeSummary[]> {
     .where(eq(pipes.orgId, orgId))
     .orderBy(asc(pipes.createdAt));
 
-  // No Card entity exists yet (feature-004) — every pipe has 0 cards until then.
-  return rows.map((p) => ({
+  const counts = await Promise.all(
+    rows.map(async (p) => {
+      const [{ value }] = await db
+        .select({ value: count() })
+        .from(cards)
+        .where(eq(cards.pipeId, p.id));
+      return value;
+    }),
+  );
+
+  return rows.map((p, index) => ({
     id: p.id,
     name: p.name,
     color: p.color,
-    cardsCount: 0,
+    cardsCount: counts[index],
   }));
 }
 
