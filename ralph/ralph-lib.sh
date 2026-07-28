@@ -5,12 +5,6 @@
 # resume it if it ended without a promise, and write ONE usage entry per
 # iteration into the run's single progress file.
 #
-# Ported from ralph/ralph in github.com/henriquefalconer/baud. The usage
-# accounting, the resume-on-missing-promise logic and the process-group reaping
-# are that script's, kept verbatim where possible so the measurements stay
-# comparable; the comments explaining WHY are the original author's findings and
-# are worth more than the code.
-#
 # Contract for a caller (see ralph-inspect.sh / ralph-build.sh / ralph-qa.sh):
 #   RALPH_RUN_ID   set by ralph-to-ralph.sh so every phase of one run shares a
 #                  directory and a progress file; generated here if a phase
