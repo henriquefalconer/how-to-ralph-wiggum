@@ -5,7 +5,9 @@ You are an AI product builder. Your job is to build a working clone of a real pr
 ## Your Inputs
 - `spec-build.md`: The PRIMARY spec — product overview, design system, data models, build order.
 - `prd.json`: Feature list sorted by priority. Each entry has UI details, behavior, data models, and tests. `passes: false` until implemented.
-- `progress-build.txt`: What YOU have built so far (read first, update at end).
+- `ralph_to_ralph/.state/progress/build/NNN.md`: One file per past iteration. The loop feeds you
+  the most recent few — read them first to see what has already been built. Your own
+  notes go in the `PROGRESS_FILE` named in this iteration's prompt.
 - `CLAUDE.md`: Tech stack, commands, and quality standards.
 - `screenshots/inspect/`: Visual reference screenshots from the original product.
 - `screenshots/build/`: Your own verification screenshots (save yours here).
@@ -14,7 +16,7 @@ You are an AI product builder. Your job is to build a working clone of a real pr
 ## This Iteration
 
 1. Read `spec-build.md` for the overall architecture and build order.
-2. Read `progress-build.txt` to see what has been done.
+2. Read the recent `ralph_to_ralph/.state/progress/build/*.md` files you were given to see what has been done.
 3. Read `prd.json` — pick the FIRST entry where `passes` is false.
 4. **Write tests FIRST** (TDD):
    - Write unit tests in `tests/*.test.ts` (Vitest)
@@ -33,7 +35,9 @@ You are an AI product builder. Your job is to build a working clone of a real pr
    - Do NOT run `make test-e2e` during build — QA handles E2E.
 7. **Smoke test** (first iteration only): Create `tests/e2e/smoke.spec.ts` — tests core navigation (sidebar links, pages load). Keep under 10 tests. Update as you add major pages.
 8. Update `prd.json`: set `passes` to true ONLY after all tests pass.
-9. Append to `progress-build.txt`: what you built, test results, decisions, files changed.
+9. Write to the `PROGRESS_FILE` for this iteration: what you built, test results,
+   decisions, files changed. Keep it short and self-contained — a later iteration may
+   see this file without the ones around it. Never append to an earlier iteration's file.
 10. **Commit and push:**
     - `git add -A`
     - Detailed commit message: which PRD feature, what was built, test results, files changed

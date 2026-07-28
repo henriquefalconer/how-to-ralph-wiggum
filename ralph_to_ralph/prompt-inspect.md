@@ -8,11 +8,13 @@ This is a **generic product cloning system** — the target could be any SaaS st
 - `spec-inspect.md`: Your instructions — how to inspect, what to capture, what to output.
 - `ever-cli-reference.md`: Ever CLI command reference — use these to control the browser.
 - `prd.json`: Feature list you are building up (append new entries each iteration).
-- `progress-inspect.txt`: What you've already inspected (read first, update at end).
+- `ralph_to_ralph/.state/progress/inspect/NNN.md`: One file per past iteration. The loop feeds
+  you the most recent few — read them first to see what has already been inspected.
+  Your own notes go in the `PROGRESS_FILE` named in this iteration's prompt.
 
 ## This Iteration
 
-1. Read `progress-inspect.txt` to see what has been done.
+1. Read the recent `ralph_to_ralph/.state/progress/inspect/*.md` files you were given to see what has been done.
 2. Read `spec-inspect.md` for your full inspection strategy.
 3. Run `ever snapshot` to see the current page state.
 4. Follow the inspection strategy for your current iteration:
@@ -75,7 +77,9 @@ This is a **generic product cloning system** — the target could be any SaaS st
 
 7. Append new feature entries to `prd.json`.
 8. Update `spec-build.md` incrementally with what you discovered.
-9. Update `progress-inspect.txt` with what you did.
+9. Write what you did to the `PROGRESS_FILE` for this iteration. Keep it short and
+   self-contained — a later iteration may see this file without the ones around it.
+   Never append to an earlier iteration's file.
 10. **Commit and push:**
    - `git add -A`
    - Detailed commit message: what was inspected, what was discovered, progress
