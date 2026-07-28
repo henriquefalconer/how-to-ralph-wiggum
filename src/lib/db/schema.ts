@@ -1,3 +1,7 @@
+import type {
+  ConditionGroup,
+  ConditionalAction,
+} from "@/lib/field-conditional-types";
 import {
   boolean,
   doublePrecision,
@@ -110,6 +114,31 @@ export const fields = pgTable(
     primaryKey({ columns: [table.ownerType, table.ownerId, table.id] }),
   ],
 );
+
+export const fieldConditionals = pgTable("field_conditionals", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  phaseId: uuid("phase_id")
+    .notNull()
+    .references(() => phases.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  // Determines both display order and evaluation/conflict order — rules are
+  // processed top-to-bottom and the last one to touch a given field wins.
+  position: integer("position").notNull().default(0),
+  conditionGroups: jsonb("condition_groups")
+    .$type<ConditionGroup[]>()
+    .notNull()
+    .default([]),
+  trueActions: jsonb("true_actions")
+    .$type<ConditionalAction[]>()
+    .notNull()
+    .default([]),
+  falseActions: jsonb("false_actions")
+    .$type<ConditionalAction[]>()
+    .notNull()
+    .default([]),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
 
 export const cards = pgTable("cards", {
   id: uuid("id").primaryKey().defaultRandom(),

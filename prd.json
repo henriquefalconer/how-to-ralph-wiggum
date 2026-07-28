@@ -537,7 +537,7 @@
     "data_model": "field_conditionals: id, phase_id (fk), name, position (int, determines evaluation/conflict order), condition_groups (jsonb — array of AND-groups, each an array of {field_id, operator, value}), true_actions (jsonb array of {action, target_field_id}), false_actions (jsonb array of {action, target_field_id})",
     "priority": 4,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {

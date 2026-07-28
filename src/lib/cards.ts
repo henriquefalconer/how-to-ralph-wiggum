@@ -7,6 +7,10 @@ import {
   phases,
   pipes,
 } from "@/lib/db/schema";
+import {
+  type FieldConditional,
+  listFieldConditionals,
+} from "@/lib/field-conditionals";
 import { listFields } from "@/lib/fields";
 import { triggerWebhookEvent } from "@/lib/webhooks";
 import { and, asc, desc, eq } from "drizzle-orm";
@@ -108,6 +112,7 @@ export interface CardDetail {
     field: Awaited<ReturnType<typeof listFields>>[number];
     value: string;
   }[];
+  phaseFieldConditionals: FieldConditional[];
   history: CardTransition[];
 }
 
@@ -137,6 +142,7 @@ export async function getCardDetail(
 
   const startFormFields = await listFields("start_form", pipe.id);
   const phaseFieldsList = await listFields("phase", phase.id);
+  const phaseFieldConditionals = await listFieldConditionals(phase.id);
 
   const values = await db
     .select()
@@ -172,6 +178,7 @@ export async function getCardDetail(
     pipePhases,
     startForm,
     phaseFields: phaseFieldsOut,
+    phaseFieldConditionals,
     history,
   };
 }

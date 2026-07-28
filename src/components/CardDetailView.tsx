@@ -1,11 +1,12 @@
 "use client";
 
 import type { CardDetail } from "@/lib/cards";
+import { evaluateConditionals } from "@/lib/field-conditional-types";
 import { isFieldValueEditable } from "@/lib/field-types";
 import type { Dictionary } from "@/lib/i18n";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 export function CardDetailView({
   pipeId,
@@ -22,6 +23,11 @@ export function CardDetailView({
   );
   const [moving, setMoving] = useState(false);
   const [moveError, setMoveError] = useState<string | null>(null);
+
+  const fieldActions = useMemo(
+    () => evaluateConditionals(detail.phaseFieldConditionals, phaseValues),
+    [detail.phaseFieldConditionals, phaseValues],
+  );
 
   function phaseName(phaseId: string): string {
     return detail.pipePhases.find((p) => p.id === phaseId)?.name ?? "";
@@ -141,43 +147,51 @@ export function CardDetailView({
         </div>
         {moveError && <p className="mb-2 text-sm text-red-600">{moveError}</p>}
 
-        {detail.phaseFields.length === 0 ? (
-          <p data-testid="phase-fields-empty" className="text-sm text-gray-400">
-            {dictionary.card.detail.noPhaseFields}
-          </p>
-        ) : (
-          <div className="space-y-3">
-            {detail.phaseFields.map(({ field }) => (
-              <div
-                key={field.id}
-                data-testid="phase-field-row"
-                data-field-id={field.id}
-              >
-                <label
-                  className="mb-1 block text-xs font-medium text-gray-700"
-                  htmlFor={`phase-field-${field.id}`}
+        {(() => {
+          const visibleFields = detail.phaseFields.filter(
+            ({ field }) => fieldActions[field.id] !== "hide",
+          );
+          return visibleFields.length === 0 ? (
+            <p
+              data-testid="phase-fields-empty"
+              className="text-sm text-gray-400"
+            >
+              {dictionary.card.detail.noPhaseFields}
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {visibleFields.map(({ field }) => (
+                <div
+                  key={field.id}
+                  data-testid="phase-field-row"
+                  data-field-id={field.id}
                 >
-                  {field.label}
-                </label>
-                <input
-                  id={`phase-field-${field.id}`}
-                  data-testid="phase-field-input"
-                  type="text"
-                  disabled={!isFieldValueEditable(field)}
-                  value={phaseValues[field.id] ?? ""}
-                  onChange={(event) =>
-                    setPhaseValues((prev) => ({
-                      ...prev,
-                      [field.id]: event.target.value,
-                    }))
-                  }
-                  onBlur={() => handleFieldBlur(field.id)}
-                  className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm disabled:bg-gray-50"
-                />
-              </div>
-            ))}
-          </div>
-        )}
+                  <label
+                    className="mb-1 block text-xs font-medium text-gray-700"
+                    htmlFor={`phase-field-${field.id}`}
+                  >
+                    {field.label}
+                  </label>
+                  <input
+                    id={`phase-field-${field.id}`}
+                    data-testid="phase-field-input"
+                    type="text"
+                    disabled={!isFieldValueEditable(field)}
+                    value={phaseValues[field.id] ?? ""}
+                    onChange={(event) =>
+                      setPhaseValues((prev) => ({
+                        ...prev,
+                        [field.id]: event.target.value,
+                      }))
+                    }
+                    onBlur={() => handleFieldBlur(field.id)}
+                    className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm disabled:bg-gray-50"
+                  />
+                </div>
+              ))}
+            </div>
+          );
+        })()}
       </section>
     </div>
   );

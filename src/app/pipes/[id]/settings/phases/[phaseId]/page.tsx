@@ -1,6 +1,7 @@
 import { ManageTabs } from "@/components/ManageTabs";
 import { PhaseEditor } from "@/components/PhaseEditor";
 import { TopNav } from "@/components/TopNav";
+import { listFieldConditionals } from "@/lib/field-conditionals";
 import { listFields } from "@/lib/fields";
 import { getTranslations } from "@/lib/i18n";
 import { getPipeWithPhases } from "@/lib/pipes";
@@ -25,6 +26,7 @@ export default async function PhaseSettingsPage({
   }
 
   const fields = await listFields("phase", currentPhase.id);
+  const fieldConditionals = await listFieldConditionals(currentPhase.id);
 
   return (
     <main className="min-h-screen bg-[#F5F6F8]">
@@ -35,6 +37,7 @@ export default async function PhaseSettingsPage({
         phases={phases}
         currentPhaseId={currentPhase.id}
         fields={fields}
+        fieldConditionals={fieldConditionals}
         dictionary={dictionary}
       />
     </main>

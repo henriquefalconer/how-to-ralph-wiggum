@@ -261,6 +261,47 @@ export interface Dictionary {
       statusError: string;
     };
   };
+  fieldConditionals: {
+    openButton: string;
+    heading: string;
+    searchPlaceholder: string;
+    fieldFilterLabel: string;
+    usageFilterLabel: string;
+    filterAll: string;
+    banner: string;
+    emptyState: string;
+    createButton: string;
+    thenDo: string;
+    createModalTitle: string;
+    nameLabel: string;
+    namePlaceholder: string;
+    conditionsHeading: string;
+    selectFieldPlaceholder: string;
+    addCondition: string;
+    addGroup: string;
+    operators: {
+      equals: string;
+      not_equals: string;
+      contains: string;
+      is_empty: string;
+      is_not_empty: string;
+    };
+    valuePlaceholder: string;
+    whenTrueHeading: string;
+    whenFalseHeading: string;
+    actionLabel: string;
+    actions: {
+      hide: string;
+      show: string;
+    };
+    targetFieldLabel: string;
+    addAction: string;
+    save: string;
+    cancel: string;
+    delete: string;
+    deleteConfirm: string;
+    requiredError: string;
+  };
   interfaces: {
     heading: string;
     emptyStateTitle: string;
@@ -594,6 +635,49 @@ export const dictionaries: Record<Locale, Dictionary> = {
         statusSuccess: "Success",
         statusError: "Error",
       },
+    },
+    fieldConditionals: {
+      openButton: "Field conditionals",
+      heading: "Field conditionals",
+      searchPlaceholder: "Search conditionals",
+      fieldFilterLabel: "Field",
+      usageFilterLabel: "Field usage",
+      filterAll: "All",
+      banner:
+        "Conditionals are now in a single list, and are processed top to bottom. In case of conflict, the last one prevails.",
+      emptyState: "No conditionals yet",
+      createButton: "Create conditional",
+      thenDo: "Then do this",
+      createModalTitle: "Create conditional",
+      nameLabel: "Conditional name",
+      namePlaceholder: "Name this conditional",
+      conditionsHeading: "Define the conditions",
+      selectFieldPlaceholder: "Select a field",
+      addCondition: "Add condition",
+      addGroup: "New condition group",
+      operators: {
+        equals: "is equal to",
+        not_equals: "is not equal to",
+        contains: "contains",
+        is_empty: "is empty",
+        is_not_empty: "is not empty",
+      },
+      valuePlaceholder: "Value",
+      whenTrueHeading: "When the conditions are true",
+      whenFalseHeading: "When the conditions are false",
+      actionLabel: "Action",
+      actions: {
+        hide: "Hide",
+        show: "Show",
+      },
+      targetFieldLabel: "Field",
+      addAction: "Add action",
+      save: "Save",
+      cancel: "Cancel",
+      delete: "Delete",
+      deleteConfirm:
+        "Are you sure you want to delete this conditional? This action cannot be undone.",
+      requiredError: "must be filled in",
     },
     interfaces: {
       heading: "Interfaces",
@@ -932,6 +1016,49 @@ export const dictionaries: Record<Locale, Dictionary> = {
         statusSuccess: "Sucesso",
         statusError: "Erro",
       },
+    },
+    fieldConditionals: {
+      openButton: "Condicionais de campo",
+      heading: "Condicionais de campo",
+      searchPlaceholder: "Buscar condicionais",
+      fieldFilterLabel: "Campo",
+      usageFilterLabel: "Uso do campo",
+      filterAll: "Todos",
+      banner:
+        "As condicionais agora estão em uma única lista, e são processadas de cima para baixo. Em caso de conflito, a última prevalece.",
+      emptyState: "Nenhuma condicional ainda",
+      createButton: "Criar condicional",
+      thenDo: "Então faça isso",
+      createModalTitle: "Criar condicional",
+      nameLabel: "Nome da condicional",
+      namePlaceholder: "Nomeie esta condicional",
+      conditionsHeading: "Defina as condições",
+      selectFieldPlaceholder: "Selecione um campo",
+      addCondition: "Adicionar condição",
+      addGroup: "Novo grupo de condições",
+      operators: {
+        equals: "é igual a",
+        not_equals: "é diferente de",
+        contains: "contém",
+        is_empty: "está vazio",
+        is_not_empty: "não está vazio",
+      },
+      valuePlaceholder: "Valor",
+      whenTrueHeading: "Quando as condições forem verdadeiras",
+      whenFalseHeading: "Quando as condições forem falsas",
+      actionLabel: "Ação",
+      actions: {
+        hide: "Ocultar",
+        show: "Mostrar",
+      },
+      targetFieldLabel: "Campo",
+      addAction: "Adicionar ação",
+      save: "Salvar",
+      cancel: "Cancelar",
+      delete: "Excluir",
+      deleteConfirm:
+        "Tem certeza de que deseja excluir esta condicional? Esta ação não pode ser desfeita.",
+      requiredError: "deve ser preenchido",
     },
     interfaces: {
       heading: "Interfaces",
@@ -1272,6 +1399,49 @@ export const dictionaries: Record<Locale, Dictionary> = {
         statusError: "Error",
       },
     },
+    fieldConditionals: {
+      openButton: "Condicionales de campo",
+      heading: "Condicionales de campo",
+      searchPlaceholder: "Buscar condicionales",
+      fieldFilterLabel: "Campo",
+      usageFilterLabel: "Uso del campo",
+      filterAll: "Todos",
+      banner:
+        "Las condicionales ahora están en una sola lista y se procesan de arriba hacia abajo. En caso de conflicto, la última prevalece.",
+      emptyState: "Aún no hay condicionales",
+      createButton: "Crear condicional",
+      thenDo: "Entonces haz esto",
+      createModalTitle: "Crear condicional",
+      nameLabel: "Nombre de la condicional",
+      namePlaceholder: "Nombra esta condicional",
+      conditionsHeading: "Define las condiciones",
+      selectFieldPlaceholder: "Selecciona un campo",
+      addCondition: "Agregar condición",
+      addGroup: "Nuevo grupo de condiciones",
+      operators: {
+        equals: "es igual a",
+        not_equals: "es diferente de",
+        contains: "contiene",
+        is_empty: "está vacío",
+        is_not_empty: "no está vacío",
+      },
+      valuePlaceholder: "Valor",
+      whenTrueHeading: "Cuando las condiciones sean verdaderas",
+      whenFalseHeading: "Cuando las condiciones sean falsas",
+      actionLabel: "Acción",
+      actions: {
+        hide: "Ocultar",
+        show: "Mostrar",
+      },
+      targetFieldLabel: "Campo",
+      addAction: "Agregar acción",
+      save: "Guardar",
+      cancel: "Cancelar",
+      delete: "Eliminar",
+      deleteConfirm:
+        "¿Seguro que deseas eliminar esta condicional? Esta acción no se puede deshacer.",
+      requiredError: "debe completarse",
+    },
     interfaces: {
       heading: "Interfaces",
       emptyStateTitle:
@@ -1598,6 +1768,48 @@ export const dictionaries: Record<Locale, Dictionary> = {
         statusSuccess: "成功",
         statusError: "错误",
       },
+    },
+    fieldConditionals: {
+      openButton: "字段条件",
+      heading: "字段条件",
+      searchPlaceholder: "搜索条件",
+      fieldFilterLabel: "字段",
+      usageFilterLabel: "字段用途",
+      filterAll: "全部",
+      banner:
+        "条件现在位于同一个列表中，并按从上到下的顺序处理。如有冲突，以最后一条为准。",
+      emptyState: "暂无条件",
+      createButton: "创建条件",
+      thenDo: "然后执行此操作",
+      createModalTitle: "创建条件",
+      nameLabel: "条件名称",
+      namePlaceholder: "为此条件命名",
+      conditionsHeading: "定义条件",
+      selectFieldPlaceholder: "选择一个字段",
+      addCondition: "添加条件",
+      addGroup: "新建条件组",
+      operators: {
+        equals: "等于",
+        not_equals: "不等于",
+        contains: "包含",
+        is_empty: "为空",
+        is_not_empty: "不为空",
+      },
+      valuePlaceholder: "值",
+      whenTrueHeading: "当条件为真时",
+      whenFalseHeading: "当条件为假时",
+      actionLabel: "操作",
+      actions: {
+        hide: "隐藏",
+        show: "显示",
+      },
+      targetFieldLabel: "字段",
+      addAction: "添加操作",
+      save: "保存",
+      cancel: "取消",
+      delete: "删除",
+      deleteConfirm: "确定要删除此条件吗？此操作无法撤销。",
+      requiredError: "为必填项",
     },
     interfaces: {
       heading: "界面",
@@ -1940,6 +2152,49 @@ export const dictionaries: Record<Locale, Dictionary> = {
         statusSuccess: "Erfolg",
         statusError: "Fehler",
       },
+    },
+    fieldConditionals: {
+      openButton: "Feldbedingungen",
+      heading: "Feldbedingungen",
+      searchPlaceholder: "Bedingungen durchsuchen",
+      fieldFilterLabel: "Feld",
+      usageFilterLabel: "Feldverwendung",
+      filterAll: "Alle",
+      banner:
+        "Bedingungen befinden sich jetzt in einer einzigen Liste und werden von oben nach unten verarbeitet. Bei einem Konflikt gilt die letzte.",
+      emptyState: "Noch keine Bedingungen",
+      createButton: "Bedingung erstellen",
+      thenDo: "Dann tue dies",
+      createModalTitle: "Bedingung erstellen",
+      nameLabel: "Name der Bedingung",
+      namePlaceholder: "Benenne diese Bedingung",
+      conditionsHeading: "Bedingungen festlegen",
+      selectFieldPlaceholder: "Feld auswählen",
+      addCondition: "Bedingung hinzufügen",
+      addGroup: "Neue Bedingungsgruppe",
+      operators: {
+        equals: "ist gleich",
+        not_equals: "ist ungleich",
+        contains: "enthält",
+        is_empty: "ist leer",
+        is_not_empty: "ist nicht leer",
+      },
+      valuePlaceholder: "Wert",
+      whenTrueHeading: "Wenn die Bedingungen wahr sind",
+      whenFalseHeading: "Wenn die Bedingungen falsch sind",
+      actionLabel: "Aktion",
+      actions: {
+        hide: "Ausblenden",
+        show: "Anzeigen",
+      },
+      targetFieldLabel: "Feld",
+      addAction: "Aktion hinzufügen",
+      save: "Speichern",
+      cancel: "Abbrechen",
+      delete: "Löschen",
+      deleteConfirm:
+        "Möchtest du diese Bedingung wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      requiredError: "muss ausgefüllt werden",
     },
     interfaces: {
       heading: "Oberflächen",
@@ -2284,6 +2539,49 @@ export const dictionaries: Record<Locale, Dictionary> = {
         statusError: "Erreur",
       },
     },
+    fieldConditionals: {
+      openButton: "Conditions de champ",
+      heading: "Conditions de champ",
+      searchPlaceholder: "Rechercher des conditions",
+      fieldFilterLabel: "Champ",
+      usageFilterLabel: "Utilisation du champ",
+      filterAll: "Tous",
+      banner:
+        "Les conditions sont désormais dans une seule liste et sont traitées de haut en bas. En cas de conflit, la dernière prévaut.",
+      emptyState: "Aucune condition pour le moment",
+      createButton: "Créer une condition",
+      thenDo: "Alors fais ceci",
+      createModalTitle: "Créer une condition",
+      nameLabel: "Nom de la condition",
+      namePlaceholder: "Nommez cette condition",
+      conditionsHeading: "Définissez les conditions",
+      selectFieldPlaceholder: "Sélectionnez un champ",
+      addCondition: "Ajouter une condition",
+      addGroup: "Nouveau groupe de conditions",
+      operators: {
+        equals: "est égal à",
+        not_equals: "est différent de",
+        contains: "contient",
+        is_empty: "est vide",
+        is_not_empty: "n'est pas vide",
+      },
+      valuePlaceholder: "Valeur",
+      whenTrueHeading: "Quand les conditions sont vraies",
+      whenFalseHeading: "Quand les conditions sont fausses",
+      actionLabel: "Action",
+      actions: {
+        hide: "Masquer",
+        show: "Afficher",
+      },
+      targetFieldLabel: "Champ",
+      addAction: "Ajouter une action",
+      save: "Enregistrer",
+      cancel: "Annuler",
+      delete: "Supprimer",
+      deleteConfirm:
+        "Voulez-vous vraiment supprimer cette condition ? Cette action est irréversible.",
+      requiredError: "doit être rempli",
+    },
     interfaces: {
       heading: "Interfaces",
       emptyStateTitle:
@@ -2621,6 +2919,49 @@ export const dictionaries: Record<Locale, Dictionary> = {
         statusError: "エラー",
       },
     },
+    fieldConditionals: {
+      openButton: "フィールド条件",
+      heading: "フィールド条件",
+      searchPlaceholder: "条件を検索",
+      fieldFilterLabel: "フィールド",
+      usageFilterLabel: "フィールドの用途",
+      filterAll: "すべて",
+      banner:
+        "条件は現在1つのリストにまとめられ、上から下に処理されます。競合する場合は、最後の条件が優先されます。",
+      emptyState: "条件はまだありません",
+      createButton: "条件を作成",
+      thenDo: "この操作を実行",
+      createModalTitle: "条件を作成",
+      nameLabel: "条件名",
+      namePlaceholder: "この条件に名前を付ける",
+      conditionsHeading: "条件を設定",
+      selectFieldPlaceholder: "フィールドを選択",
+      addCondition: "条件を追加",
+      addGroup: "新しい条件グループ",
+      operators: {
+        equals: "が次と等しい",
+        not_equals: "が次と等しくない",
+        contains: "を含む",
+        is_empty: "が空である",
+        is_not_empty: "が空でない",
+      },
+      valuePlaceholder: "値",
+      whenTrueHeading: "条件が真の場合",
+      whenFalseHeading: "条件が偽の場合",
+      actionLabel: "アクション",
+      actions: {
+        hide: "非表示にする",
+        show: "表示する",
+      },
+      targetFieldLabel: "フィールド",
+      addAction: "アクションを追加",
+      save: "保存",
+      cancel: "キャンセル",
+      delete: "削除",
+      deleteConfirm:
+        "この条件を削除してもよろしいですか？この操作は元に戻せません。",
+      requiredError: "は必須項目です",
+    },
     interfaces: {
       heading: "インターフェース",
       emptyStateTitle:
@@ -2954,6 +3295,49 @@ export const dictionaries: Record<Locale, Dictionary> = {
         statusError: "त्रुटि",
       },
     },
+    fieldConditionals: {
+      openButton: "फ़ील्ड कंडीशनल",
+      heading: "फ़ील्ड कंडीशनल",
+      searchPlaceholder: "कंडीशनल खोजें",
+      fieldFilterLabel: "फ़ील्ड",
+      usageFilterLabel: "फ़ील्ड का उपयोग",
+      filterAll: "सभी",
+      banner:
+        "कंडीशनल अब एक ही सूची में हैं, और ऊपर से नीचे तक संसाधित होते हैं। टकराव की स्थिति में, अंतिम वाला मान्य होता है।",
+      emptyState: "अभी तक कोई कंडीशनल नहीं",
+      createButton: "कंडीशनल बनाएं",
+      thenDo: "तो यह करें",
+      createModalTitle: "कंडीशनल बनाएं",
+      nameLabel: "कंडीशनल का नाम",
+      namePlaceholder: "इस कंडीशनल को नाम दें",
+      conditionsHeading: "शर्तें परिभाषित करें",
+      selectFieldPlaceholder: "एक फ़ील्ड चुनें",
+      addCondition: "शर्त जोड़ें",
+      addGroup: "नया शर्त समूह",
+      operators: {
+        equals: "बराबर है",
+        not_equals: "बराबर नहीं है",
+        contains: "में शामिल है",
+        is_empty: "खाली है",
+        is_not_empty: "खाली नहीं है",
+      },
+      valuePlaceholder: "मान",
+      whenTrueHeading: "जब शर्तें सत्य हों",
+      whenFalseHeading: "जब शर्तें असत्य हों",
+      actionLabel: "कार्रवाई",
+      actions: {
+        hide: "छिपाएं",
+        show: "दिखाएं",
+      },
+      targetFieldLabel: "फ़ील्ड",
+      addAction: "कार्रवाई जोड़ें",
+      save: "सहेजें",
+      cancel: "रद्द करें",
+      delete: "हटाएं",
+      deleteConfirm:
+        "क्या आप वाकई इस कंडीशनल को हटाना चाहते हैं? यह कार्रवाई पूर्ववत नहीं की जा सकती।",
+      requiredError: "भरना आवश्यक है",
+    },
     interfaces: {
       heading: "इंटरफ़ेस",
       emptyStateTitle: "शुरू करने के लिए पाइप और डेटाबेस से डेटा को खींचें और छोड़ें",
@@ -3284,6 +3668,49 @@ export const dictionaries: Record<Locale, Dictionary> = {
         statusSuccess: "نجاح",
         statusError: "خطأ",
       },
+    },
+    fieldConditionals: {
+      openButton: "الشروط الحقلية",
+      heading: "الشروط الحقلية",
+      searchPlaceholder: "البحث عن الشروط",
+      fieldFilterLabel: "الحقل",
+      usageFilterLabel: "استخدام الحقل",
+      filterAll: "الكل",
+      banner:
+        "أصبحت الشروط الآن في قائمة واحدة، وتتم معالجتها من الأعلى إلى الأسفل. في حال التعارض، يسود الشرط الأخير.",
+      emptyState: "لا توجد شروط بعد",
+      createButton: "إنشاء شرط",
+      thenDo: "قم بهذا الإجراء",
+      createModalTitle: "إنشاء شرط",
+      nameLabel: "اسم الشرط",
+      namePlaceholder: "سمِّ هذا الشرط",
+      conditionsHeading: "حدد الشروط",
+      selectFieldPlaceholder: "اختر حقلاً",
+      addCondition: "إضافة شرط",
+      addGroup: "مجموعة شروط جديدة",
+      operators: {
+        equals: "يساوي",
+        not_equals: "لا يساوي",
+        contains: "يحتوي على",
+        is_empty: "فارغ",
+        is_not_empty: "غير فارغ",
+      },
+      valuePlaceholder: "القيمة",
+      whenTrueHeading: "عندما تكون الشروط صحيحة",
+      whenFalseHeading: "عندما تكون الشروط غير صحيحة",
+      actionLabel: "الإجراء",
+      actions: {
+        hide: "إخفاء",
+        show: "إظهار",
+      },
+      targetFieldLabel: "الحقل",
+      addAction: "إضافة إجراء",
+      save: "حفظ",
+      cancel: "إلغاء",
+      delete: "حذف",
+      deleteConfirm:
+        "هل أنت متأكد من حذف هذا الشرط؟ لا يمكن التراجع عن هذا الإجراء.",
+      requiredError: "يجب تعبئته",
     },
     interfaces: {
       heading: "الواجهات",
@@ -3617,6 +4044,49 @@ export const dictionaries: Record<Locale, Dictionary> = {
         statusSuccess: "Успех",
         statusError: "Ошибка",
       },
+    },
+    fieldConditionals: {
+      openButton: "Условия полей",
+      heading: "Условия полей",
+      searchPlaceholder: "Поиск условий",
+      fieldFilterLabel: "Поле",
+      usageFilterLabel: "Использование поля",
+      filterAll: "Все",
+      banner:
+        "Условия теперь находятся в едином списке и обрабатываются сверху вниз. В случае конфликта приоритет имеет последнее условие.",
+      emptyState: "Пока нет условий",
+      createButton: "Создать условие",
+      thenDo: "Тогда сделать это",
+      createModalTitle: "Создать условие",
+      nameLabel: "Название условия",
+      namePlaceholder: "Назовите это условие",
+      conditionsHeading: "Определите условия",
+      selectFieldPlaceholder: "Выберите поле",
+      addCondition: "Добавить условие",
+      addGroup: "Новая группа условий",
+      operators: {
+        equals: "равно",
+        not_equals: "не равно",
+        contains: "содержит",
+        is_empty: "пусто",
+        is_not_empty: "не пусто",
+      },
+      valuePlaceholder: "Значение",
+      whenTrueHeading: "Когда условия истинны",
+      whenFalseHeading: "Когда условия ложны",
+      actionLabel: "Действие",
+      actions: {
+        hide: "Скрыть",
+        show: "Показать",
+      },
+      targetFieldLabel: "Поле",
+      addAction: "Добавить действие",
+      save: "Сохранить",
+      cancel: "Отмена",
+      delete: "Удалить",
+      deleteConfirm:
+        "Вы уверены, что хотите удалить это условие? Это действие нельзя отменить.",
+      requiredError: "обязательно для заполнения",
     },
     interfaces: {
       heading: "Интерфейсы",

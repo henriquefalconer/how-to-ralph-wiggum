@@ -1,5 +1,7 @@
 "use client";
 
+import { FieldConditionalsPanel } from "@/components/FieldConditionalsPanel";
+import type { FieldConditional } from "@/lib/field-conditionals";
 import {
   FIELD_TYPES,
   type FieldType,
@@ -24,12 +26,14 @@ export function PhaseEditor({
   phases,
   currentPhaseId,
   fields,
+  fieldConditionals,
   dictionary,
 }: {
   pipe: PipeSummary;
   phases: Phase[];
   currentPhaseId: string;
   fields: Field[];
+  fieldConditionals: FieldConditional[];
   dictionary: Dictionary;
 }) {
   const router = useRouter();
@@ -332,14 +336,23 @@ export function PhaseEditor({
               + {dictionary.phaseSettings.createPhase}
             </button>
           </div>
-          <button
-            type="button"
-            data-testid="advanced-options-button"
-            onClick={() => setModalOpen(true)}
-            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            {dictionary.phaseSettings.advancedOptions}
-          </button>
+          <div className="flex items-center gap-2">
+            <FieldConditionalsPanel
+              key={currentPhase.id}
+              phaseId={currentPhase.id}
+              fields={fields}
+              initialConditionals={fieldConditionals}
+              dictionary={dictionary}
+            />
+            <button
+              type="button"
+              data-testid="advanced-options-button"
+              onClick={() => setModalOpen(true)}
+              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              {dictionary.phaseSettings.advancedOptions}
+            </button>
+          </div>
         </div>
 
         {currentPhase.done && (
