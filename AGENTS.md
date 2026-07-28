@@ -68,7 +68,7 @@ If a live URL exists (check `progress-build.txt`), test the deployed version too
 - `scripts/` — infra and deploy scripts
 
 ## Environment
-- `.env` has `DATABASE_URL` (Neon) and `DASHBOARD_KEY`
+- `.env` has `NEON_DATABASE_URL` (Neon) and `DASHBOARD_KEY`
 - `./scripts/preflight.sh` reports anything missing from `.env`
 - Dev server usually on port 3000 (check with `lsof -i :3015`)
 

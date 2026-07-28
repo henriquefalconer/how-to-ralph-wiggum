@@ -1,6 +1,6 @@
 import { defineConfig } from "drizzle-kit";
 
-const url = process.env.DATABASE_URL ?? "";
+const url = process.env.NEON_DATABASE_URL ?? "";
 
 export default defineConfig({
   schema: "./src/lib/db/schema.ts",

@@ -11,8 +11,7 @@ Phase 1: Inspect (Claude + Ever CLI) → Phase 2: Build (Claude + Playwright E2E
 - **UI Primitives**: Radix UI (or whatever matches the target product)
 - **Database**: Neon serverless Postgres via Drizzle ORM (`pg`)
 - **Storage**: uploads stored in Postgres (`bytea`), served by route handlers
-- **Deployment**: Render (Docker web service)
-- **Registry**: GitHub Container Registry (`ghcr.io`)
+- **Deployment**: Render web service, built from the GitHub repo with Render's native Node runtime (no Docker)
 - **Unit Tests**: Vitest
 - **E2E Tests**: Playwright (pre-configured)
 - **Linting**: Biome (pre-configured)
@@ -66,12 +65,40 @@ Phase 1: Inspect (Claude + Ever CLI) → Phase 2: Build (Claude + Playwright E2E
   With that set, `git push` works normally — the loops commit and push on their own.
   Use `gh.exe` for any other GitHub work too (PRs, issues, API).
 - **`.env`** contains:
-  - `DATABASE_URL` — Neon Postgres connection string
+  - `NEON_DATABASE_URL` — Neon Postgres connection string
   - `DASHBOARD_KEY` — master key for dashboard access
+  - `RENDER_API_KEY` — Render API key (Account Settings -> API Keys)
+  - `RENDER_SERVICE_ID` — Render service id (`srv-...`, from the service's dashboard URL)
   - Target product API keys (for testing/comparing only, not for the clone's backend)
 - **Preflight** — `./scripts/preflight.sh` validates `.env` before a run and lists anything missing.
 
+## Deployment — `scripts/render.sh`
+Render builds from the connected GitHub repo (build `npm install && npm run build`,
+start `npm start`, app binds Render's injected `$PORT`). `scripts/render.sh` wraps the
+Render REST API and reads its credentials from `.env`.
+
+- `deploy` — deploy only if necessary.
+  ```bash
+  ./scripts/render.sh deploy
+  ```
+- `logs` — build and deploy logs for the latest deploy, or for a given deploy id.
+  ```bash
+  ./scripts/render.sh logs            # latest deploy
+  ./scripts/render.sh logs dep-xxxxx  # a specific deploy
+  ```
+- `settings` — project settings: name, type, repo, branch, region, plan, auto-deploy, URL, env vars.
+  ```bash
+  ./scripts/render.sh settings
+  ```
+- `status` — latest deploy id, status, commit and timestamp.
+  ```bash
+  ./scripts/render.sh status
+  ```
+
+The `RENDER_API_KEY` and `RENDER_SERVICE_ID` in `.env` can be used to edit any configuration in Render as needed.
+
 ## Out of Scope — DO NOT build
+- **Docker — do NOT use it in this project.**
 - Login / signup / authentication (use API key auth wall instead)
 - Paywalls, billing, subscription management
 - Account settings, profile management

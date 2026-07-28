@@ -107,8 +107,7 @@ every feature. Progress is visible in `prd.json` (`passes` flags),
 - **UI:** Radix UI
 - **Database:** Neon serverless Postgres via Drizzle ORM
 - **Storage:** Neon Postgres (`bytea` columns)
-- **Deployment:** Render (Docker web service)
-- **Registry:** GitHub Container Registry
+- **Deployment:** Render (built from the GitHub repo, native Node runtime)
 
 ## Team
 

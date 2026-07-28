@@ -3,14 +3,14 @@
 Everything listed here is already installed and configured. Do NOT reinstall, reconfigure, or overwrite these.
 
 ## Tooling
-- **Next.js 16** — `next.config.js` (standalone output for Docker, Turbopack)
+- **Next.js 16** — `next.config.js` (Turbopack)
 - **TypeScript** — `tsconfig.json` (strict mode, `@/` path aliases)
 - **Tailwind CSS** — `tailwind.config.ts` + `postcss.config.js` (dark mode, src paths)
 - **Biome** — `biome.json` (lint + format, replaces ESLint/Prettier)
 - **Vitest** — `vitest.config.ts` (jsdom, path aliases, `tests/*.test.ts`)
 - **Playwright** — `playwright.config.ts` + Chromium installed (`tests/e2e/*.spec.ts`)
 - **Drizzle ORM** — `drizzle.config.ts` + `src/lib/db/index.ts` + `src/lib/db/schema.ts`
-- **Docker** — `Dockerfile` (multi-stage, standalone) + `.dockerignore`
+- **Render CLI helper** — `scripts/render.sh` (deploy, logs, settings, status)
 
 ## Commands (use these, don't create new ones)
 - `make check` — typecheck + Biome lint/format
@@ -25,10 +25,12 @@ Everything listed here is already installed and configured. Do NOT reinstall, re
 ## Infrastructure (validated by `scripts/preflight.sh`)
 Every service below is on a free tier and is created from its own web dashboard.
 `scripts/preflight.sh` checks that `.env` has the credentials for all of them:
-- **Neon Postgres** — serverless Postgres, connection string in `.env` as `DATABASE_URL`.
+- **Neon Postgres** — serverless Postgres, connection string in `.env` as `NEON_DATABASE_URL`.
   Holds both the relational data and any uploaded files.
-- **Render** — Docker web service built from the repo `Dockerfile`, free plan
-- **GitHub Container Registry** — images at `ghcr.io/<owner>/<repo>`
+- **Render** — web service on the free plan, built from the connected GitHub repo with
+  Render's native Node runtime (build `npm install && npm run build`, start `npm start`).
+  No Docker, no image registry. Credentials in `.env` as `RENDER_API_KEY` and
+  `RENDER_SERVICE_ID`; drive it with `scripts/render.sh`.
 
 ## File Storage
 Uploads live in Postgres, in a `bytea` column alongside their metadata — there is no
@@ -51,11 +53,14 @@ and `Content-Length` from the row.
 keep total stored bytes well under the plan's limit. Writes fail rather than silently
 costing money, so a missing cap surfaces as a broken feature, not a bill.
 
-## Container Registry
-The GitHub CLI is a Windows binary, not on `PATH` as `gh`. Use it to log in to `ghcr.io`:
+## Deployment
+Render builds from the connected GitHub repo — pushing to the service's branch is all
+that ships code. `scripts/render.sh` wraps the Render API:
 ```bash
-GH="/mnt/c/Program Files/GitHub CLI/gh.exe"
-"$GH" auth token | docker login ghcr.io -u "$("$GH" api user --jq .login)" --password-stdin
+./scripts/render.sh status     # latest deploy id, status, commit
+./scripts/render.sh deploy     # deploy only if Render is behind local HEAD
+./scripts/render.sh logs       # build + deploy logs for the latest deploy
+./scripts/render.sh settings   # service config and env vars
 ```
 
 ## Project Structure (already scaffolded)
@@ -76,8 +81,10 @@ scripts/           — Infrastructure and deploy scripts
 ```
 
 ## .env Contents
-- `DATABASE_URL` — Neon Postgres connection string
+- `NEON_DATABASE_URL` — Neon Postgres connection string
 - `DASHBOARD_KEY` — master key for dashboard auth (set when needed)
+- `RENDER_API_KEY` — Render API key (Account Settings -> API Keys)
+- `RENDER_SERVICE_ID` — Render service id (`srv-...`, from the service's dashboard URL)
 
 ## Target Product Login (if session expires)
 The browser already holds a logged-in session for the target product — see

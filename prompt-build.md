@@ -53,8 +53,7 @@ Cloud Services:
   - Neon Postgres (Drizzle ORM) → all data persistence
   - Neon Postgres (bytea columns) → file storage (uploads, attachments, assets)
   - Route handlers → webhook delivery (HTTP POST)
-  - GitHub Container Registry → Docker image registry
-  - Render → deployment
+  - Render → deployment (builds from the GitHub repo, native Node runtime)
 ```
 
 ### Implementation Rules
@@ -68,12 +67,13 @@ Cloud Services:
 - **API docs**: Always add a `/docs` page with all endpoints, schemas, and examples.
 
 ### Credentials
-- **`.env`**: `DATABASE_URL` (Neon Postgres), `DASHBOARD_KEY` (auth wall)
+- **`.env`**: `NEON_DATABASE_URL` (Neon Postgres), `DASHBOARD_KEY` (auth wall), `RENDER_API_KEY` + `RENDER_SERVICE_ID` (deployment)
 - Run `./scripts/preflight.sh` if anything looks unset — it reports what's missing.
 
 ### Deployment
-- Deploy on Render. Docker image → `ghcr.io` → Render web service.
-- Log in to the registry with the GitHub CLI: `"/mnt/c/Program Files/GitHub CLI/gh.exe" auth token | docker login ghcr.io -u <github-user> --password-stdin`.
+- **No Docker.** Render builds the app from the connected GitHub repo using its native Node runtime — there is no `Dockerfile` and no image registry.
+- Build command `npm install && npm run build`, start command `npm start`. The app must bind the `$PORT` Render injects; `next start` does this automatically.
+- Deploy with `./scripts/render.sh deploy` — it only triggers when the service is behind the local HEAD commit. Check on it with `./scripts/render.sh status` and `./scripts/render.sh logs`.
 - Final iteration should deploy and output the live URL.
 
 ## Out of Scope

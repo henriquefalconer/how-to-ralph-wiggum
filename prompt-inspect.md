@@ -44,7 +44,7 @@ This is a **generic product cloning system** — the target could be any SaaS st
   - All data models with field types
   - **Backend Architecture** — map each feature to the cloud service that powers it
   - **SDK/DX** — what SDK to build, what developer workflow to support
-  - **Deployment** — deployment instructions (Render Docker web service + Neon Postgres)
+  - **Deployment** — deployment instructions (Render web service, native Node runtime + Neon Postgres)
   - **Build Order** — prioritized list, core features first
 
 5. **Build for a REAL Product, Not a Mock:**
@@ -58,12 +58,12 @@ This is a **generic product cloning system** — the target could be any SaaS st
      - Queues/async jobs? → Postgres-backed job table polled by a route handler
      - Search? → Postgres full-text search
      - Charts/analytics? → Postgres aggregation queries
-     - Hosting? → Render Docker web service
+     - Hosting? → Render web service (native Node runtime, built from the repo)
    - **The clone builds its OWN API** — it does NOT call the target product's API.
    - **No mock data, no SQLite, no fake backends.**
 
    **Pre-configured cloud credentials (all in `.env`):**
-   - `DATABASE_URL` — Neon Postgres
+   - `NEON_DATABASE_URL` — Neon Postgres
 
 6. **PRD Entry Priority:**
    - P0: Infrastructure (DB, cloud service setup)

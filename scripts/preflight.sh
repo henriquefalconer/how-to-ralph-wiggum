@@ -37,14 +37,20 @@ fi
 # 1. Neon Postgres
 echo ""
 echo "--- Neon Postgres ---"
-check_var DATABASE_URL "Neon connection string (Neon dashboard -> Connection Details)"
+check_var NEON_DATABASE_URL "Neon connection string (Neon dashboard -> Connection Details)"
 
 # 2. Auth wall
 echo ""
 echo "--- Auth Wall ---"
 check_var DASHBOARD_KEY "master key that unlocks the dashboard and the API"
 
-# 3. Summary
+# 3. Render
+echo ""
+echo "--- Render ---"
+check_var RENDER_API_KEY "Render API key (Render dashboard -> Account Settings -> API Keys)"
+check_var RENDER_SERVICE_ID "Render service id, srv-... (from the service's dashboard URL)"
+
+# 4. Summary
 echo ""
 if [ ${#MISSING[@]} -eq 0 ]; then
   echo "=== Pre-flight Complete — all checks passed ==="
