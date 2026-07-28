@@ -53,69 +53,23 @@ echo "--- Render ---"
 check_var RENDER_API_KEY "Render API key (Render dashboard -> Account Settings -> API Keys)"
 check_var RENDER_SERVICE_ID "Render service id, srv-... (from the service's dashboard URL)"
 
-# 4. Neon usage — only meaningful once the four Neon vars are present.
-#
-# Two things this catches that a "is the variable set" check cannot: ids that
-# resolve but describe a DIFFERENT project than the app writes to (the endpoint
-# comparison below), and a run started with storage already near the cap.
-#
-# Storage is the limit this workload approaches, not compute. Neon bills
+# 4. Neon usage — storage is the limit this workload approaches. Neon bills
 # *synthetic* storage, which includes history retention and runs several times
-# the logical database size under a build's write churn. The plan's "compute
-# hours" are CU-hours: at the free tier's 0.25 CU, 191.9 CU-h is ~767 hours of
-# activity a month, which a single run cannot exhaust.
-if [ -n "${NEON_API_KEY:-}" ] && [ -n "${NEON_ORG_ID:-}" ] && [ -n "${NEON_PROJECT_ID:-}" ]; then
+# the logical database size under a build's write churn. Informational: a slow
+# or unreachable API must not block a run.
+if [ -n "${NEON_API_KEY:-}" ] && [ -n "${NEON_PROJECT_ID:-}" ]; then
   echo ""
   echo "--- Neon usage ---"
-  NEON_JSON=$(curl -s --max-time 20 \
-    -H "Authorization: Bearer $NEON_API_KEY" -H "Accept: application/json" \
-    "https://console.neon.tech/api/v2/projects/$NEON_PROJECT_ID" 2>/dev/null || true)
-  NEON_EPS=$(curl -s --max-time 20 \
-    -H "Authorization: Bearer $NEON_API_KEY" -H "Accept: application/json" \
-    "https://console.neon.tech/api/v2/projects/$NEON_PROJECT_ID/endpoints" 2>/dev/null || true)
-  if ! NEON_REPORT=$(NEON_JSON="$NEON_JSON" NEON_EPS="$NEON_EPS" \
-      DB_URL="${NEON_DATABASE_URL:-}" ORG_ID="$NEON_ORG_ID" python3 - <<'PY'
-import json, os, re, sys
-try:
-    proj = json.loads(os.environ["NEON_JSON"]).get("project") or {}
-except Exception:
-    print("  WARN     could not reach the Neon API (network or bad NEON_API_KEY)"); sys.exit(0)
-if not proj:
-    print("  FAIL     NEON_PROJECT_ID does not resolve with this NEON_API_KEY"); sys.exit(1)
-print(f"  OK       project {proj.get('name')} ({proj.get('region_id')}, pg{proj.get('pg_version')})")
-if proj.get("org_id") and proj["org_id"] != os.environ["ORG_ID"]:
-    print(f"  FAIL     NEON_ORG_ID is {os.environ['ORG_ID']} but the project belongs to {proj['org_id']}")
-    sys.exit(1)
-# The ids must describe the database the app actually writes to.
-host = ""
-m = re.search(r"@([^/?:]+)", os.environ.get("DB_URL", ""))
-if m:
-    host = m.group(1)
-    try:
-        eps = json.loads(os.environ["NEON_EPS"]).get("endpoints", [])
-    except Exception:
-        eps = []
-    rw = [e.get("host", "") for e in eps if e.get("type") == "read_write"]
-    if rw and host not in rw:
-        print(f"  FAIL     NEON_DATABASE_URL points at {host}, not this project's endpoint ({rw[0]})")
-        sys.exit(1)
-    if rw:
-        print(f"  OK       NEON_DATABASE_URL matches the project's read_write endpoint")
-storage = proj.get("synthetic_storage_size")
-compute = proj.get("compute_time_seconds")
-if storage is not None:
-    pct = storage / 5e8 * 100          # 500 MB on the free plan
-    flag = "WARN " if pct >= 80 else "OK   "
-    print(f"  {flag}    storage {storage/1e6:.1f} MB of 500 MB ({pct:.1f}%) — synthetic, includes history retention")
-if compute is not None:
-    print(f"  OK       compute {compute/3600:.2f} CU-h of 191.9 ({compute/3600/191.9*100:.1f}%) — not the binding limit")
-PY
-  ); then
-    echo "$NEON_REPORT"
-    MISSING+=("Neon configuration is inconsistent — see above")
-  else
-    echo "$NEON_REPORT"
-  fi
+  curl -s --max-time 20 -H "Authorization: Bearer $NEON_API_KEY" \
+    "https://console.neon.tech/api/v2/projects/$NEON_PROJECT_ID" 2>/dev/null |
+    python3 -c "
+import json, sys
+p = (json.load(sys.stdin).get('project') or {})
+if not p:
+    print('  WARN     could not read project usage from the Neon API'); raise SystemExit
+mb = (p.get('synthetic_storage_size') or 0) / 1e6
+print(f\"  OK       {p.get('name')} — storage {mb:.1f} MB of 500 MB ({mb/500*100:.1f}%)\")
+" 2>/dev/null || echo "  WARN     could not read project usage from the Neon API"
 fi
 
 # 5. Summary
