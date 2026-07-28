@@ -4,7 +4,25 @@
 
 Give it any URL → It inspects, builds, tests, and deploys a working clone.
 
-![Ralph-to-Ralph Architecture](decks/ralph-to-ralph/assets/architecture-diagram.png)
+```mermaid
+flowchart LR
+    URL(["Target URL"])
+
+    subgraph WD["Watchdog Orchestrator — auto-restart · git commit+push · cron backup"]
+        direction LR
+        INSPECT["<b>INSPECT</b><br/>Phase 1 · Ever CLI + Claude<br/>prd.json · spec-build.md<br/>sitemap + screenshots"]
+        BUILD["<b>BUILD</b><br/>Phase 2 · Claude<br/>API routes + components<br/>Vitest unit tests<br/>Neon · R2 · Render"]
+        QA["<b>QA</b><br/>Phase 3 · Claude<br/>E2E via Ever CLI + Playwright<br/>bug fixes + screenshots<br/>regression suite"]
+
+        INSPECT --> BUILD --> QA
+        QA -- "bugs found → fix → retest<br/>(up to 5 cycles)" --> BUILD
+    end
+
+    DEPLOYED(["Deployed Product<br/>live on Render"])
+
+    URL --> INSPECT
+    QA --> DEPLOYED
+```
 
 ## What Is This?
 
