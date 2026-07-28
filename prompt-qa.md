@@ -50,7 +50,7 @@ Also run full `make test-e2e` to catch cross-feature regressions.
 8. Verify real infrastructure, not mocks:
    - Test via curl/SDK directly, not just UI
    - Create a record → row actually lands in Neon Postgres?
-   - Upload a file → object actually lands in the R2 bucket, and the returned URL serves it?
+   - Upload a file → row actually lands in the files table, and the returned URL serves the bytes back with the right `Content-Type`?
    - Create API key → authenticates real requests?
 </important>
 

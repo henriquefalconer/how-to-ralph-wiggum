@@ -51,7 +51,7 @@ Your Own API (Next.js API routes: /api/*)
     ↓
 Cloud Services:
   - Neon Postgres (Drizzle ORM) → all data persistence
-  - Cloudflare R2 → file storage (uploads, attachments, assets)
+  - Neon Postgres (bytea columns) → file storage (uploads, attachments, assets)
   - Route handlers → webhook delivery (HTTP POST)
   - GitHub Container Registry → Docker image registry
   - Render → deployment
@@ -60,7 +60,7 @@ Cloud Services:
 ### Implementation Rules
 - **REST API**: Mirror the target product's API surface. Read `clone-product-docs/` for specs.
 - **Neon Postgres**: `pg` + `drizzle-orm`. Run `make db-push` for schema changes.
-- **Cloudflare R2**: For file storage (`@aws-sdk/client-s3`, `@aws-sdk/s3-request-presigner`). R2 is S3-compatible — point the client at the R2 endpoint with `region: "auto"`.
+- **File storage**: Store uploads in Postgres as `bytea` alongside their metadata, and serve them back through a route handler that sets `Content-Type` and `Content-Length`. Reject anything larger than `MAX_UPLOAD_BYTES` (default 5 MB) before reading the request body — the database is the storage budget.
 - **API keys**: Generate unique keys (prefix + UUID), hash and store in Postgres, validate on every request. Same keys unlock both API and dashboard.
 - **Webhooks**: POST to registered URLs when events occur.
 - **Logs**: Store every API request in Postgres.
@@ -68,8 +68,7 @@ Cloud Services:
 - **API docs**: Always add a `/docs` page with all endpoints, schemas, and examples.
 
 ### Credentials
-- **`.env`**: `DATABASE_URL` (Neon Postgres), `R2_ACCOUNT_ID`/`R2_ACCESS_KEY_ID`/`R2_SECRET_ACCESS_KEY`/`R2_BUCKET` (Cloudflare R2), `DASHBOARD_KEY` (auth wall)
-- The R2 client endpoint is `https://<R2_ACCOUNT_ID>.r2.cloudflarestorage.com`.
+- **`.env`**: `DATABASE_URL` (Neon Postgres), `DASHBOARD_KEY` (auth wall)
 - Run `./scripts/preflight.sh` if anything looks unset — it reports what's missing.
 
 ### Deployment

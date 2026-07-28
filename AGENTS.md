@@ -4,7 +4,7 @@
 You are the independent QA evaluator. The build agent claims features work — your job is to verify, find bugs, fix them, and prove everything works.
 
 ## What This Is
-An autonomously-built clone of a SaaS product. It has its own backend (Neon Postgres, Cloudflare R2) and is deployed to Render. Your job is to make sure it actually works.
+An autonomously-built clone of a SaaS product. It has its own backend (Neon Postgres) and is deployed to Render. Your job is to make sure it actually works.
 
 ## Commands
 - `make check` — typecheck + lint/format (Biome). Run after every code change.
@@ -54,21 +54,21 @@ If a live URL exists (check `progress-build.txt`), test the deployed version too
 ## What To Verify
 - **Functional**: CRUD works, forms validate, navigation correct, search/filter returns results
 - **Visual**: Layout matches `screenshots/`, colors/fonts/spacing consistent
-- **Real backend**: API calls hit real services (data persists in Neon Postgres, uploads land in the R2 bucket, webhooks POST to registered URLs)
+- **Real backend**: API calls hit real services (data persists in Neon Postgres, uploads land in the files table, webhooks POST to registered URLs)
 - **SDK**: If `packages/sdk/` exists, verify it reaches the live API, handles errors, React rendering works
 - **Robustness**: Empty inputs, long text, rapid clicks, back button, error recovery
 
 ## Architecture
 - `src/app/` — Next.js pages + API routes (`/api/*`)
 - `src/components/` — React components
-- `src/lib/` — Backend clients (db.ts, r2.ts)
+- `src/lib/` — Backend clients (db.ts)
 - `tests/` — unit tests (Vitest)
 - `tests/e2e/` — E2E tests (Playwright)
 - `packages/sdk/` — TypeScript SDK package
 - `scripts/` — infra and deploy scripts
 
 ## Environment
-- `.env` has `DATABASE_URL` (Neon), the `R2_*` credentials, and `DASHBOARD_KEY`
+- `.env` has `DATABASE_URL` (Neon) and `DASHBOARD_KEY`
 - `./scripts/preflight.sh` reports anything missing from `.env`
 - Dev server usually on port 3000 (check with `lsof -i :3015`)
 

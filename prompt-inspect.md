@@ -52,8 +52,8 @@ This is a **generic product cloning system** — the target could be any SaaS st
 
    - **Identify the core infrastructure** the target product needs. Map each feature to the simplest cloud service:
      - Database? → Neon Postgres via Drizzle ORM
-     - File storage/uploads? → Cloudflare R2 (S3-compatible)
-     - Large file transfer? → R2 presigned URLs
+     - File storage/uploads? → Postgres `bytea` column, served by a route handler
+     - Large file transfer? → out of scope; cap uploads at `MAX_UPLOAD_BYTES` (5 MB)
      - Webhooks? → HTTP POST to registered URLs
      - Queues/async jobs? → Postgres-backed job table polled by a route handler
      - Search? → Postgres full-text search
@@ -64,7 +64,6 @@ This is a **generic product cloning system** — the target could be any SaaS st
 
    **Pre-configured cloud credentials (all in `.env`):**
    - `DATABASE_URL` — Neon Postgres
-   - `R2_ACCOUNT_ID` / `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` / `R2_BUCKET` — Cloudflare R2
 
 6. **PRD Entry Priority:**
    - P0: Infrastructure (DB, cloud service setup)

@@ -39,20 +39,12 @@ echo ""
 echo "--- Neon Postgres ---"
 check_var DATABASE_URL "Neon connection string (Neon dashboard -> Connection Details)"
 
-# 2. Cloudflare R2
-echo ""
-echo "--- Cloudflare R2 ---"
-check_var R2_ACCOUNT_ID "Cloudflare account ID — endpoint is https://<id>.r2.cloudflarestorage.com"
-check_var R2_ACCESS_KEY_ID "R2 API token access key ID"
-check_var R2_SECRET_ACCESS_KEY "R2 API token secret access key"
-check_var R2_BUCKET "R2 bucket name"
-
-# 3. Auth wall
+# 2. Auth wall
 echo ""
 echo "--- Auth Wall ---"
 check_var DASHBOARD_KEY "master key that unlocks the dashboard and the API"
 
-# 4. Summary
+# 3. Summary
 echo ""
 if [ ${#MISSING[@]} -eq 0 ]; then
   echo "=== Pre-flight Complete — all checks passed ==="
@@ -64,7 +56,7 @@ else
     echo "  - $item"
   done
   echo ""
-  echo "Neon, R2 and Render are each created from their own web dashboard."
+  echo "Neon and Render are each created from their own web dashboard."
   echo "Set them up there, put the values in ./.env, then re-run this script."
   exit 1
 fi

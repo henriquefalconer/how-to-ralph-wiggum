@@ -25,23 +25,31 @@ Everything listed here is already installed and configured. Do NOT reinstall, re
 ## Infrastructure (validated by `scripts/preflight.sh`)
 Every service below is on a free tier and is created from its own web dashboard.
 `scripts/preflight.sh` checks that `.env` has the credentials for all of them:
-- **Neon Postgres** — serverless Postgres, connection string in `.env` as `DATABASE_URL`
-- **Cloudflare R2** — S3-compatible object storage, bucket in `.env` as `R2_BUCKET`
+- **Neon Postgres** — serverless Postgres, connection string in `.env` as `DATABASE_URL`.
+  Holds both the relational data and any uploaded files.
 - **Render** — Docker web service built from the repo `Dockerfile`, free plan
 - **GitHub Container Registry** — images at `ghcr.io/<owner>/<repo>`
 
-## Cloudflare R2 Client
-R2 speaks the S3 API, so use `@aws-sdk/client-s3` and `@aws-sdk/s3-request-presigner`:
+## File Storage
+Uploads live in Postgres, in a `bytea` column alongside their metadata — there is no
+separate object store:
 ```ts
-new S3Client({
-  region: "auto",
-  endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-  credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
-  },
+export const files = pgTable("files", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  contentType: text("content_type").notNull(),
+  size: integer("size").notNull(),
+  data: customType<{ data: Buffer }>({ dataType: () => "bytea" })("data").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 ```
+Serve bytes back through a route handler (`/api/files/[id]`) that sets `Content-Type`
+and `Content-Length` from the row.
+
+**Cap every upload.** The database is the storage budget, so reject anything over
+`MAX_UPLOAD_BYTES` (default 5 MB) in the route handler *before* reading the body, and
+keep total stored bytes well under the plan's limit. Writes fail rather than silently
+costing money, so a missing cap surfaces as a broken feature, not a bill.
 
 ## Container Registry
 The GitHub CLI is a Windows binary, not on `PATH` as `gh`. Use it to log in to `ghcr.io`:
@@ -69,9 +77,6 @@ scripts/           — Infrastructure and deploy scripts
 
 ## .env Contents
 - `DATABASE_URL` — Neon Postgres connection string
-- `R2_ACCOUNT_ID` — Cloudflare account ID (used to build the R2 endpoint)
-- `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` — R2 API token credentials
-- `R2_BUCKET` — R2 bucket name
 - `DASHBOARD_KEY` — master key for dashboard auth (set when needed)
 
 ## Target Product Login (if session expires)

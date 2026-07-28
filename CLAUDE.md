@@ -10,7 +10,7 @@ Phase 1: Inspect (Claude + Ever CLI) → Phase 2: Build (Claude + Playwright E2E
 - **Styling**: Tailwind CSS
 - **UI Primitives**: Radix UI (or whatever matches the target product)
 - **Database**: Neon serverless Postgres via Drizzle ORM (`pg`)
-- **Storage**: Cloudflare R2, S3-compatible (`@aws-sdk/client-s3`)
+- **Storage**: uploads stored in Postgres (`bytea`), served by route handlers
 - **Deployment**: Render (Docker web service)
 - **Registry**: GitHub Container Registry (`ghcr.io`)
 - **Unit Tests**: Vitest
@@ -37,7 +37,7 @@ Phase 1: Inspect (Claude + Ever CLI) → Phase 2: Build (Claude + Playwright E2E
 - `src/` — source code
 - `src/app/` — Next.js App Router pages and API routes
 - `src/components/` — React components
-- `src/lib/` — utilities, helpers, API clients (db.ts, r2.ts)
+- `src/lib/` — utilities, helpers, API clients (db.ts)
 - `src/types/` — TypeScript types
 - `tests/` — unit tests (Vitest)
 - `tests/e2e/` — E2E tests (Playwright)
@@ -67,7 +67,6 @@ Phase 1: Inspect (Claude + Ever CLI) → Phase 2: Build (Claude + Playwright E2E
   Use `gh.exe` for any other GitHub work too (PRs, issues, API).
 - **`.env`** contains:
   - `DATABASE_URL` — Neon Postgres connection string
-  - `R2_ACCOUNT_ID` / `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` / `R2_BUCKET` — Cloudflare R2 object storage
   - `DASHBOARD_KEY` — master key for dashboard access
   - Target product API keys (for testing/comparing only, not for the clone's backend)
 - **Preflight** — `./scripts/preflight.sh` validates `.env` before a run and lists anything missing.

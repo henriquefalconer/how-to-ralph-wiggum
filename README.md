@@ -11,7 +11,7 @@ flowchart LR
     subgraph WD["Watchdog Orchestrator — auto-restart · git commit+push · cron backup"]
         direction LR
         INSPECT["<b>INSPECT</b><br/>Phase 1 · Ever CLI + Claude<br/>prd.json · spec-build.md<br/>sitemap + screenshots"]
-        BUILD["<b>BUILD</b><br/>Phase 2 · Claude<br/>API routes + components<br/>Vitest unit tests<br/>Neon · R2 · Render"]
+        BUILD["<b>BUILD</b><br/>Phase 2 · Claude<br/>API routes + components<br/>Vitest unit tests<br/>Neon · Render"]
         QA["<b>QA</b><br/>Phase 3 · Claude<br/>E2E via Ever CLI + Playwright<br/>bug fixes + screenshots<br/>regression suite"]
 
         INSPECT --> BUILD --> QA
@@ -48,7 +48,7 @@ Ralph-to-Ralph runs a three-phase autonomous pipeline:
 **Claude Agent (Opus)** builds the full stack:
 - API routes + React components
 - Unit tests (Vitest)
-- Cloud infrastructure (Neon, R2, Render)
+- Cloud infrastructure (Neon, Render)
 
 ### Phase 3: QA (Ralph Loop #3)
 
@@ -78,7 +78,7 @@ A strict watchdog wraps the entire pipeline, ensuring all Ralph loops stay stabl
 ## Running It
 
 ```bash
-# 1. Check the environment once (Neon, R2, dashboard key)
+# 1. Check the environment once (Neon, dashboard key)
 ./scripts/preflight.sh
 
 # 2. Point the pipeline at a target product
@@ -92,7 +92,7 @@ every feature. Progress is visible in `prd.json` (`passes` flags),
 ### What a Completed Run Produces
 
 - **A real backend** — the clone serves its own REST API; it never proxies the target's
-- **Real cloud infrastructure** — Neon Postgres via Drizzle, Cloudflare R2 storage, deployed on Render
+- **Real cloud infrastructure** — Neon Postgres via Drizzle, uploads stored in Postgres, deployed on Render
 - **A dashboard** — pages matching the target product's UI, built from inspection screenshots
 - **A TypeScript SDK** in `packages/sdk/` when the target ships a client library
 - **API docs** — an auto-generated `/docs` page covering every endpoint
@@ -106,7 +106,7 @@ every feature. Progress is visible in `prd.json` (`passes` flags),
 - **Styling:** Tailwind CSS
 - **UI:** Radix UI
 - **Database:** Neon serverless Postgres via Drizzle ORM
-- **Storage:** Cloudflare R2 (S3-compatible)
+- **Storage:** Neon Postgres (`bytea` columns)
 - **Deployment:** Render (Docker web service)
 - **Registry:** GitHub Container Registry
 
