@@ -72,7 +72,43 @@ print(f\"  OK       {p.get('name')} — storage {mb:.1f} MB of 500 MB ({mb/500*1
 " 2>/dev/null || echo "  WARN     could not read project usage from the Neon API"
 fi
 
-# 5. Summary
+# 5. Render usage — free plan includes 5 GB bandwidth and 500 pipeline minutes
+# a month. Bandwidth comes from the metrics API; pipeline minutes are NOT
+# exposed by Render's API at all, so build time is derived from deploy
+# durations and marked as an estimate. Informational, like the Neon block.
+if [ -n "${RENDER_API_KEY:-}" ] && [ -n "${RENDER_SERVICE_ID:-}" ]; then
+  echo ""
+  echo "--- Render usage ---"
+  RENDER_AUTH="Authorization: Bearer $RENDER_API_KEY"
+  BW=$(curl -s --max-time 20 -H "$RENDER_AUTH" \
+    "https://api.render.com/v1/metrics/bandwidth?resource=$RENDER_SERVICE_ID" 2>/dev/null || true)
+  DEP=$(curl -s --max-time 20 -H "$RENDER_AUTH" \
+    "https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys?limit=100" 2>/dev/null || true)
+  BW="$BW" DEP="$DEP" python3 -c "
+import json, os, datetime
+try:
+    series = json.loads(os.environ['BW'])
+    mb = sum(v.get('value', 0) for s in series for v in s.get('values', []))
+    print(f'  OK       bandwidth {mb:.1f} MB of 5120 MB ({mb/5120*100:.1f}%)')
+except Exception:
+    print('  WARN     could not read bandwidth from the Render API')
+try:
+    month = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m')
+    secs = 0.0
+    for d in json.loads(os.environ['DEP']):
+        d = d.get('deploy', d)
+        a, b = d.get('createdAt'), d.get('finishedAt')
+        if a and b and a.startswith(month):
+            f = lambda t: datetime.datetime.fromisoformat(t.replace('Z', '+00:00'))
+            secs += (f(b) - f(a)).total_seconds()
+    m = secs / 60
+    print(f'  OK       pipeline ~{m:.1f} min of 500 ({m/500*100:.1f}%) — estimated from deploy durations')
+except Exception:
+    print('  WARN     could not read deploys from the Render API')
+" 2>/dev/null || echo "  WARN     could not read usage from the Render API"
+fi
+
+# 6. Summary
 echo ""
 if [ ${#MISSING[@]} -eq 0 ]; then
   echo "=== Pre-flight Complete — all checks passed ==="
