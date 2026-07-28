@@ -81,4 +81,19 @@ test.describe("smoke", () => {
     await page.waitForURL(/\/open-cards\/.+/);
     await expect(page.getByTestId("card-title")).toBeVisible();
   });
+
+  test("the Databases tab creates a database and loads its grid page", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.getByTestId("home-tab-databases").click();
+    await page.getByTestId("create-database-tile").click();
+    await page
+      .getByTestId("database-name-input")
+      .fill(`Smoke Database ${Date.now()}`);
+    await page.getByTestId("submit-create-database").click();
+
+    await page.waitForURL(/\/apollo_databases\/.+/);
+    await expect(page.getByTestId("create-record-button")).toBeVisible();
+  });
 });

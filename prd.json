@@ -255,7 +255,7 @@
     "data_model": "tables: id, org_id (fk), name, public (bool), title_field_id (fk, nullable), subtitle_template (text, default 'Criado em'), create_button_label (text, default 'Criar registro'), all_members_can_crud (bool). table_records: id, table_id (fk), title (derived live from title_field_id's value), created_at, updated_at. table_record_field_values: id, record_id (fk), field_id (fk), value (text), date_value, datetime_value, float_value",
     "priority": 3,
     "core": true,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {

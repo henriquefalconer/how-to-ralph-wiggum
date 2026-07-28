@@ -139,6 +139,48 @@ export interface Dictionary {
       backToBoard: string;
     };
   };
+  database: {
+    createTile: string;
+    createModalTitle: string;
+    nameLabel: string;
+    namePlaceholder: string;
+    submit: string;
+    cancel: string;
+    close: string;
+    recordsCountOne: string;
+    recordsCountOther: string;
+    titleColumn: string;
+    emptyState: string;
+    createRecord: string;
+    requiredError: string;
+    createSuccessToast: string;
+    backToHome: string;
+    manage: string;
+    detail: {
+      infoHeading: string;
+      createdAtLabel: string;
+      updatedAtLabel: string;
+      edit: string;
+      save: string;
+      cancel: string;
+      deleteRecord: string;
+      backToGrid: string;
+      noFields: string;
+    };
+    settings: {
+      heading: string;
+      titleFieldLabel: string;
+      titleFieldNone: string;
+      permissionsLabel: string;
+      publicOption: string;
+      privateOption: string;
+      allMembersCanCrudCheckbox: string;
+      deleteDatabase: string;
+      deleteConfirm: string;
+      save: string;
+      backToGrid: string;
+    };
+  };
 }
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -276,6 +318,50 @@ export const dictionaries: Record<Locale, Dictionary> = {
         moveButton: "Move to {phase}",
         noPhaseFields: "No fields in this phase",
         backToBoard: "Back to board",
+      },
+    },
+    database: {
+      createTile: "Create database",
+      createModalTitle: "Create database",
+      nameLabel: "Database name",
+      namePlaceholder: "e.g. Suppliers",
+      submit: "Create database",
+      cancel: "Cancel",
+      close: "Close",
+      recordsCountOne: "{n} record",
+      recordsCountOther: "{n} records",
+      titleColumn: "Title",
+      emptyState: "No records yet",
+      createRecord: "Create record",
+      requiredError: "must be filled in",
+      createSuccessToast: "Record created successfully",
+      backToHome: "Back to home",
+      manage: "Manage",
+      detail: {
+        infoHeading: "Record information",
+        createdAtLabel: "Created at",
+        updatedAtLabel: "Updated at {date}",
+        edit: "Edit",
+        save: "Save",
+        cancel: "Cancel",
+        deleteRecord: "Delete record",
+        backToGrid: "Back to database",
+        noFields: "No fields yet",
+      },
+      settings: {
+        heading: "Database settings",
+        titleFieldLabel: "Record title",
+        titleFieldNone: "None",
+        permissionsLabel: "Permissions",
+        publicOption: "Public database",
+        privateOption: "Private database",
+        allMembersCanCrudCheckbox:
+          "Everyone in this database can create, edit and delete records",
+        deleteDatabase: "Delete this database",
+        deleteConfirm:
+          "Are you sure you want to delete this database? This action cannot be undone.",
+        save: "Save",
+        backToGrid: "Back to database",
       },
     },
   },
@@ -418,6 +504,50 @@ export const dictionaries: Record<Locale, Dictionary> = {
         moveButton: "Mover para {phase}",
         noPhaseFields: "Nenhum campo nesta fase",
         backToBoard: "Voltar ao quadro",
+      },
+    },
+    database: {
+      createTile: "Criar database",
+      createModalTitle: "Criar database",
+      nameLabel: "Nome do database",
+      namePlaceholder: "ex. Fornecedores",
+      submit: "Criar database",
+      cancel: "Cancelar",
+      close: "Fechar",
+      recordsCountOne: "{n} registro",
+      recordsCountOther: "{n} registros",
+      titleColumn: "Título",
+      emptyState: "Nenhum registro ainda",
+      createRecord: "Criar registro",
+      requiredError: "deve ser informado",
+      createSuccessToast: "Registro criado com sucesso",
+      backToHome: "Voltar ao início",
+      manage: "Gerenciar",
+      detail: {
+        infoHeading: "Informações de registro",
+        createdAtLabel: "Criado em",
+        updatedAtLabel: "Atualizado em {date}",
+        edit: "Editar",
+        save: "Salvar",
+        cancel: "Cancelar",
+        deleteRecord: "Deletar registro",
+        backToGrid: "Voltar ao database",
+        noFields: "Nenhum campo ainda",
+      },
+      settings: {
+        heading: "Configurações de database",
+        titleFieldLabel: "Título do registro",
+        titleFieldNone: "Nenhum",
+        permissionsLabel: "Permissões",
+        publicOption: "Database público",
+        privateOption: "Database privado",
+        allMembersCanCrudCheckbox:
+          "Todas as pessoas neste database podem criar, editar e deletar registros",
+        deleteDatabase: "Excluir este database",
+        deleteConfirm:
+          "Tem certeza de que deseja excluir este database? Esta ação não pode ser desfeita.",
+        save: "Salvar",
+        backToGrid: "Voltar ao database",
       },
     },
   },
@@ -563,6 +693,50 @@ export const dictionaries: Record<Locale, Dictionary> = {
         backToBoard: "Volver al tablero",
       },
     },
+    database: {
+      createTile: "Crear database",
+      createModalTitle: "Crear database",
+      nameLabel: "Nombre del database",
+      namePlaceholder: "p. ej. Proveedores",
+      submit: "Crear database",
+      cancel: "Cancelar",
+      close: "Cerrar",
+      recordsCountOne: "{n} registro",
+      recordsCountOther: "{n} registros",
+      titleColumn: "Título",
+      emptyState: "Todavía no hay registros",
+      createRecord: "Crear registro",
+      requiredError: "debe completarse",
+      createSuccessToast: "Registro creado con éxito",
+      backToHome: "Volver al inicio",
+      manage: "Gestionar",
+      detail: {
+        infoHeading: "Información del registro",
+        createdAtLabel: "Creado el",
+        updatedAtLabel: "Actualizado el {date}",
+        edit: "Editar",
+        save: "Guardar",
+        cancel: "Cancelar",
+        deleteRecord: "Eliminar registro",
+        backToGrid: "Volver al database",
+        noFields: "Todavía no hay campos",
+      },
+      settings: {
+        heading: "Configuración del database",
+        titleFieldLabel: "Título del registro",
+        titleFieldNone: "Ninguno",
+        permissionsLabel: "Permisos",
+        publicOption: "Database público",
+        privateOption: "Database privado",
+        allMembersCanCrudCheckbox:
+          "Todas las personas en este database pueden crear, editar y eliminar registros",
+        deleteDatabase: "Eliminar este database",
+        deleteConfirm:
+          "¿Seguro que quieres eliminar este database? Esta acción no se puede deshacer.",
+        save: "Guardar",
+        backToGrid: "Volver al database",
+      },
+    },
   },
   zh: {
     nav: {
@@ -696,6 +870,49 @@ export const dictionaries: Record<Locale, Dictionary> = {
         moveButton: "移动到{phase}",
         noPhaseFields: "此阶段没有字段",
         backToBoard: "返回看板",
+      },
+    },
+    database: {
+      createTile: "创建数据库",
+      createModalTitle: "创建数据库",
+      nameLabel: "数据库名称",
+      namePlaceholder: "例如：供应商",
+      submit: "创建数据库",
+      cancel: "取消",
+      close: "关闭",
+      recordsCountOne: "{n} 条记录",
+      recordsCountOther: "{n} 条记录",
+      titleColumn: "标题",
+      emptyState: "暂无记录",
+      createRecord: "创建记录",
+      requiredError: "必须填写",
+      createSuccessToast: "记录创建成功",
+      backToHome: "返回首页",
+      manage: "管理",
+      detail: {
+        infoHeading: "记录信息",
+        createdAtLabel: "创建于",
+        updatedAtLabel: "更新于 {date}",
+        edit: "编辑",
+        save: "保存",
+        cancel: "取消",
+        deleteRecord: "删除记录",
+        backToGrid: "返回数据库",
+        noFields: "暂无字段",
+      },
+      settings: {
+        heading: "数据库设置",
+        titleFieldLabel: "记录标题",
+        titleFieldNone: "无",
+        permissionsLabel: "权限",
+        publicOption: "公开数据库",
+        privateOption: "私有数据库",
+        allMembersCanCrudCheckbox:
+          "此数据库中的所有人都可以创建、编辑和删除记录",
+        deleteDatabase: "删除此数据库",
+        deleteConfirm: "确定要删除此数据库吗？此操作无法撤销。",
+        save: "保存",
+        backToGrid: "返回数据库",
       },
     },
   },
@@ -843,6 +1060,50 @@ export const dictionaries: Record<Locale, Dictionary> = {
         backToBoard: "Zurück zum Board",
       },
     },
+    database: {
+      createTile: "Datenbank erstellen",
+      createModalTitle: "Datenbank erstellen",
+      nameLabel: "Datenbankname",
+      namePlaceholder: "z. B. Lieferanten",
+      submit: "Datenbank erstellen",
+      cancel: "Abbrechen",
+      close: "Schließen",
+      recordsCountOne: "{n} Eintrag",
+      recordsCountOther: "{n} Einträge",
+      titleColumn: "Titel",
+      emptyState: "Noch keine Einträge",
+      createRecord: "Eintrag erstellen",
+      requiredError: "muss ausgefüllt werden",
+      createSuccessToast: "Eintrag erfolgreich erstellt",
+      backToHome: "Zurück zur Startseite",
+      manage: "Verwalten",
+      detail: {
+        infoHeading: "Eintragsinformationen",
+        createdAtLabel: "Erstellt am",
+        updatedAtLabel: "Aktualisiert am {date}",
+        edit: "Bearbeiten",
+        save: "Speichern",
+        cancel: "Abbrechen",
+        deleteRecord: "Eintrag löschen",
+        backToGrid: "Zurück zur Datenbank",
+        noFields: "Noch keine Felder",
+      },
+      settings: {
+        heading: "Datenbankeinstellungen",
+        titleFieldLabel: "Eintragstitel",
+        titleFieldNone: "Keiner",
+        permissionsLabel: "Berechtigungen",
+        publicOption: "Öffentliche Datenbank",
+        privateOption: "Private Datenbank",
+        allMembersCanCrudCheckbox:
+          "Alle Mitglieder dieser Datenbank können Einträge erstellen, bearbeiten und löschen",
+        deleteDatabase: "Diese Datenbank löschen",
+        deleteConfirm:
+          "Möchtest du diese Datenbank wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+        save: "Speichern",
+        backToGrid: "Zurück zur Datenbank",
+      },
+    },
   },
   fr: {
     nav: {
@@ -987,6 +1248,50 @@ export const dictionaries: Record<Locale, Dictionary> = {
         backToBoard: "Retour au tableau",
       },
     },
+    database: {
+      createTile: "Créer un database",
+      createModalTitle: "Créer un database",
+      nameLabel: "Nom du database",
+      namePlaceholder: "p. ex. Fournisseurs",
+      submit: "Créer le database",
+      cancel: "Annuler",
+      close: "Fermer",
+      recordsCountOne: "{n} enregistrement",
+      recordsCountOther: "{n} enregistrements",
+      titleColumn: "Titre",
+      emptyState: "Aucun enregistrement pour l'instant",
+      createRecord: "Créer un enregistrement",
+      requiredError: "doit être renseigné",
+      createSuccessToast: "Enregistrement créé avec succès",
+      backToHome: "Retour à l'accueil",
+      manage: "Gérer",
+      detail: {
+        infoHeading: "Informations sur l'enregistrement",
+        createdAtLabel: "Créé le",
+        updatedAtLabel: "Mis à jour le {date}",
+        edit: "Modifier",
+        save: "Enregistrer",
+        cancel: "Annuler",
+        deleteRecord: "Supprimer l'enregistrement",
+        backToGrid: "Retour au database",
+        noFields: "Aucun champ pour l'instant",
+      },
+      settings: {
+        heading: "Paramètres du database",
+        titleFieldLabel: "Titre de l'enregistrement",
+        titleFieldNone: "Aucun",
+        permissionsLabel: "Autorisations",
+        publicOption: "Database public",
+        privateOption: "Database privé",
+        allMembersCanCrudCheckbox:
+          "Tout le monde dans ce database peut créer, modifier et supprimer des enregistrements",
+        deleteDatabase: "Supprimer ce database",
+        deleteConfirm:
+          "Voulez-vous vraiment supprimer ce database ? Cette action est irréversible.",
+        save: "Enregistrer",
+        backToGrid: "Retour au database",
+      },
+    },
   },
   ja: {
     nav: {
@@ -1126,6 +1431,50 @@ export const dictionaries: Record<Locale, Dictionary> = {
         backToBoard: "ボードに戻る",
       },
     },
+    database: {
+      createTile: "データベースを作成",
+      createModalTitle: "データベースを作成",
+      nameLabel: "データベース名",
+      namePlaceholder: "例: サプライヤー",
+      submit: "データベースを作成",
+      cancel: "キャンセル",
+      close: "閉じる",
+      recordsCountOne: "{n} 件のレコード",
+      recordsCountOther: "{n} 件のレコード",
+      titleColumn: "タイトル",
+      emptyState: "まだレコードがありません",
+      createRecord: "レコードを作成",
+      requiredError: "入力が必要です",
+      createSuccessToast: "レコードが正常に作成されました",
+      backToHome: "ホームに戻る",
+      manage: "管理",
+      detail: {
+        infoHeading: "レコード情報",
+        createdAtLabel: "作成日",
+        updatedAtLabel: "更新日 {date}",
+        edit: "編集",
+        save: "保存",
+        cancel: "キャンセル",
+        deleteRecord: "レコードを削除",
+        backToGrid: "データベースに戻る",
+        noFields: "まだフィールドがありません",
+      },
+      settings: {
+        heading: "データベース設定",
+        titleFieldLabel: "レコードタイトル",
+        titleFieldNone: "なし",
+        permissionsLabel: "権限",
+        publicOption: "公開データベース",
+        privateOption: "非公開データベース",
+        allMembersCanCrudCheckbox:
+          "このデータベースの全員がレコードを作成・編集・削除できます",
+        deleteDatabase: "このデータベースを削除",
+        deleteConfirm:
+          "このデータベースを削除してもよろしいですか？この操作は元に戻せません。",
+        save: "保存",
+        backToGrid: "データベースに戻る",
+      },
+    },
   },
   hi: {
     nav: {
@@ -1261,6 +1610,50 @@ export const dictionaries: Record<Locale, Dictionary> = {
         moveButton: "{phase} में ले जाएं",
         noPhaseFields: "इस चरण में कोई फ़ील्ड नहीं है",
         backToBoard: "बोर्ड पर वापस जाएं",
+      },
+    },
+    database: {
+      createTile: "डेटाबेस बनाएं",
+      createModalTitle: "डेटाबेस बनाएं",
+      nameLabel: "डेटाबेस नाम",
+      namePlaceholder: "जैसे आपूर्तिकर्ता",
+      submit: "डेटाबेस बनाएं",
+      cancel: "रद्द करें",
+      close: "बंद करें",
+      recordsCountOne: "{n} रिकॉर्ड",
+      recordsCountOther: "{n} रिकॉर्ड",
+      titleColumn: "शीर्षक",
+      emptyState: "अभी तक कोई रिकॉर्ड नहीं",
+      createRecord: "रिकॉर्ड बनाएं",
+      requiredError: "भरा जाना आवश्यक है",
+      createSuccessToast: "रिकॉर्ड सफलतापूर्वक बनाया गया",
+      backToHome: "होम पर वापस जाएं",
+      manage: "प्रबंधित करें",
+      detail: {
+        infoHeading: "रिकॉर्ड जानकारी",
+        createdAtLabel: "बनाया गया",
+        updatedAtLabel: "अपडेट किया गया {date}",
+        edit: "संपादित करें",
+        save: "सहेजें",
+        cancel: "रद्द करें",
+        deleteRecord: "रिकॉर्ड हटाएं",
+        backToGrid: "डेटाबेस पर वापस जाएं",
+        noFields: "अभी तक कोई फ़ील्ड नहीं",
+      },
+      settings: {
+        heading: "डेटाबेस सेटिंग्स",
+        titleFieldLabel: "रिकॉर्ड शीर्षक",
+        titleFieldNone: "कोई नहीं",
+        permissionsLabel: "अनुमतियां",
+        publicOption: "सार्वजनिक डेटाबेस",
+        privateOption: "निजी डेटाबेस",
+        allMembersCanCrudCheckbox:
+          "इस डेटाबेस में सभी लोग रिकॉर्ड बना, संपादित और हटा सकते हैं",
+        deleteDatabase: "यह डेटाबेस हटाएं",
+        deleteConfirm:
+          "क्या आप वाकई इस डेटाबेस को हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।",
+        save: "सहेजें",
+        backToGrid: "डेटाबेस पर वापस जाएं",
       },
     },
   },
@@ -1400,6 +1793,50 @@ export const dictionaries: Record<Locale, Dictionary> = {
         backToBoard: "العودة إلى اللوحة",
       },
     },
+    database: {
+      createTile: "إنشاء قاعدة بيانات",
+      createModalTitle: "إنشاء قاعدة بيانات",
+      nameLabel: "اسم قاعدة البيانات",
+      namePlaceholder: "مثال: الموردون",
+      submit: "إنشاء قاعدة البيانات",
+      cancel: "إلغاء",
+      close: "إغلاق",
+      recordsCountOne: "{n} سجل",
+      recordsCountOther: "{n} سجلات",
+      titleColumn: "العنوان",
+      emptyState: "لا توجد سجلات بعد",
+      createRecord: "إنشاء سجل",
+      requiredError: "يجب تعبئته",
+      createSuccessToast: "تم إنشاء السجل بنجاح",
+      backToHome: "العودة إلى الصفحة الرئيسية",
+      manage: "إدارة",
+      detail: {
+        infoHeading: "معلومات السجل",
+        createdAtLabel: "تم الإنشاء في",
+        updatedAtLabel: "تم التحديث في {date}",
+        edit: "تعديل",
+        save: "حفظ",
+        cancel: "إلغاء",
+        deleteRecord: "حذف السجل",
+        backToGrid: "العودة إلى قاعدة البيانات",
+        noFields: "لا توجد حقول بعد",
+      },
+      settings: {
+        heading: "إعدادات قاعدة البيانات",
+        titleFieldLabel: "عنوان السجل",
+        titleFieldNone: "بلا",
+        permissionsLabel: "الأذونات",
+        publicOption: "قاعدة بيانات عامة",
+        privateOption: "قاعدة بيانات خاصة",
+        allMembersCanCrudCheckbox:
+          "يمكن لجميع الأشخاص في قاعدة البيانات هذه إنشاء السجلات وتعديلها وحذفها",
+        deleteDatabase: "حذف قاعدة البيانات هذه",
+        deleteConfirm:
+          "هل أنت متأكد أنك تريد حذف قاعدة البيانات هذه؟ لا يمكن التراجع عن هذا الإجراء.",
+        save: "حفظ",
+        backToGrid: "العودة إلى قاعدة البيانات",
+      },
+    },
   },
   ru: {
     nav: {
@@ -1537,6 +1974,50 @@ export const dictionaries: Record<Locale, Dictionary> = {
         moveButton: "Переместить на этап {phase}",
         noPhaseFields: "На этом этапе нет полей",
         backToBoard: "Вернуться к доске",
+      },
+    },
+    database: {
+      createTile: "Создать базу данных",
+      createModalTitle: "Создать базу данных",
+      nameLabel: "Название базы данных",
+      namePlaceholder: "например, Поставщики",
+      submit: "Создать базу данных",
+      cancel: "Отмена",
+      close: "Закрыть",
+      recordsCountOne: "{n} запись",
+      recordsCountOther: "{n} записей",
+      titleColumn: "Заголовок",
+      emptyState: "Пока нет записей",
+      createRecord: "Создать запись",
+      requiredError: "обязательно для заполнения",
+      createSuccessToast: "Запись успешно создана",
+      backToHome: "Вернуться на главную",
+      manage: "Управление",
+      detail: {
+        infoHeading: "Информация о записи",
+        createdAtLabel: "Создано",
+        updatedAtLabel: "Обновлено {date}",
+        edit: "Редактировать",
+        save: "Сохранить",
+        cancel: "Отмена",
+        deleteRecord: "Удалить запись",
+        backToGrid: "Вернуться к базе данных",
+        noFields: "Пока нет полей",
+      },
+      settings: {
+        heading: "Настройки базы данных",
+        titleFieldLabel: "Заголовок записи",
+        titleFieldNone: "Нет",
+        permissionsLabel: "Права доступа",
+        publicOption: "Публичная база данных",
+        privateOption: "Приватная база данных",
+        allMembersCanCrudCheckbox:
+          "Все участники этой базы данных могут создавать, редактировать и удалять записи",
+        deleteDatabase: "Удалить эту базу данных",
+        deleteConfirm:
+          "Вы уверены, что хотите удалить эту базу данных? Это действие нельзя отменить.",
+        save: "Сохранить",
+        backToGrid: "Вернуться к базе данных",
       },
     },
   },

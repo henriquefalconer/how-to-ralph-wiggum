@@ -1,18 +1,25 @@
-import { PipesSection } from "@/components/PipesSection";
+import { HomeTabs } from "@/components/HomeTabs";
 import { TopNav } from "@/components/TopNav";
 import { getTranslations } from "@/lib/i18n";
 import { getDefaultOrgId, listPipes } from "@/lib/pipes";
+import { listTables } from "@/lib/tables";
 
 export default async function HomePage() {
   const { locale, dictionary } = await getTranslations();
   const orgId = await getDefaultOrgId();
   const pipes = await listPipes(orgId);
+  const tables = await listTables(orgId);
 
   return (
     <main className="min-h-screen bg-[#F5F6F8]">
       <TopNav locale={locale} dictionary={dictionary} />
       <div className="mx-auto max-w-5xl px-8 py-8">
-        <PipesSection pipes={pipes} dictionary={dictionary} locale={locale} />
+        <HomeTabs
+          pipes={pipes}
+          tables={tables}
+          dictionary={dictionary}
+          locale={locale}
+        />
       </div>
     </main>
   );

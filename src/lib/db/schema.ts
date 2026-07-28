@@ -1,5 +1,6 @@
 import {
   boolean,
+  doublePrecision,
   integer,
   jsonb,
   pgTable,
@@ -150,6 +151,51 @@ export const cardFieldValues = pgTable(
       ],
     }),
   ],
+);
+
+export const tables = pgTable("tables", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  orgId: uuid("org_id")
+    .notNull()
+    .references(() => organizations.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  public: boolean("public").notNull().default(true),
+  // References fields.id within the (owner_type='table', owner_id=tables.id) scope.
+  titleFieldId: text("title_field_id"),
+  subtitleTemplate: text("subtitle_template").notNull().default("Criado em"),
+  createButtonLabel: text("create_button_label")
+    .notNull()
+    .default("Criar registro"),
+  allMembersCanCrud: boolean("all_members_can_crud").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const tableRecords = pgTable("table_records", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tableId: uuid("table_id")
+    .notNull()
+    .references(() => tables.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const tableRecordFieldValues = pgTable(
+  "table_record_field_values",
+  {
+    recordId: uuid("record_id")
+      .notNull()
+      .references(() => tableRecords.id, { onDelete: "cascade" }),
+    // Scoped to (owner_type='table', owner_id=tables.id) — implicit via the
+    // record's tableId, so no separate fieldOwnerType/fieldOwnerId columns
+    // are needed here (unlike card_field_values, which spans two scopes).
+    fieldId: text("field_id").notNull(),
+    value: text("value").notNull().default(""),
+    dateValue: timestamp("date_value", { mode: "date" }),
+    datetimeValue: timestamp("datetime_value"),
+    floatValue: doublePrecision("float_value"),
+    filledAt: timestamp("filled_at").defaultNow().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.recordId, table.fieldId] })],
 );
 
 export const cardTransitions = pgTable("card_transitions", {

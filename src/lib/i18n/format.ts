@@ -10,3 +10,14 @@ export function formatCardsCount(
       : dictionary.home.cardsCountOther;
   return template.replace("{n}", String(count));
 }
+
+export function formatRecordsCount(
+  dictionary: Dictionary,
+  count: number,
+): string {
+  const template =
+    count === 1
+      ? dictionary.database.recordsCountOne
+      : dictionary.database.recordsCountOther;
+  return template.replace("{n}", String(count));
+}

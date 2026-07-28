@@ -65,3 +65,12 @@ export function slugify(label: string): string {
     .replace(/[^a-z0-9]+/g, "_")
     .replace(/^_+|_+$/g, "");
 }
+
+// Masks raw digit entry into a currency amount, interpreting the digits as cents —
+// matches the target's live "15000" -> "150.00" behavior for `currency` fields.
+export function formatCurrencyInput(raw: string): string {
+  const digits = raw.replace(/\D/g, "");
+  if (!digits) return "";
+  const cents = Number.parseInt(digits, 10);
+  return (cents / 100).toFixed(2);
+}

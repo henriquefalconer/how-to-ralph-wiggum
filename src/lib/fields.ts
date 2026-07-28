@@ -76,6 +76,14 @@ export async function createField(
   const existingIds = new Set(existing.map((field) => field.id));
 
   const baseId = slugify(label) || "field";
+
+  // Confirmed live against the target (Database Table fields): a colliding label is
+  // rejected outright with "já está em uso", not auto-suffixed. Phase/start_form fields
+  // keep the auto-suffix fallback below (unverified against the real UI — see prd.json).
+  if (ownerType === "table" && existingIds.has(baseId)) {
+    throw new Error(`"${label}" já está em uso (already in use)`);
+  }
+
   let id = baseId;
   let suffix = 2;
   while (existingIds.has(id)) {
