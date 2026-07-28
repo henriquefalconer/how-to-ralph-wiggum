@@ -9,7 +9,7 @@ ITERATIONS="${2:-999}"
 
 MAX_FAILURES="${RALPH_MAX_FAILURES:-3}"   # abort after N consecutive no-promise iterations
 
-STATE_DIR="ralph-to-ralph/.state"
+STATE_DIR="ralph/.state"
 QA_SENTINEL="$STATE_DIR/qa-complete"
 DEV_PORT=3015
 
@@ -33,7 +33,7 @@ fi
 # shellcheck source=ralph-lib.sh
 . "$(dirname "$0")/ralph-lib.sh"
 
-echo "=== RALPH-TO-RALPH: Phase 3 (QA with Claude) ==="
+echo "=== Phase 3 (QA with Claude) ==="
 echo "Target: ${TARGET_URL:-none}"
 echo "Iterations: $ITERATIONS"
 echo "Progress: $PROGRESS"
@@ -111,7 +111,7 @@ When confused about how a feature should work, open $TARGET_URL with claude-in-c
 fi
 
 note "═══════════════════════════════════════════════════════"
-note "ralph-to-ralph Phase 3 (QA) starting — target=${TARGET_URL:-none} model=$MODEL max-iter=$ITERATIONS"
+note "Phase 3 (QA) starting — target=${TARGET_URL:-none} model=$MODEL max-iter=$ITERATIONS"
 
 consecutive_failures=0
 
@@ -121,7 +121,7 @@ for ((i=1; i<=ITERATIONS; i++)); do
   PROMPT_FILE="$RUN_DIR/prompt-qa-$i.txt"
   {
     cat <<PROMPT
-@ralph-to-ralph/prompt-qa.md @pre-setup.md @spec-build.md @prd.json @report-qa.json @claude-in-chrome-reference.md
+@ralph/prompt-qa.md @pre-setup.md @spec-build.md @prd.json @report-qa.json @claude-in-chrome-reference.md
 
 ITERATION: $i of $ITERATIONS
 PROGRESS: $PROGRESS

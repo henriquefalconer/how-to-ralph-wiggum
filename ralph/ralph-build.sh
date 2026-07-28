@@ -27,7 +27,7 @@ trap 'reap_sessions; exit 130' INT
 trap 'reap_sessions; exit 143' TERM
 trap 'reap_sessions' EXIT
 
-echo "=== RALPH-TO-RALPH: Phase 2 (Build) ==="
+echo "=== Phase 2 (Build) ==="
 echo "Iterations: $ITERATIONS"
 echo "Progress: $PROGRESS"
 echo ""
@@ -63,7 +63,7 @@ count_passes() { local s; s=$(read_prd 2>/dev/null) || s="0 0"; echo "${s%% *}";
 total_tasks()  { local s; s=$(read_prd 2>/dev/null) || s="0 0"; echo "${s##* }"; }
 
 note "═══════════════════════════════════════════════════════"
-note "ralph-to-ralph Phase 2 (Build) starting — model=$MODEL max-iter=$ITERATIONS"
+note "Phase 2 (Build) starting — model=$MODEL max-iter=$ITERATIONS"
 
 consecutive_failures=0
 
@@ -95,7 +95,7 @@ for ((i=1; i<=ITERATIONS; i++)); do
   PROMPT_FILE="$RUN_DIR/prompt-build-$i.txt"
   {
     cat <<PROMPT
-@ralph-to-ralph/prompt-build.md @pre-setup.md @spec-build.md @prd.json @CLAUDE.md
+@ralph/prompt-build.md @pre-setup.md @spec-build.md @prd.json @CLAUDE.md
 
 ITERATION: $i of $ITERATIONS
 PROGRESS_COUNT: $PASSES/$TOTAL features passed

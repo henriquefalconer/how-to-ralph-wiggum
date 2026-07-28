@@ -82,13 +82,14 @@ A strict watchdog wraps the entire pipeline, ensuring all Ralph loops stay stabl
 ./scripts/preflight.sh
 
 # 2. Point the pipeline at a target product
-./ralph-to-ralph/ralph-to-ralph.sh https://example.com
+./ralph/ralph-to-ralph.sh https://example.com
 ```
 
 The watchdog takes it from there — inspect, build, QA — committing after
 every feature. Progress is visible in `prd.json` (`passes` flags),
-`ralph-to-ralph/.state/progress/<phase>/NNN.md` (one journal file per
-iteration), and `report-qa.json`.
+`ralph/.state/runs/<run-id>/progress.txt` (one file for the whole run —
+every phase and every session appends to it, alongside each session's
+cost/context/subagent ledger), and `report-qa.json`.
 
 ### What a Completed Run Produces
 

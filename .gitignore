@@ -14,7 +14,7 @@ dist/
 
 # Runtime files
 *.log
-# Loop runtime state lives in ralph-to-ralph/.state/ — ignored by that
+# Loop runtime state lives in ralph/.state/ — ignored by that
 # directory's own .gitignore.
 
 # TypeScript incremental build cache

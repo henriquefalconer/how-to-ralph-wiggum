@@ -30,7 +30,7 @@ set -m
 # the UTC time it started. Session files are numbered from 001 within a run, so
 # two runs sharing one flat directory would silently overwrite each other's
 # transcripts — namespacing removes that entirely.
-STATE_DIR="${STATE_DIR:-ralph-to-ralph/.state}"
+STATE_DIR="${STATE_DIR:-ralph/.state}"
 RALPH_RUN_ID="${RALPH_RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)}"
 RUN_DIR="$STATE_DIR/runs/$RALPH_RUN_ID"
 PROGRESS="${RALPH_PROGRESS:-$RUN_DIR/progress.txt}"

@@ -11,7 +11,7 @@
 #   * --resume is attempted BEFORE a fresh session is spent on the slot
 #   * session numbering is unique across the three phase processes of one run
 #
-# Run with: npx bats ralph-to-ralph/ralph-lib.test.bats
+# Run with: npx bats ralph/ralph-lib.test.bats
 
 setup() {
   LIB="$BATS_TEST_DIRNAME/ralph-lib.sh"

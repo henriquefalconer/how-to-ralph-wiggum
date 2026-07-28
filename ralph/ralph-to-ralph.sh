@@ -5,7 +5,7 @@
 # restarts a phase that stops early, cycles Build ↔ QA while features still
 # fail, and commits between phases.
 #
-# Usage: ./ralph-to-ralph/ralph-to-ralph.sh <target-url> [inspect-iters] [build-iters] [qa-iters]
+# Usage: ./ralph/ralph-to-ralph.sh <target-url> [inspect-iters] [build-iters] [qa-iters]
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -14,14 +14,14 @@ INSPECT_ITERS="${2:-999}"
 BUILD_ITERS="${3:-999}"
 QA_ITERS="${4:-999}"
 
-LOCKFILE="ralph-to-ralph/.state/watchdog.lock"
+LOCKFILE="ralph/.state/watchdog.lock"
 
 # One run id for the whole pipeline. Every phase inherits it, so all three write
 # their session JSONs into one directory and append to ONE progress file — the
 # single place to watch a run, and the only way session numbering stays unique
 # across three separate phase processes.
 export RALPH_RUN_ID="${RALPH_RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)}"
-RUN_DIR="ralph-to-ralph/.state/runs/$RALPH_RUN_ID"
+RUN_DIR="ralph/.state/runs/$RALPH_RUN_ID"
 export RALPH_PROGRESS="$RUN_DIR/progress.txt"
 
 echo "========================================="
@@ -56,4 +56,4 @@ touch "$RALPH_PROGRESS"
 
 echo "Starting watchdog..."
 echo "=================================="
-./ralph-to-ralph/ralph-watchdog.sh "$TARGET_URL" "$INSPECT_ITERS" "$BUILD_ITERS" "$QA_ITERS"
+./ralph/ralph-watchdog.sh "$TARGET_URL" "$INSPECT_ITERS" "$BUILD_ITERS" "$QA_ITERS"
