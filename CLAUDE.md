@@ -101,6 +101,44 @@ The `RENDER_API_KEY` and `RENDER_SERVICE_ID` in `.env` can be used to edit any c
 
 ## Git Branch
 Never change branches — always commit and push to whichever branch is already checked out.
+## Browser & Target Account
+
+### Account identity
+- **Never write the Proton Mail address into any file, prompt, commit message, test, or log — read it from the logged-in session at the moment you need it.**
+- Use whichever account is **already logged in to `proton.me` in Chrome** as the account email anywhere the target product asks for one — signup, login, "add contact", domain/sender verification, invite flows, newsletter opt-ins, test recipients. Open `https://mail.proton.me` and read the address off the session rather than assuming one.
+- Do not invent other email addresses for the target product. If a flow needs a second address, use a plus-alias of that same mailbox (`<local-part>+<label>@proton.me`).
+- Mail for that address is read in Proton Mail (`proton.me`) in the browser — that is where confirmation links and verification codes land.
+
+### Chrome session (already authenticated)
+- Chrome is already running with a **logged-in `proton.me` session**. Reuse it — do **not** log out, clear cookies, use an incognito/guest window, or start a fresh profile, or you will lose the session.
+- To read a verification email, open a tab on `https://mail.proton.me` in that same window; the inbox loads without re-authenticating.
+
+### Finding and launching Chrome
+Chrome may already be running. If it is not, locate the binary on disk and launch it rather than assuming a fixed path:
+
+```bash
+# Is it already running?
+tasklist.exe | grep -i chrome
+
+# Known locations on this machine (prefer the 64-bit one):
+"/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
+"/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe"
+
+# If neither exists, search for it:
+ls /usr/bin/*chrom* /opt/google/chrome/chrome 2>/dev/null
+find "/mnt/c/Program Files" "/mnt/c/Program Files (x86)" "/mnt/c/Users/$USER/AppData/Local" \
+  -maxdepth 5 -name 'chrome.exe' 2>/dev/null
+
+# Launch with the default profile (keeps the proton.me session):
+"/mnt/c/Program Files/Google/Chrome/Application/chrome.exe" &
+```
+
+There is no Linux Chrome inside WSL — the browser is the Windows host Chrome.
+
+### Use claude-in-chrome
+- Drive that Chrome via **claude-in-chrome** — the loop scripts already pass `--chrome` to `claude -p`. Keep that flag.
+- Work in the existing authenticated window so the `proton.me` session is available to every phase (inspect, build, QA).
+- Ever CLI is still the tool for scripted snapshots/screenshots of the target and the clone; claude-in-chrome is for interactive flows that need the logged-in session.
 
 ## Out of Scope — DO NOT build
 - **Docker — do NOT use it in this project.**
