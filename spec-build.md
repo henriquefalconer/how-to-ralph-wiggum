@@ -341,8 +341,9 @@ Provisional core-feature guess (to validate against the real UI next):
 - [x] Pipe Settings — Pessoas / Configurações do pipe / Atividades / Ferramentas (Etiquetas + Gerador de PDF) / Lixeira (Iteration 2; see §15 and prd feature-013 through feature-017; screenshots: `screenshots/inspect/pipe-settings-pessoas.jpg`, `screenshots/inspect/pipe-settings-configuracoes.jpg`)
 - [x] Emails compose flow (card-scoped compose, per-thread generated alias vs. pipe inbound alias, email templates with shared 'Conteúdo dinâmico' token picker — Iteration 4; see §17 and prd feature-018; screenshots: `screenshots/inspect/emails-inbox.jpg`, `screenshots/inspect/emails-compose.jpg`)
 - [x] AI Agents creation flow (3-step builder, trigger/instructions/model/skills/effort, Logs/Templates/MCP sub-tabs — Iteration 5; see §18 and prd feature-019; screenshots: `screenshots/inspect/ai-agents-empty.jpg`, `screenshots/inspect/ai-agents-behaviors-builder.jpg`, `screenshots/inspect/ai-agents-templates.jpg`)
-- [ ] `/my-tasks` (org-level "my work" list)
+- [x] Meu trabalho / `/my-tasks` (org-level "my work" list) + notification system (Iteration 9; see §22 and prd feature-027; screenshots: `screenshots/inspect/my-work-populated.jpg`, `screenshots/inspect/notifications.jpg`)
 - [ ] Search
+- [ ] Tarefas e Solicitações's underlying data source (confirmed distinct from Meu trabalho and from card Atividades — see §22 and sitemap.md)
 - [ ] Design system consolidated from screenshots
 - [ ] Final cleanup pass + PRD reorder (spec-inspect.md "Final Iteration")
 
@@ -1212,3 +1213,72 @@ element (no disposable test file), and inviting a second real person to
 `Gerenciar pessoas` (single-seat trial org).
 
 Screenshots: `screenshots/inspect/interfaces-elements-builder.jpg`.
+
+## 22. Meu trabalho ("My work") & Notifications (Iteration 9, live UI test)
+
+**Meu trabalho** (`/my-tasks` redirects to `/my-work`) is an org-level,
+cross-pipe VIEW of cards assigned to the current user — a computed query
+over the existing Card entity (feature-004), not a new persisted entity.
+Header: "Meu trabalho" + "Visualize e gerencie os cards atribuídos a
+você." + a help-doc link. 6 filter tabs, each with a live count badge:
+
+| Tab | Definition (confirmed) |
+|---|---|
+| Todos os cards | All cards assigned to the current user, any pipe |
+| Cards prestes a vencer | `due_date` within the next 7 days — confirmed via an on-hover tooltip: "Cards que estão a 7 dias da data de vencimento" |
+| Vencidos | `due_date` already in the past |
+| Atrasados | **Distinct from Vencidos** — tracks phase/SLA time-in-phase expiration (the pipe-wide expiration alert from feature-014's Configurações do pipe), independent of the card's own due date |
+| Expirados | A separate pipe-level expiration rule firing (from Configurações do pipe) |
+| Concluídos | Card is in a phase flagged as the pipe's "done"/final phase |
+
+Table columns (all sortable — every header is a button): Título, Data de
+vencimento (relabeled "Vencidos em" while the Vencidos tab is active),
+Pipe, Fase atual, Criado em, Designado em (assigned-at timestamp).
+Standard pagination footer. **Each tab's empty state is independent** —
+switching to a 0-count tab shows the full empty-state block ("Parece que
+ainda não há tarefas atribuídas a você. Que tal criar um card e
+atribuí-lo a si mesmo? Saiba mais.") even while another tab has rows.
+
+**Live-tested end-to-end:** assigned an existing card ("João Silva",
+Purchase Requests pipe) to the current user via the card detail's
+"Adicionar responsável" control, then set its Vencimento to the previous
+day via the date-picker (defaults to today's date/time on first open).
+Both changes reflected in Meu trabalho on the next load: "Todos os
+cards" and "Vencidos" both went 0→1; "Cards prestes a vencer" and
+"Atrasados" stayed at 0, confirming they're computed from different
+fields (see table above).
+
+**Notifications:** the overdue transition auto-generated a real-time
+in-app notification ("O card \"João Silva\" está vencido") with **no
+manual trigger** — confirmed in both the header bell's popover (title
+"Notificações", "Marcar todas como lidas" link, unread red badge count
+on the bell icon) and the dedicated `/notifications` page (each entry:
+a type-specific icon [a red overdue-clock glyph for this case] + message
++ relative timestamp, e.g. "há 2 minutos"). The bell's unread badge
+cleared automatically after visiting `/notifications` — read-state
+appears to be a single "has the user opened the notification list" flag
+rather than per-item click-to-read (unconfirmed whether opening the
+popover alone, without navigating to the full page, also clears it).
+
+**Not the same feature as Tarefas e Solicitações:** `/organizations/:orgId/tasks_and_requests`
+(org-level "Tarefas e Solicitações" nav tab) stayed on its empty state
+("Sem tarefas" / "Tudo em dia!") even after the above card was assigned
++ overdue — proving it is backed by a **different** underlying feed,
+not simply "cards assigned to me". Checked the card's own "Atividades"
+tab too (per-field audit log: actor/field/old→new value/timestamp) —
+also not the source. What actually populates Tarefas e Solicitações
+remains **unconfirmed** — flagged in `sitemap.md` for a follow-up pass;
+treating it as a separate, lower-priority PRD item rather than folding
+it into feature-027 (Meu trabalho) since the live evidence contradicts
+that assumption.
+
+**Account menu:** the top-right avatar button ("Conta e recursos",
+tied to the org's real account name — this trial org's greeting/avatar
+consistently render as "Tiago Vasconselos" even though the pipe-level
+top nav shows "Claude") did not produce a visible dropdown across 3
+click attempts. Per this project's spec, account/profile management is
+explicitly out of scope, so this was not pursued further — the clone
+should still render the avatar button as a stub control.
+
+See `prd.json` feature-027. Screenshots: `screenshots/inspect/my-work-populated.jpg`,
+`screenshots/inspect/notifications.jpg`.

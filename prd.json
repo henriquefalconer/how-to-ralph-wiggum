@@ -1485,5 +1485,76 @@
         }
       ]
     }
+  },
+  {
+    "id": "feature-027",
+    "category": "ui",
+    "description": "Meu trabalho (\"My work\") — org-level card assignment inbox: cards assigned to the current user across all pipes, filtered by due-date state, plus the notification system that surfaces overdue cards",
+    "page": "Meu trabalho — /my-tasks (redirects to /my-work)",
+    "ui_details": "CONFIRMED live iteration 9. Header 'Meu trabalho' with subtitle 'Visualize e gerencie os cards atribuídos a você.' + a help-doc link. 6 filter tabs, each with a live count badge: 'Todos os cards', 'Cards prestes a vencer' (tooltip on hover: 'Cards que estão a 7 dias da data de vencimento'), 'Vencidos', 'Atrasados', 'Expirados', 'Concluídos'. Below the tabs, a sortable table (every column header is a sort button) with 6 columns: Título, Data de vencimento (renamed 'Vencidos em' while the Vencidos tab is active), Pipe, Fase atual, Criado em, Designado em. Standard pagination footer ('Anterior'/'Próximo', '1 - 1 de 1 resultados'). Empty state (shown per-tab, independently, even when other tabs have rows): 'Parece que ainda não há tarefas atribuídas a você. Que tal criar um card e atribuí-lo a si mesmo? Saiba mais.'",
+    "behavior": "CONFIRMED live: assigned an existing card ('João Silva' in the Purchase Requests pipe) to the current user via the card detail's 'Adicionar responsável' control, then set its Vencimento (due date) to the previous day via the date-picker calendar (defaults to today's date/time when first opened). Both changes reflected on Meu trabalho within one page load: 'Todos os cards' and 'Vencidos' both went from 0 to 1, while 'Cards prestes a vencer' (due within 7 days but not yet passed) and 'Atrasados' stayed at 0 — confirming 'Vencidos' (due date already passed) and 'Atrasados' are DISTINCT states: Atrasados tracks phase/SLA time-in-phase expiration (the pipe-wide expiration alert from feature-014's Configurações do pipe), not the card's own Vencimento field. Each tab's empty state is independent — switching to a 0-count tab (e.g. 'Atrasados') shows the full empty-state block even though 'Todos os cards' has a row. The overdue transition auto-generated a real-time in-app notification ('O card \"João Silva\" está vencido') without any manual trigger — confirmed in both the header bell's popover (title 'Notificações', 'Marcar todas como lidas' link, unread items shown with a red badge count on the bell) and the dedicated /notifications page (each entry has a type-specific icon — a red overdue-clock glyph for this case — plus relative timestamp, e.g. 'há 2 minutos'). The bell's unread badge cleared automatically after visiting /notifications (read-state is a simple 'has the user opened the list' flag, not per-item until clicked). The top-right avatar button ('Conta e recursos', tied to the org's Tiago Vasconselos account) did not render a visible dropdown across 3 click attempts — account/profile management is explicitly out of scope per this project's spec, so not pursued further; the clone should still render the button as a stub even if it needs no working menu.",
+    "data_model": "Meu trabalho is a computed, cross-pipe VIEW over the existing Card entity (feature-004) — no new persisted entity. Query: cards where assignee_ids CONTAINS current_user_id, joined to their pipe for the Pipe/Fase atual columns. Tab filters (computed booleans over the Card row, all relative to now()): 'Cards prestes a vencer' = due_date BETWEEN now() AND now()+7d; 'Vencidos' = due_date < now(); 'Atrasados' = phase_entered_at + phase.sla_duration < now() (references feature-014's per-phase SLA/expiration config, independent of due_date); 'Expirados' = a separate pipe-level expiration rule from Configurações do pipe firing; 'Concluídos' = card.phase.is_final (Concluído-type phase). Notification entity: id, user_id (fk), card_id (fk), type (enum, at least 'card_overdue'), message, created_at, read_at (nullable — set on any /notifications page visit, not per-item).",
+    "priority": 12,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "vencidos filter is due_date-based, independent of atrasados' SLA basis",
+          "description": "The two overdue-like tabs must use different fields so a card can be Vencido without being Atrasado and vice versa",
+          "input": "isVencido({due_date: yesterday}) and isAtrasado({due_date: yesterday, phase_entered_at: now, phase_sla_hours: null})",
+          "expected_output": "first call returns true, second returns false (no SLA configured on the phase, so time-in-phase alone can't trigger Atrasado)"
+        },
+        {
+          "name": "cards prestes a vencer is a 7-day forward window",
+          "description": "Matches the observed tooltip copy exactly",
+          "input": "isPrestesAVencer({due_date: now+3d}) and isPrestesAVencer({due_date: now+10d})",
+          "expected_output": "first call returns true, second returns false"
+        },
+        {
+          "name": "notification unread badge count reflects unread rows, clears on list view",
+          "description": "read_at is set for all of a user's notifications the moment they open /notifications, not lazily per row",
+          "input": "markAllReadOnView(userId) with 1 unread notification, then unreadCount(userId)",
+          "expected_output": "returns 0 after the view call"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "assigning a card to self and setting a past due date surfaces it on Meu trabalho and generates a notification",
+          "steps": [
+            "Open a card, click 'Adicionar responsável', select the current user",
+            "Click 'Vencimento', pick a date before today",
+            "Navigate to /my-tasks (or /my-work)",
+            "Click the 'Vencidos' tab"
+          ],
+          "expected": "The card appears in 'Todos os cards' and 'Vencidos' (both counts incremented by 1), and a new 'O card ... está vencido' notification appears in the bell popover with an unread badge"
+        },
+        {
+          "name": "each Meu trabalho tab shows its own empty state independent of other tabs' data",
+          "steps": [
+            "With at least one card assigned and overdue (non-zero 'Vencidos'), click the 'Atrasados' tab"
+          ],
+          "expected": "Atrasados shows the 'Parece que ainda não há tarefas atribuídas a você...' empty-state message even though other tabs are non-empty"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "no cards assigned to the user at all",
+          "steps": [
+            "Open /my-tasks for a user with zero assigned cards"
+          ],
+          "expected": "All 6 tabs show count (0) and the shared empty-state message with a 'Saiba mais' link"
+        },
+        {
+          "name": "visiting the bell popover vs. the full /notifications page both clear the unread badge",
+          "steps": [
+            "Trigger a notification",
+            "Open the bell popover only (don't navigate to /notifications)",
+            "Reload the page"
+          ],
+          "expected": "Behavior should be verified against the live product — record whether opening the popover alone is sufficient to clear the badge, or whether only visiting the full page does (observed behavior only confirmed the full-page case)"
+        }
+      ]
+    }
   }
 ]
