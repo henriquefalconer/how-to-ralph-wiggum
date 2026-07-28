@@ -532,5 +532,118 @@
         }
       ]
     }
+  },
+  {
+    "id": "feature-011",
+    "category": "data",
+    "description": "Report builder: saved live-query view over a pipe's cards with a grouped field filter/column picker (shared component with Automations token picker)",
+    "page": "Gerenciar/page tab Relatórios — /pipes/:id/reports_v2 (list), /pipes/:id/reports_v2/new (builder), /pipes/:id/reports_v2/:reportId (saved report)",
+    "ui_details": "Confirmed (Iteration 6, live test): list view is a tile grid (search + 'Ordenar por: Nome') of saved reports, each tile showing a live result-count badge, plus a 'Criar novo relatório' tile. Builder: left rail 'Adicionar filtro' opens the SAME grouped searchable field picker as the Automations token picker (feature-010) — 'Geral > Atributos do Card' (Código/Título/Fase atual/Etiquetas/Data de vencimento/Criador/Responsáveis/Finalizado em/Criado em/Atualizado em/Último comentário/Último comentário em/Expirado em) then 'Fases > <phase name> > <that phase's fields>'. Picking a field opens an operator radio list (é/não é/contém/não contém/é desconhecido/existe) + a value input for value-bearing operators; applied filters render as removable chips with 'e'/'ou' (AND/OR) buttons, plus a bottom 'ou' row to start a new OR'd group (AND-within-group, OR-across-groups — same shape as feature-009's field conditionals). Results render as a live table (no 'run' step — updates as filters change) with default columns Título/Fase atual/Criador/Criado em. Top-right icons: Σ formulas (disabled until a numeric field is chosen, tooltip 'Escolha os campos para fazer fórmulas' — not further tested), column picker (identical grouped-field checklist toggling visible columns), export (modal offering Email or Download, not triggered this pass to avoid a side effect). Save prompts a name-only modal, then redirects to /reports_v2/:reportId and the tile appears back on the list.",
+    "behavior": "CONFIRMED live: a saved report re-evaluates its filter against current card data every time it is opened — it is NOT a frozen snapshot/export. Filters combine via AND ('e') within a group and OR ('ou') across groups. The field list for both filters and columns is identical to (and should share an implementation with) the Automations action-value token picker's field grouping.",
+    "data_model": "reports: id, pipe_id (fk), name, filters (jsonb — array of AND-groups, each an array of {field_id, operator, value}), visible_column_field_ids (jsonb array), created_at, updated_at",
+    "priority": 8,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "report filter AND-within-group OR-across-groups",
+          "description": "A report with two filter groups matches a card satisfying either group in full",
+          "input": "evaluateReportFilters(card, groups: [[{field:'status',op:'is',value:'Pendente'}],[{field:'priority',op:'is',value:'Alta'}]]) where card.priority='Alta' but card.status!='Pendente'",
+          "expected_output": "Card is included (second group alone matches)"
+        },
+        {
+          "name": "report re-queries live data, not a cached snapshot",
+          "description": "Opening a saved report reflects card changes made after the report was saved",
+          "input": "createReport({filters}); updateCardField(cardId, fieldId, newValue) matching the filter; openReport(reportId)",
+          "expected_output": "The updated card appears in the report's results without needing to re-save the report"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "create and save a filtered report",
+          "steps": [
+            "Navigate to a pipe's Relatórios tab, click 'Criar novo relatório'",
+            "Click 'Adicionar filtro', choose a start-form field, operator 'contém', type a value",
+            "Verify the results table updates live to only matching cards",
+            "Click 'Salvar', name it, confirm"
+          ],
+          "expected": "Redirects to the saved report's own URL; navigating back to the Relatórios list shows the new report as a tile with a live result-count badge"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "report with zero matching cards",
+          "steps": [
+            "Apply a filter that matches no cards"
+          ],
+          "expected": "Table shows '0 resultados' and an empty body, not an error"
+        },
+        {
+          "name": "empty reports list",
+          "steps": [
+            "Navigate to a pipe's Relatórios tab with zero saved reports"
+          ],
+          "expected": "Empty state with 'Criar novo relatório' CTA, no error"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-012",
+    "category": "ui",
+    "description": "Dashboards (Painéis): named grid of chart widgets, each built from a metric + dimension + time grouping + one of 8 visualization types",
+    "page": "Page tab Painéis — /pipes/:id/dashboards (list/grid), /pipes/:id/dashboards/:dashboardId (a saved dashboard), /pipes/:id/dashboards/chart (chart builder)",
+    "ui_details": "Confirmed (Iteration 6, live test, created a real dashboard + chart): empty state 'Nenhum painel criado' + 'Criar painel' CTA; creation is a name-only modal (same pattern as Database Table creation). A dashboard starts as an empty grid with 'Adicionar gráfico'. Chart builder: three '+' pickers — Métrica, Dimensão, Grupo de tempo — each a searchable dropdown scoped to the current pipe. Metric options are computed aggregations over Cards (not raw field values): Anexos do Card (Total), Cards (Total), Comentários do card (Total), Lead Time (horas) - Min, Lead Time (horas) - Somatória, Lead time (horas) - máx, Lead time (horas) - média, Responsável (Total). Picking a metric auto-fills a title ('<Metric> Por <Grouping>'), a default time field (Criado em), time range ('Desde o início'), and grouping ('Por Dia'), each independently editable. 'Visualização' offers 8 chart types: Área, Barra, Calendário, Linha, Número, Pizza, Dispersão, Tabela; switching type auto-adjusts other config (confirmed: 'Número' collapses time grouping to 'Sem agrupamento' and drops the 'Por Dia' suffix from the title, rendering a single live KPI value instead of a series). Chart preview updates live (a newly created card appeared immediately on both a line chart and a number tile — no reload needed, unlike the Kanban/Database staleness quirks in feature-004/005). Save opens a modal (name pre-filled, 'Selecione o painel' dropdown targeting any existing dashboard); toast 'Gráfico criado. Confira!' on success, and the chart renders as a drag-resizable tile on the dashboard grid (same widget-grid pattern as feature-008 Interfaces). Per-chart kebab: Recarregar gráfico/Editar gráfico/Duplicar gráfico/Excluir gráfico. Per-dashboard kebab: Exportar painel em PDF/Definir permissões/Excluir painel. A dashboard-level date filter chip ('Filtro: Desde o início') applies a default time range across its charts.",
+    "behavior": "CONFIRMED: chart config auto-derives from vizType selection (time grouping resets, title regenerates) rather than being independently stored per type — the clone should treat these as computed UI defaults, re-derived whenever vizType changes, not persisted fields that could drift out of sync. Charts are live-querying (same re-evaluate-on-open behavior as feature-011 Reports), not frozen renders.",
+    "data_model": "dashboards: id, pipe_id (fk), name, default_time_range (text, default 'all_time'), created_at. dashboard_charts: id, dashboard_id (fk), title, metric (enum: cards_total|attachments_total|comments_total|lead_time_min|lead_time_sum|lead_time_max|lead_time_avg|assignees_total), dimension_field_id (fk, nullable), time_field_id (fk, default = card.created_at), time_range (text), time_grouping (enum: day|week|month|none, nullable), viz_type (enum: area|bar|calendar|line|number|pie|scatter|table), filters (jsonb), position (jsonb — {x,y,w,h} grid layout), created_at, updated_at",
+    "priority": 9,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "changing viz_type to 'number' clears time_grouping",
+          "description": "Selecting the Número visualization forces time_grouping to null/none, matching the observed auto-collapse behavior",
+          "input": "updateChart(chartId, { vizType: 'number' }) on a chart previously grouped by day",
+          "expected_output": "chart.timeGrouping === null; chart.title no longer contains a 'Por Dia' suffix if it was auto-generated"
+        },
+        {
+          "name": "dashboard chart re-queries live card data",
+          "description": "A chart's rendered value reflects cards created after the chart was saved, without re-saving the chart",
+          "input": "createChart({metric:'cards_total'}); createCard(pipeId, {...}); renderChart(chartId)",
+          "expected_output": "The chart's displayed count includes the newly created card"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "create a dashboard and add a KPI number chart",
+          "steps": [
+            "Navigate to a pipe's Painéis tab, click 'Criar painel', name it",
+            "Click 'Adicionar gráfico'",
+            "Click '+ Métrica', choose 'Cards (Total)'",
+            "Click the 'Linha' visualization selector, choose 'Número'",
+            "Click 'Salvar gráfico', confirm the name and target dashboard"
+          ],
+          "expected": "Toast 'Gráfico criado. Confira!' appears; the dashboard now shows a tile displaying the current total card count as a large number"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "empty dashboards list",
+          "steps": [
+            "Navigate to a pipe's Painéis tab with zero dashboards created"
+          ],
+          "expected": "Empty state 'Nenhum painel criado' + 'Criar painel' CTA, no error"
+        },
+        {
+          "name": "chart with a metric that has zero matching cards",
+          "steps": [
+            "Add a filter to a chart that excludes every card in the pipe"
+          ],
+          "expected": "Chart renders a zero value / empty series, not an error"
+        }
+      ]
+    }
   }
 ]

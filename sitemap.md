@@ -57,10 +57,10 @@ Page tabs (`/pipes/:id`, `/pipes/:id/flow`, etc.):
 | Fluxo | `/flow` | Visual pipeline builder | Each phase rendered as a column card with quick-add shortcuts: "Adicionar agente de IA", "Adicionar automação", "Atribuir membros", "Adicionar campos". This is the phase/field editor entry point, alternate to Kanban. |
 | Kanban | (root) | Kanban board | **Core view. Inspected iteration 3** — phase columns (here: Caixa de entrada / Fazendo / Concluído — Pipefy's default 3-phase template), card counts per column (client-side staleness quirk on same-session move, see spec-build.md §11), "Criar novo card" (gated on start form having ≥1 field) / "Nova fase" buttons, drag-drop cards between columns, done-phase card styling. Card detail opens at `/open-cards/:cardId` (see prd feature-004, spec-build.md §11). |
 | Lista | `/list` (approx) | Configurable table view | Column-based list of cards; starts with "Nenhuma coluna selecionada — habilite as colunas" empty state; has its own "Criar novo card". |
-| Relatórios | `/reports_v2` | Reports builder | "Crie relatórios rápidos e exportáveis com informações de seus cards"; empty state prompts to build first report. Maps to prd's Report entity. |
+| Relatórios | `/reports_v2` | Reports builder | **Inspected iteration 6** — grouped field filter/column picker (shared with Automations token picker), live-query results table, saved report tiles with live count badges. See prd feature-011, spec-build.md §14. |
 | Formulário | (interfaces path) | Start-form editor | "Vamos começar adicionando alguns campos" + "Adicionar campos" CTA; side panel shows solicitation count, and "Próximos passos" tips (enable request tracking, create standardized emails, analyze reports). |
 | Emails | (own path) | Shared team inbox | Left rail: Compor email, Todas as mensagens, Mensagens não lidas, Atribuídas a mim, Sem responsável, then Automações de email / Templates de email / Configurações; a per-pipe forwarding address (`pipe307273712@...`, currently disabled) for routing inbound email into the pipe. |
-| Painéis | `/dashboards` | Analytics dashboards | "Explorar dados" + "Meus Painéis" / "Criar painel"; empty state "Nenhum painel criado". Distinct from Relatórios (dashboards = charts, relatórios = tabular exports). |
+| Painéis | `/dashboards` | Analytics dashboards | **Inspected iteration 6** — named dashboards of drag-resizable chart widgets, 8 viz types, live-recomputed aggregation metrics. See prd feature-012, spec-build.md §14. |
 | Learning Center | (org-level, pipe-scoped entry point) | Same help hub as org-level — out of scope |
 
 "Gerenciar" dropdown (pipe settings — the phase/field editors that matter most for cloning):
@@ -86,7 +86,6 @@ Automations sub-tabs (`/pipes/:id/automations`): Automações, Logs. **Inspected
 confirmed via Logs and the card detail view. See prd feature-010 and spec-build.md §13.
 
 ## Not yet inspected (next iterations)
-- Relatórios / Painéis actually building a chart
 - Emails compose flow
 - AI Agents agent creation flow
 - Pessoas / Configurações do pipe / Atividades / Ferramentas / Lixeira

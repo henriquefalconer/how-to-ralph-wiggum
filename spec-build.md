@@ -177,6 +177,40 @@ rename for clarity but should preserve the same concepts.
 - Saved aggregation config over a pipe's cards: columns, filterable fields,
   export. (`pipe-reports.md`, `get-pipe-report-columns.md`,
   `get-pipe-report-filterable-fields.md`)
+- CONFIRMED live (Iteration 6): a report is a saved `{name, filters, columns}`
+  tuple that re-queries the pipe's live cards on every open (not a frozen
+  snapshot). Filters and the column picker draw from the identical field list
+  used by the Automations token picker (feature-010) — grouped `Geral >
+  Atributos do Card` then `Fases > <phase name> > <phase's own fields>`,
+  confirming this grouped-field-picker is a shared component across ≥3
+  features (field conditionals, automations, reports). Each filter is
+  `{fieldId, operator, value}` with operator one of `is`, `is_not`,
+  `contains`, `not_contains`, `is_unknown`, `exists`, combinable with AND/OR
+  chips (multiple AND'd conditions on one field, plus an "ou" button to add
+  an OR'd group — same AND-within-group/OR-across-groups shape as feature-009's
+  conditionals). Export offers **Email** or **Download** (not exercised this
+  pass — only confirmed the modal exists, to avoid an unnecessary side effect
+  during inspection).
+
+### Dashboard / Chart (new entity, Iteration 6)
+- A pipe has zero or more named Dashboards (Painéis), each holding an ordered,
+  freely positioned/resized grid of Chart widgets (confirmed: chart tiles have
+  a drag-resize handle, same "widget on a grid" shape as feature-008's
+  Interfaces page layout).
+- Chart config: `{metric, dimension, timeGroupField, timeRange, timeGrouping,
+  filters[], vizType, title}`. **Metric** is a computed aggregation over Cards
+  — NOT a raw field value — from a fixed catalog scoped to the pipe (observed:
+  Anexos do Card (Total), Cards (Total), Comentários do card (Total), Lead
+  Time (horas) - Min/Somatória/Máx/Média, Responsável (Total)). **Dimension**
+  groups the metric by a field (not exercised this pass). `vizType` is one of
+  8 types: Área, Barra, Calendário, Linha, Número, Pizza, Dispersão, Tabela.
+  Switching `vizType` auto-adjusts other config (confirmed: picking "Número"
+  reset `timeGrouping` from "Dia" to "Sem agrupamento" and dropped "Por Dia"
+  from the auto-generated title) — the clone should treat viz-type-appropriate
+  defaults as a derived UI behavior, not stored separately per chart.
+  Chart-level actions (kebab menu): Recarregar gráfico (reload), Editar
+  gráfico, Duplicar gráfico, Excluir gráfico. Dashboard-level actions:
+  Exportar painel em PDF, Definir permissões, Excluir painel.
 
 ### Tag / Tag Category
 - Org-wide; `{id, name}` grouped by category; attachable to any resource by
@@ -259,7 +293,7 @@ Provisional core-feature guess (to validate against the real UI next):
 - [x] Card detail view (Iteration 3)
 - [ ] Start form
 - [x] Database Tables (create flow, field-type palette incl. connection fields, record create/edit, Configurações de database — screenshots: `screenshots/inspect/database-grid.jpg`, `screenshots/inspect/database-record-detail.jpg`)
-- [ ] Reports/dashboards
+- [x] Reports/dashboards (Reports builder — filter/column picker, saved report tiles; Dashboards — chart builder with 8 viz types, live aggregation metrics — Iteration 6; screenshots: `screenshots/inspect/reports-list.jpg`, `screenshots/inspect/dashboard-number-chart.jpg`, `screenshots/inspect/dashboard-panel.jpg`)
 - [x] Automation rule builder (separate from field conditionals — pipe-level Automações tab; 10 triggers × 12 actions, tested end-to-end incl. Logs — screenshot: `screenshots/inspect/automations-builder.jpg`; see §13 and prd feature-010)
 - [ ] Interfaces / Portal builder (new feature, not in prd.json yet)
 - [ ] AI Agents creation flow
@@ -496,3 +530,80 @@ Not yet tested this pass: the other 9 triggers and 11 actions (in
 particular the HTTP-request round trip, recurring activities, and formula
 action) — only the phase-enter → update-field pair was exercised.
 Screenshot: `screenshots/inspect/automations-builder.jpg`.
+
+## 14. Reports & Dashboards (Iteration 6, live UI test)
+
+Tested both analytics surfaces end-to-end in a real pipe (`Purchase Requests`,
+id 307273712), creating a real saved Report and a real saved Dashboard/chart.
+
+### Relatórios (Reports) — `/pipes/:id/reports_v2`
+- List view: search box, "Ordenar por: Nome", a tile grid of saved reports
+  (each tile shows a live result-count badge, e.g. "1") plus a "Criar novo
+  relatório" tile.
+- Builder (`/reports_v2/new`): left rail "Adicionar filtro" opens a searchable,
+  grouped field picker (`Geral > Atributos do Card`, then `Fases > <phase> >
+  <fields>`) — identical grouping to the Automations token picker
+  (`spec-build.md §13`, `prd.json` feature-010). Selecting a field opens an
+  operator radio list (é / não é / contém / não contém / é desconhecido /
+  existe) plus a value input for value-bearing operators; applied filters
+  render as removable chips with "e"/"ou" (AND/OR) buttons to combine more
+  conditions, and a bottom "ou" row to start a new OR'd group.
+- Results render as a live table (auto-updates as filters are added — no
+  separate "run report" step) with columns: Título, Fase atual, Criador,
+  Criado em by default.
+- Top-right icons: **Σ** (formulas — greyed out/disabled with tooltip "Escolha
+  os campos para fazer fórmulas" until a numeric field is selected; not
+  further tested this pass), **column picker** (same grouped-field checklist
+  as the filter picker, toggles which columns render), **export** (opens an
+  "Exportar Relatório" modal offering Email or Download).
+- Save flow: clicking "Salvar" prompts a name-only modal ("Digite o nome do
+  seu novo relatório"); saving redirects to `/reports_v2/:reportId` and the
+  report now appears as a tile back on the list view.
+- **Confirmed live-query behavior**: the report is NOT a frozen export — it
+  re-evaluates the filter against current card data every time it's opened.
+
+### Painéis (Dashboards) — `/pipes/:id/dashboards`
+- Empty state: "Nenhum painel criado" + "Criar painel" CTA (matches the
+  Report/Database "name-only creation modal" pattern used across the product).
+- A pipe can have multiple named Dashboards, listed in the left rail under
+  "Meus Painéis" alongside a persistent "Explorar dados" link (ad-hoc query
+  surface, not yet tested).
+- Each Dashboard is an empty grid until you "Adicionar gráfico". The chart
+  builder has three top-level pickers — **Métrica**, **Dimensão**, **Grupo de
+  tempo** — each a searchable "+" dropdown scoped to the current pipe. Metric
+  options observed (all pipe/card-scoped aggregations, grouped under the pipe's
+  own name in the dropdown): Anexos do Card (Total), Cards (Total),
+  Comentários do card (Total), Lead Time (horas) - Min, Lead Time (horas) -
+  Somatória, Lead time (horas) - máx, Lead time (horas) - média, Responsável
+  (Total).
+- Picking a metric auto-populates a default title (`"<Metric> Por <Grouping>"`,
+  e.g. "Cards (Total) Por Dia"), a default time dimension (`Criado em`), time
+  range (`Desde o início`), and grouping (`Por Dia`) — all independently
+  editable via their own chip.
+- **Visualização** section lets you pick one of 8 chart types: Área, Barra,
+  Calendário, Linha, Número, Pizza, Dispersão, Tabela. Confirmed switching
+  type changes downstream config: selecting "Número" collapsed "Por Dia" time
+  grouping to "Sem agrupamento" and the auto-title dropped the "Por Dia"
+  suffix, rendering a single live KPI value (e.g. "1") instead of a line
+  series.
+- The chart preview updates live below the config form (confirmed: a
+  freshly-created card showed up immediately as a single point on a line
+  chart, and as "1" on a number tile — no reload needed, unlike the Kanban/
+  Database staleness quirks documented in feature-004/005).
+- Save flow: "Salvar gráfico" opens a modal with a name field (pre-filled from
+  the auto-title) and a "Selecione o painel" dropdown (which Dashboard the
+  chart is added to — supports adding a chart to any existing dashboard, not
+  just the one you started from). On save, a toast "Gráfico criado. Confira!"
+  appears and the chart renders as a tile on the dashboard grid with a
+  drag-resize handle (bottom-right corner) — a freely arranged widget grid,
+  the same underlying pattern as feature-008's Interfaces page layout.
+- Per-chart kebab menu: Recarregar gráfico, Editar gráfico, Duplicar gráfico,
+  Excluir gráfico. Per-dashboard kebab menu (top-right, next to "Adicionar
+  gráfico"): Exportar painel em PDF, Definir permissões, Excluir painel.
+- A dashboard-level date filter chip ("Filtro: Desde o início") sits next to
+  "Adicionar gráfico", applying a default time range across all charts on
+  that dashboard (not yet tested whether per-chart time ranges override it).
+
+Screenshots: `screenshots/inspect/reports-list.jpg`,
+`screenshots/inspect/dashboard-number-chart.jpg`,
+`screenshots/inspect/dashboard-panel.jpg`.
