@@ -60,19 +60,33 @@ fits the product well:
 
 ## 3. Site Map
 
-**TODO — not yet inspected.** Next iteration must log in, `read_page` the main
-dashboard, and populate this section per spec-inspect.md "Iteration 1: Site Map".
-Expected top-level areas based on docs (to verify against the real UI):
-- Home / pipes list (org dashboard)
-- A pipe's Kanban board view (phases as columns, cards as tickets)
-- Card detail view (fields, attachments, emails, tasks, activity/timeline)
-- Start form (public/internal intake form for a pipe)
-- Database Tables list + table detail (spreadsheet-like grid)
-- Reports/dashboards view
-- Pipe settings: phases, fields, automations, AI agents (partially in scope —
-  the phase/field/automation *editors* are core product functionality, not
-  "settings" in the excluded auth/billing/profile sense)
-- Search (cross-pipe card search)
+**PARTIAL — org/pipe navigation mapped, page-level deep dives still TODO.**
+Full detail in `sitemap.md` (mirrored here at a summary level). The trial org
+started with **zero pipes**, which forces a non-dismissable "create your first
+pipe" modal — not real product behavior, do not clone that; a test pipe
+("Purchase Requests") was created to proceed.
+
+**Org-level nav:** Início (dashboard: Pipes/Databases grid), Portal (a sample
+Interfaces page acting as an employee self-service portal), Tarefas e
+Solicitações (cross-pipe task inbox), Interfaces (no-code page/portal builder —
+new feature, not yet in prd.json), Learning Center (help/marketing — **out of
+scope**).
+
+**Pipe-level nav:** top tabs Pipe / Agentes de IA / Automações / Integrações
+(paid connector marketplace — **out of scope**) / Conexões (attach Database
+Tables for `connector` fields) / Gerenciar (settings dropdown: Formulário
+inicial, **Fases** [phase/field editor — highest priority for next deep dive],
+Pessoas, Email, Configurações do pipe, Atividades, Ferramentas, Lixeira).
+Page tabs: Mapa (visual map), Fluxo (visual pipeline/phase builder), **Kanban**
+(core board view), Lista (configurable table view), Relatórios (report
+builder), Formulário (start form editor), Emails (shared inbox per pipe),
+Painéis (dashboards/charts).
+
+Confirmed still-TODO for upcoming iterations: card detail view, Fases editor
+(the 23 field types), Database Table creation + grid + record detail, Kanban
+drag-drop, Relatórios/Painéis chart creation, Emails compose, Automations rule
+builder, AI Agents creation flow, Pessoas/Configurações/Atividades/Ferramentas/
+Lixeira, `/my-tasks`.
 
 ## 4. Design System
 
@@ -216,14 +230,16 @@ Provisional core-feature guess (to validate against the real UI next):
 9. Bulk import, polish, edge cases — last
 
 ## UI Inspection Coverage Checklist
-- [ ] Site map (Iteration 1)
-- [ ] Home / pipes list
-- [ ] Kanban board view
+- [x] Site map (Iteration 1) — see `sitemap.md`
+- [x] Home / pipes list (screenshot: `screenshots/inspect/home.jpg`)
+- [ ] Kanban board view (seen empty; need card CRUD + drag-drop test)
 - [ ] Card detail view
 - [ ] Start form
 - [ ] Database Tables (list + detail)
 - [ ] Reports/dashboards
-- [ ] Phase/field/automation editors
+- [ ] Phase/field/automation editors (Fases — the 23 field types)
+- [ ] Interfaces / Portal builder (new feature, not in prd.json yet)
+- [ ] AI Agents creation flow
 - [ ] Search
 - [ ] Design system consolidated from screenshots
 - [ ] Final cleanup pass + PRD reorder (spec-inspect.md "Final Iteration")

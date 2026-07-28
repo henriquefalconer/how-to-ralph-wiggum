@@ -305,5 +305,46 @@
         }
       ]
     }
+  },
+  {
+    "id": "feature-008",
+    "category": "ui",
+    "description": "Interfaces builder: no-code page composer that arranges pipe/database data into a custom page (used to build the org's self-service 'Portal')",
+    "page": "Interfaces (org-level) / Portal",
+    "ui_details": "Discovered in sitemap iteration (see sitemap.md). Empty state: 'Arraste e solte dados de pipes e databases para criar páginas...' with a single 'Criar interface' CTA. The default 'Portal' page it produces is a hero banner + search bar + department cards (linking out to specific pipes' start forms) + a forms section + a company-docs section.",
+    "behavior": "Not yet tested (creation flow, widget types, drag-drop behavior all TODO for a future iteration).",
+    "data_model": "interfaces: id, org_id (fk), name. interface_pages: id, interface_id (fk), title, layout (jsonb — ordered list of widget blocks, each referencing a pipe_id/table_id or static content)",
+    "priority": 10,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "interface page layout stores ordered widget blocks",
+          "description": "Saving a page persists its widget list in the order the user arranged them",
+          "input": "savePageLayout(pageId, [{type:'department_grid'}, {type:'form_link', pipeId:'p1'}])",
+          "expected_output": "interface_pages.layout is an array of exactly 2 blocks in that order"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "create a new Interfaces page",
+          "steps": [
+            "Navigate to /interfaces",
+            "Click 'Criar interface'",
+            "Add a pipe's start-form link as a widget",
+            "Save"
+          ],
+          "expected": "New page appears in the Interfaces list and is viewable at its own URL"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "empty interfaces list",
+          "steps": ["Navigate to /interfaces with zero pages created"],
+          "expected": "Empty state message and 'Criar interface' CTA shown, no error"
+        }
+      ]
+    }
   }
 ]
