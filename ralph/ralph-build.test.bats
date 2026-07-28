@@ -8,7 +8,7 @@
 setup() {
   REPO="$BATS_TEST_TMPDIR/repo"
   mkdir -p "$REPO/ralph/.state" "$REPO/bin"
-  cp "$BATS_TEST_DIRNAME/ralph-build.sh" "$BATS_TEST_DIRNAME/ralph-lib.sh" "$REPO/ralph/"
+  cp "$BATS_TEST_DIRNAME/ralph-build.sh" "$BATS_TEST_DIRNAME/ralph-lib.sh" "$BATS_TEST_DIRNAME/ralph-resume.sh" "$REPO/ralph/"
 
   export RALPH_RUN_ID="TESTRUN"
   RUN_DIR="$REPO/ralph/.state/runs/TESTRUN"

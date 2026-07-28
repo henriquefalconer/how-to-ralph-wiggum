@@ -4,7 +4,14 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
+# shellcheck source=ralph-resume.sh
+. "$(dirname "$0")/ralph-resume.sh"
+parse_resume "$@"; set -- ${RESUME_ARGS[@]+"${RESUME_ARGS[@]}"}
+
 TARGET_URL="${1:-}"
+if [ "$RESUMING" = 1 ] && [ -z "$TARGET_URL" ]; then
+  TARGET_URL=$(run_target "$RUNS_DIR/$RALPH_RUN_ID")
+fi
 ITERATIONS="${2:-999}"
 
 MAX_FAILURES="${RALPH_MAX_FAILURES:-3}"   # abort after N consecutive no-promise iterations
@@ -110,6 +117,7 @@ TARGET_URL: $TARGET_URL
 When confused about how a feature should work, open $TARGET_URL with claude-in-chrome to check the original product."
 fi
 
+[ "$RESUMING" = 1 ] && resume_banner "$PROGRESS" "qa"
 note "═══════════════════════════════════════════════════════"
 note "Phase 3 (QA) starting — target=${TARGET_URL:-none} model=$MODEL max-iter=$ITERATIONS"
 

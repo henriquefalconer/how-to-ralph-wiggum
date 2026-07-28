@@ -4,7 +4,15 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
-TARGET_URL="${1:?Usage: $0 <target-url> [iterations]}"
+# shellcheck source=ralph-resume.sh
+. "$(dirname "$0")/ralph-resume.sh"
+parse_resume "$@"; set -- ${RESUME_ARGS[@]+"${RESUME_ARGS[@]}"}
+
+TARGET_URL="${1:-}"
+if [ "$RESUMING" = 1 ] && [ -z "$TARGET_URL" ]; then
+  TARGET_URL=$(run_target "$RUNS_DIR/$RALPH_RUN_ID")
+fi
+: "${TARGET_URL:?Usage: $0 [--resume [run-id]] <target-url> [iterations]}"
 ITERATIONS="${2:-999}"
 
 MAX_FAILURES="${RALPH_MAX_FAILURES:-3}"   # abort after N consecutive no-promise iterations
@@ -67,6 +75,7 @@ mkdir -p screenshots
 # there is no session for this script to start or stop — the loop just passes
 # --chrome and the agent works in the Chrome window that is already open.
 
+[ "$RESUMING" = 1 ] && resume_banner "$PROGRESS" "inspect"
 note "═══════════════════════════════════════════════════════"
 note "Phase 1 (Inspect) starting — target=$TARGET_URL model=$MODEL max-iter=$ITERATIONS"
 
