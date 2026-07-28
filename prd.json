@@ -9,7 +9,7 @@
     "data_model": "pipes: id, uuid, name, color (server-assigned on create, user-editable after), org_id (fk), cards_count (derived), opened_cards_count (derived). labels: id, pipe_id (fk), name, color. Pipe creation is a single required field (name) — all other fields (color, the 3 default phases) are server-populated side effects of the create action, not user input.",
     "priority": 1,
     "core": true,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {

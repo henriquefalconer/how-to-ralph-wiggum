@@ -31,7 +31,10 @@
       ".omx",
       "drizzle",
       "*.d.ts",
-      "public"
+      "public",
+      "ralph",
+      "prd.json",
+      "report-qa.json"
     ]
   }
 }

@@ -19,3 +19,7 @@ dist/
 
 # TypeScript incremental build cache
 tsconfig.tsbuildinfo
+
+# Playwright artifacts
+test-results/
+playwright-report/
