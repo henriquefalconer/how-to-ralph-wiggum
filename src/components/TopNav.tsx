@@ -17,12 +17,15 @@ export function TopNav({
         >
           {dictionary.nav.home}
         </Link>
-        {/* Portal, Tasks, Interfaces, Learning Center are separate PRD features not yet built */}
+        {/* Portal, Tasks, Learning Center are separate PRD features not yet built */}
         <span className="text-sm text-gray-400">{dictionary.nav.portal}</span>
         <span className="text-sm text-gray-400">{dictionary.nav.tasks}</span>
-        <span className="text-sm text-gray-400">
+        <Link
+          href="/interfaces"
+          className="text-sm text-gray-600 hover:text-gray-900"
+        >
           {dictionary.nav.interfaces}
-        </span>
+        </Link>
         <span className="text-sm text-gray-400">
           {dictionary.nav.learningCenter}
         </span>

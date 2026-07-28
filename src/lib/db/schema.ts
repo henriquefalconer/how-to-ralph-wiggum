@@ -304,3 +304,79 @@ export const automationRuns = pgTable("automation_runs", {
   message: text("message").notNull(),
   startedAt: timestamp("started_at").defaultNow().notNull(),
 });
+
+export const interfacePrivacyTiers = [
+  "restricted_people",
+  "restricted_org",
+  "public_link",
+] as const;
+
+export const interfaces = pgTable("interfaces", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  orgId: uuid("org_id")
+    .notNull()
+    .references(() => organizations.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  icon: text("icon").notNull().default("Layout"),
+  privacyTier: text("privacy_tier", { enum: interfacePrivacyTiers })
+    .notNull()
+    .default("restricted_org"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const interfacePages = pgTable("interface_pages", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  interfaceId: uuid("interface_id")
+    .notNull()
+    .references(() => interfaces.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  showHeader: boolean("show_header").notNull().default(true),
+  position: integer("position").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const interfaceElementTypes = [
+  "data_table",
+  "form_link",
+  "document",
+  "text",
+  "link",
+  "divider",
+  "image",
+  "video",
+  "embed",
+] as const;
+
+export const interfacePageElements = pgTable("interface_page_elements", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  pageId: uuid("page_id")
+    .notNull()
+    .references(() => interfacePages.id, { onDelete: "cascade" }),
+  type: text("type", { enum: interfaceElementTypes }).notNull(),
+  position: integer("position").notNull().default(0),
+  config: jsonb("config")
+    .$type<Record<string, unknown>>()
+    .notNull()
+    .default({}),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const interfaceSharedWithTypes = ["person", "group"] as const;
+
+export const interfaceShares = pgTable(
+  "interface_shares",
+  {
+    interfaceId: uuid("interface_id")
+      .notNull()
+      .references(() => interfaces.id, { onDelete: "cascade" }),
+    sharedWithType: text("shared_with_type", {
+      enum: interfaceSharedWithTypes,
+    }).notNull(),
+    sharedWithId: text("shared_with_id").notNull(),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.interfaceId, table.sharedWithType, table.sharedWithId],
+    }),
+  ],
+);

@@ -463,7 +463,7 @@
     "data_model": "interfaces: id, org_id (fk), name, icon, privacy_tier (enum: restricted_people | restricted_org | public_link), created_at. interface_pages: id, interface_id (fk), name, show_header (bool), order. interface_page_elements: id, page_id (fk), type (enum: data_table | form_link | document | text | link | divider | image | video | embed), order, config (jsonb -- for data_table: {source_type: pipe|database, source_id, show_title, title_override, clickable_rows, allow_export, sort_field, sort_direction, visibility_conditions: [{field, operator, value}], visibility_condition_groups}; for form_link: {source_type, source_id, name_override, description_override, image_url}). interface_shares: interface_id (fk), shared_with_type (enum: person | group), shared_with_id -- populated only when privacy_tier=restricted_people.",
     "priority": 10,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {
