@@ -1,5 +1,5 @@
 #!/bin/bash
-# Phase 1: Inspect a target product using Ever CLI and generate a PRD
+# Phase 1: Inspect a target product with Claude in Chrome and generate a PRD
 # Each iteration = exactly 1 page/feature (enforced by prompt)
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -23,12 +23,9 @@ if [ ! -f "prd.json" ]; then
 fi
 mkdir -p screenshots "$PROGRESS_DIR" "$LOG_DIR"
 
-# Start Ever CLI session
-ever start --url "$TARGET_URL"
-trap 'ever stop 2>/dev/null' EXIT
-
-echo "Ever CLI session started."
-echo ""
+# The browser is driven with claude-in-chrome from inside the agent's turn, so
+# there is no session for this script to start or stop — the loop just passes
+# --chrome and the agent works in the Chrome window that is already open.
 
 consecutive_failures=0
 
@@ -48,7 +45,7 @@ for ((i=1; i<=$ITERATIONS; i++)); do
   LOG="$LOG_DIR/$(printf '%03d' "$i").log"
   rc=0
   timeout 1200 claude -p --dangerously-skip-permissions --chrome --model claude-opus-4-8 \
-"@ralph_to_ralph/prompt-inspect.md @ralph_to_ralph/spec-inspect.md @ever-cli-reference.md @prd.json $PROGRESS_REFS
+"@ralph_to_ralph/prompt-inspect.md @ralph_to_ralph/spec-inspect.md @claude-in-chrome-reference.md @prd.json $PROGRESS_REFS
 
 TARGET URL: $TARGET_URL
 ITERATION: $i of $ITERATIONS

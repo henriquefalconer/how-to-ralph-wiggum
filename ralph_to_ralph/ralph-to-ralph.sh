@@ -27,7 +27,7 @@ if [ ! -f "prd.json" ]; then
   echo '[]' > prd.json
 fi
 
-echo ">>> Phase 1: Inspect (Ever CLI + Claude)"
+echo ">>> Phase 1: Inspect (Claude in Chrome)"
 echo ""
 ./ralph_to_ralph/ralph-inspect.sh "$TARGET_URL" "$INSPECT_ITERS"
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Phase 3: QA evaluation using a fresh Claude agent as independent evaluator
-# Runs Playwright regression first (fast), then Ever CLI for visual/interaction QA
+# Runs Playwright regression first (fast), then Claude in Chrome for visual/interaction QA
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -31,10 +31,9 @@ fi
 npm run dev &
 DEV_PID=$!
 echo "Dev server started (PID: $DEV_PID)"
-# `|| true` on both: under `set -e` a failed kill (dev server already gone) aborts
-# the rest of the trap, so `ever stop` never ran and the phase exited non-zero
-# even on a successful QA_COMPLETE.
-trap 'kill $DEV_PID 2>/dev/null || true; ever stop 2>/dev/null || true' EXIT
+# `|| true` because under `set -e` a failed kill (dev server already gone) would
+# abort the trap and make the phase exit non-zero even on a successful QA_COMPLETE.
+trap 'kill $DEV_PID 2>/dev/null || true' EXIT
 sleep 5  # Wait for server to be ready
 
 # Run Playwright regression suite first (fast, catches obvious bugs)
@@ -44,17 +43,15 @@ if [ -f "playwright.config.ts" ] || [ -d "tests/e2e" ]; then
   echo ""
 fi
 
-# Start Ever CLI session for QA
-ever start --url http://localhost:3015
-echo "Ever CLI session started for QA."
-echo ""
+# The browser is driven with claude-in-chrome from inside the agent's turn — the
+# agent opens http://localhost:3015 itself in the Chrome window that is already open.
 
 # Build target URL context for the prompt
 TARGET_CONTEXT=""
 if [ -n "$TARGET_URL" ]; then
   TARGET_CONTEXT="
 TARGET_URL: $TARGET_URL
-When confused about how a feature should work, use 'ever start --url $TARGET_URL' to check the original product."
+When confused about how a feature should work, open $TARGET_URL with claude-in-chrome to check the original product."
 fi
 
 consecutive_failures=0
@@ -76,10 +73,11 @@ for ((i=1; i<=$ITERATIONS; i++)); do
   LOG="$LOG_DIR/$(printf '%03d' "$i").log"
   rc=0
   timeout 1200 claude -p --dangerously-skip-permissions --chrome --model claude-opus-4-8 \
-"@ralph_to_ralph/prompt-qa.md @pre-setup.md @spec-build.md @prd.json @report-qa.json @ever-cli-reference.md $PROGRESS_REFS
+"@ralph_to_ralph/prompt-qa.md @pre-setup.md @spec-build.md @prd.json @report-qa.json @claude-in-chrome-reference.md $PROGRESS_REFS
 
 ITERATION: $i of $ITERATIONS
 PROGRESS_FILE: $PROGRESS_FILE
+CLONE_URL: http://localhost:3015
 ${TARGET_CONTEXT}
 
 Test exactly ONE feature, then commit, push, and stop.

@@ -25,10 +25,10 @@ works — the build agent only claims it does.
 
 ## Comparing Against the Original Product
 You have access to the **original product URL** (passed as TARGET_URL). When confused about how a feature should work:
-1. Use `ever start --url <TARGET_URL>` to open the original product
-2. `ever snapshot` to see how it actually works
+1. Open `<TARGET_URL>` with claude-in-chrome (`navigate`) to see the original product
+2. `read_page` to see how it actually works
 3. Compare against the clone's behavior
-4. `ever stop` when done, switch back to clone session
+4. Navigate back to the clone when done
 
 The original product is your **source of truth**.
 
@@ -39,7 +39,7 @@ The original product is your **source of truth**.
   most recent few — read them first to see what has already been tested. Your own notes
   go in the `PROGRESS_FILE` named in this iteration's prompt.
 - `report-qa.json`: Your test results (you create and maintain this).
-- `ever-cli-reference.md`: Ever CLI command reference.
+- `claude-in-chrome-reference.md`: Claude in Chrome tool reference.
 - `screenshots/inspect/`: Reference screenshots from the original.
 - `screenshots/qa/`: Save your QA screenshots here.
 - `clone-product-docs/`: Extracted docs for verifying API correctness.
@@ -57,12 +57,13 @@ The original product is your **source of truth**.
 Also run full `make test-e2e` to catch cross-feature regressions.
 </important>
 
-### Step 2: Manual Verification (Ever CLI)
+### Step 2: Manual Verification (Claude in Chrome)
 5. Start dev server if not running (`npm run dev`). It listens on port 3015 — confirm with `lsof -i :3015`.
-6. Open clone in Ever CLI: `ever start --url http://localhost:3015` (reuse existing session if running).
+6. Open the clone at `http://localhost:3015` with claude-in-chrome (`navigate`); reuse the tab you already have rather than opening a new one each time.
 7. Test the feature thoroughly:
-   - Navigate to the relevant page, `ever snapshot`
-   - `ever click <id>` / `ever input <id> <text>` to drive it; `ever screenshot --output <path>` to capture evidence
+   - Navigate to the relevant page, then `read_page`
+   - `computer` to click and type (or `form_input` for fields); `computer` with `action: "screenshot"` to capture evidence
+   - `read_network_requests` to confirm the UI is really hitting the clone's own API
    - Follow `steps` from prd.json to verify each acceptance criterion
    - Compare against `screenshots/inspect/` and `behavior` field
    - Test edge cases: empty inputs, long text, rapid clicks, back button, error recovery

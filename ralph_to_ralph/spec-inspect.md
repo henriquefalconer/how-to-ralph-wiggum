@@ -5,7 +5,7 @@ Thoroughly inspect a target web product and produce a complete build spec (`spec
 
 ## Assumptions
 - The user is ALREADY LOGGED IN to the target product in the browser.
-- An Ever CLI session is ALREADY running. Do NOT run `ever start`.
+- Chrome is ALREADY open and signed in. Work in that window — do NOT log out or open an incognito/guest window.
 - You have full access to all authenticated pages and features.
 - You should actively USE the product, not just read pages passively.
 - A `.env` file exists in the project directory with API keys for the target product. Read it to get credentials for testing API features directly (e.g., sending test requests via curl).
@@ -60,10 +60,10 @@ curl -s <site-url>/sitemap.xml
 ```
 Parse URLs, then use Method 2 (Jina Reader) to fetch each page.
 
-**Method 4: Ever CLI (last resort — slowest)**
+**Method 4: Claude in Chrome (last resort — slowest)**
 Only use if the docs are behind auth or Methods 1-3 fail:
 ```bash
-ever navigate <docs-url> && ever extract
+navigate <docs-url>, then get_page_text
 ```
 
 **Directory structure** — mirror the original docs hierarchy:
@@ -86,10 +86,10 @@ clone-product-docs/
 
 **Commit the docs extraction.**
 
-**This phase should take 1-2 iterations MAX.** Bulk download everything, then move on to UI testing. Do NOT read pages one at a time with Ever CLI — that wastes iterations.
+**This phase should take 1-2 iterations MAX.** Bulk download everything, then move on to UI testing. Do NOT read pages one at a time in the browser — that wastes iterations.
 
 ### Iteration 1: Site Map
-1. `ever snapshot` the main dashboard to see all navigation links.
+1. `read_page` on the main dashboard to see all navigation links.
 2. Map the COMPLETE site structure and save it to `sitemap.md`:
    - Every page in the navigation (sidebar, top nav, footer)
    - Sub-pages and tabs within each page
@@ -97,14 +97,14 @@ clone-product-docs/
    - Page type: list view, detail view, form, settings, etc.
 3. Record the overall layout pattern (sidebar + content, top nav + pages, etc.).
 4. Record the tech stack if detectable (check page source, network requests).
-5. Take a screenshot of the main dashboard: `ever screenshot --output screenshots/home.jpg`
+5. Screenshot the main dashboard with `computer` (`action: "screenshot"`) and save it to `screenshots/home.jpg`
 
-### Iterations 2-N: Feature-by-Feature Deep Dive (USE Ever CLI to test UI)
+### Iterations 2-N: Feature-by-Feature Deep Dive (drive the UI with Claude in Chrome)
 For each page/feature (one per iteration):
 1. Navigate to the page.
-2. `ever snapshot` to see all interactive elements.
-3. `ever screenshot --output screenshots/<page-name>.jpg`
-4. **Actively test the feature with Ever CLI:**
+2. `read_page` to see all interactive elements.
+3. `computer` (`action: "screenshot"`) saved to `screenshots/<page-name>.jpg`
+4. **Actively test the feature in the browser:**
    - Click buttons, open modals, expand dropdowns
    - Fill forms with test data, observe validation and responses
    - Try CRUD operations (create, read, update, delete)
@@ -119,11 +119,11 @@ For each page/feature (one per iteration):
 ### When to use what:
 | Task | Tool |
 |------|------|
-| Reading docs/help pages | `ever extract` or `curl` (just read text) |
-| Mapping site structure | `ever snapshot` (read nav links) |
-| Testing UI interactions | `ever snapshot` → `ever click` → `ever snapshot` |
+| Reading docs/help pages | `get_page_text` or `curl` (just read text) |
+| Mapping site structure | `read_page` (read nav links) |
+| Testing UI interactions | `read_page` → `computer` click/type → `read_page` |
 | Testing API features | `curl` with API key from `.env` |
-| Capturing visual reference | `ever screenshot` |
+| Capturing visual reference | `computer` (`action: "screenshot"`) |
 
 ### Every Iteration: Update spec-build.md Incrementally
 After each inspection iteration, update `spec-build.md` with what you know so far. This file grows as you discover more:
@@ -244,8 +244,8 @@ For EVERY feature entry, you MUST include:
 - State transitions (what happens when X changes to Y?)
 - Computed values (filters, sorts, calculations)
 
-**E2E tests** — test the full user flow via Ever CLI:
-- Write step-by-step instructions using Ever CLI commands
+**E2E tests** — test the full user flow in the browser:
+- Write step-by-step instructions using Claude in Chrome tools
 - Include exact element interactions: "click the 'Add' button", "type 'test' into the search input"
 - Include what the page should look like AFTER the action
 - Test the happy path AND at least one failure path

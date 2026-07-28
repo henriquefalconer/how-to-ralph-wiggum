@@ -2,7 +2,7 @@
 
 ## What This Is
 A three-phase autonomous system that clones any SaaS product from just a URL.
-Phase 1: Inspect (Claude + Ever CLI) → Phase 2: Build (Claude + Playwright E2E) → Phase 3: QA (Claude + Ever CLI)
+Phase 1: Inspect (Claude in Chrome) → Phase 2: Build (Claude + Playwright E2E) → Phase 3: QA (Claude in Chrome)
 
 ## Tech Stack
 - **Framework**: Next.js 16 (App Router, Turbopack) — pre-installed, do not change
@@ -138,7 +138,7 @@ There is no Linux Chrome inside WSL — the browser is the Windows host Chrome.
 ### Use claude-in-chrome
 - Drive that Chrome via **claude-in-chrome** — the loop scripts already pass `--chrome` to `claude -p`. Keep that flag.
 - Work in the existing authenticated window so the `proton.me` session is available to every phase (inspect, build, QA).
-- Ever CLI is still the tool for scripted snapshots/screenshots of the target and the clone; claude-in-chrome is for interactive flows that need the logged-in session.
+- claude-in-chrome is the only browser driver in this project — for inspecting the target, for QA against the clone, and for anything needing the logged-in session. See `claude-in-chrome-reference.md` for the tool reference.
 
 ## Out of Scope — DO NOT build
 - **Docker — do NOT use it in this project.**

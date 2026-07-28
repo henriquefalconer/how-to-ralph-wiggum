@@ -30,7 +30,7 @@ if [ -f "$LOCKFILE" ]; then
   rm -f "$LOCKFILE"
 fi
 echo $$ > "$LOCKFILE"
-trap 'rm -f "$LOCKFILE"; ever stop 2>/dev/null' EXIT
+trap 'rm -f "$LOCKFILE"' EXIT
 
 # ─── Helpers ───
 

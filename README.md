@@ -10,9 +10,9 @@ flowchart LR
 
     subgraph WD["Watchdog Orchestrator — auto-restart · git commit+push · cron backup"]
         direction LR
-        INSPECT["<b>INSPECT</b><br/>Phase 1 · Ever CLI + Claude<br/>prd.json · spec-build.md<br/>sitemap + screenshots"]
+        INSPECT["<b>INSPECT</b><br/>Phase 1 · Claude in Chrome + Claude<br/>prd.json · spec-build.md<br/>sitemap + screenshots"]
         BUILD["<b>BUILD</b><br/>Phase 2 · Claude<br/>API routes + components<br/>Vitest unit tests<br/>Neon · Render"]
-        QA["<b>QA</b><br/>Phase 3 · Claude<br/>E2E via Ever CLI + Playwright<br/>bug fixes + screenshots<br/>regression suite"]
+        QA["<b>QA</b><br/>Phase 3 · Claude<br/>E2E via Claude in Chrome + Playwright<br/>bug fixes + screenshots<br/>regression suite"]
 
         INSPECT --> BUILD --> QA
         QA -- "bugs found → fix → retest<br/>(up to 5 cycles)" --> BUILD
@@ -38,7 +38,7 @@ Ralph-to-Ralph runs a three-phase autonomous pipeline:
 
 ### Phase 1: Inspect (Ralph Loop #1)
 
-**Ever CLI + Claude Opus** analyzes the target URL and produces:
+**Claude in Chrome + Claude Opus** analyzes the target URL and produces:
 - `PRD.json` — structured product requirements
 - `spec-build.md` — technical build specification
 - Sitemap + screenshots of every page
@@ -53,7 +53,7 @@ Ralph-to-Ralph runs a three-phase autonomous pipeline:
 ### Phase 3: QA (Ralph Loop #3)
 
 **Claude QA Agents** verify everything works:
-- E2E testing via Ever CLI
+- E2E testing via Claude in Chrome
 - Bug fixes + visual regression screenshots
 - Regression test suite
 
@@ -71,7 +71,7 @@ A strict watchdog wraps the entire pipeline, ensuring all Ralph loops stay stabl
 
 | Agent | Role |
 |-------|------|
-| **[Ever CLI](https://foreverbrowsing.com)** | Custom browser agent for site inspection and E2E testing |
+| **Claude in Chrome** | Anthropic's browser extension — drives the signed-in Chrome window for site inspection and E2E testing |
 | **Claude Opus** | Powers the Inspect and Build loops — architecture, code generation, infra setup |
 | **Claude (QA)** | Runs independent fresh-context QA agents for thorough verification |
 
@@ -109,11 +109,6 @@ every feature. Progress is visible in `prd.json` (`passes` flags),
 - **Storage:** Neon Postgres (`bytea` columns)
 - **Deployment:** Render (built from the GitHub repo, native Node runtime)
 
-## Team
+## Demo 2026
 
-- **Jaeyun Ha** — [github.com/jaeyunha](https://github.com/jaeyunha)
-- **Ashley Ha** — [github.com/ashley-ha](https://github.com/ashley-ha)
-
-## Ralphthon Seoul 2026
-
-This project was built for [Ralphthon Seoul 2026](https://ralphthon.com) — a hackathon focused on building real products with AI agents.
+Built as a demonstration of autonomous product cloning with AI agents.

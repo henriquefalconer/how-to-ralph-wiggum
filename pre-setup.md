@@ -90,8 +90,8 @@ scripts/           — Infrastructure and deploy scripts
 The browser already holds a logged-in session for the target product — see
 "Browser & Target Account" in `CLAUDE.md` for the account email and how to reach
 the mailbox for confirmation links. If the target logs you out during inspection,
-sign back in with that account: `ever click` the sign-in fields, `ever input` the
-credentials, submit.
+sign back in with that account: use claude-in-chrome to fill the sign-in fields
+and submit.
 
 ## Port
 Dev server runs on **3015**. Do not change this.

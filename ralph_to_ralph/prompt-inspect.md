@@ -6,7 +6,7 @@ This is a **generic product cloning system** — the target could be any SaaS st
 
 ## Your Inputs
 - `spec-inspect.md`: Your instructions — how to inspect, what to capture, what to output.
-- `ever-cli-reference.md`: Ever CLI command reference — use these to control the browser.
+- `claude-in-chrome-reference.md`: Claude in Chrome tool reference — use these to control the browser.
 - `prd.json`: Feature list you are building up (append new entries each iteration).
 - `ralph_to_ralph/.state/progress/inspect/NNN.md`: One file per past iteration. The loop feeds
   you the most recent few — read them first to see what has already been inspected.
@@ -16,7 +16,7 @@ This is a **generic product cloning system** — the target could be any SaaS st
 
 1. Read the recent `ralph_to_ralph/.state/progress/inspect/*.md` files you were given to see what has been done.
 2. Read `spec-inspect.md` for your full inspection strategy.
-3. Run `ever snapshot` to see the current page state.
+3. Run `read_page` to see the current page state.
 4. Follow the inspection strategy for your current iteration:
 
 ### Phase A: Read ALL docs first (if nothing inspected yet)
@@ -36,7 +36,7 @@ This is a **generic product cloning system** — the target could be any SaaS st
 
 ### Subsequent iterations: Deep dive one page/feature
 - Pick the next uninspected page/feature from `sitemap.md`
-- **Take screenshots**: `ever screenshot --output screenshots/inspect/<page-name>.jpg` for each page
+- **Take screenshots**: `computer` with `action: "screenshot"`, saved to `screenshots/inspect/<page-name>.jpg` for each page
 - Inspect thoroughly: click, type, submit, test every interaction
 
 ### Final iteration: Finalize spec-build.md
@@ -87,7 +87,7 @@ This is a **generic product cloning system** — the target could be any SaaS st
 
 ## Rules
 - **HARD STOP: Inspect one page OR a group of structurally similar pages per invocation.** E.g., all list/table views together, all detail views together, all settings tabs together. After you commit and push, output the promise and stop.
-- Do NOT run `ever start` — the session is already running.
+- Work in the Chrome window that is already open and signed in. Do NOT log out, clear cookies, or open an incognito/guest window.
 - ACTIVELY test features — click, type, submit. Don't just read.
 - Take screenshots of every page you inspect.
 - Commit and push after every iteration.

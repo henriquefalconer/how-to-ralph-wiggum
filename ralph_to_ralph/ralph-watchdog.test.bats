@@ -50,8 +50,7 @@ STUB
   # The watchdog commits between phases; keep it away from a real repo.
   printf '#!/bin/bash\nexit 0\n' > "$REPO/bin/git"
   printf '#!/bin/bash\nexit 0\n' > "$REPO/bin/sleep"
-  printf '#!/bin/bash\nexit 0\n' > "$REPO/bin/ever"
-  chmod +x "$REPO/bin/git" "$REPO/bin/sleep" "$REPO/bin/ever"
+  chmod +x "$REPO/bin/git" "$REPO/bin/sleep"
   PATH="$REPO/bin:$PATH"
 
   echo '[{"id":"f1","passes":false}]' > "$REPO/prd.json"

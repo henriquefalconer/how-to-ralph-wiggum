@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 # Tests for ralph-qa.sh (Phase 3 loop).
 #
-# `claude`, `ever`, `npm` and `npx` are replaced by stubs. STUB_OUT / STUB_RC set
+# `claude`, `npm` and `npx` are replaced by stubs. STUB_OUT / STUB_RC set
 # the default claude response; STUB_OUT_<n> / STUB_RC_<n> override the nth call.
 # Run with: npx bats ralph_to_ralph/ralph-qa.test.bats
 
@@ -15,7 +15,6 @@ setup() {
 
   export STUB_ARGS="$REPO/claude-args.txt"
   export STUB_CALLS="$REPO/claude-calls.txt"
-  export EVER_ARGS="$REPO/ever-args.txt"
   export NPM_ARGS="$REPO/npm-args.txt"
   export NPX_ARGS="$REPO/npx-args.txt"
   echo 0 > "$STUB_CALLS"
@@ -29,13 +28,6 @@ echo "${!out:-${STUB_OUT:-}}"
 exit "${!rc:-${STUB_RC:-0}}"
 STUB
   chmod +x "$REPO/bin/claude"
-
-  cat > "$REPO/bin/ever" <<'STUB'
-#!/bin/bash
-printf '%s\n' "$*" >> "$EVER_ARGS"
-exit 0
-STUB
-  chmod +x "$REPO/bin/ever"
 
   cat > "$REPO/bin/npm" <<'STUB'
 #!/bin/bash
@@ -74,11 +66,12 @@ STUB
   [ "$(cat "$REPO/report-qa.json")" = "[]" ]
 }
 
-@test "starts the dev server and points Ever at the local clone" {
+@test "starts the dev server and tells the agent where the clone is" {
   export STUB_OUT="<promise>QA_COMPLETE</promise>"
   run "$REPO/ralph_to_ralph/ralph-qa.sh" https://example.com 1
   grep -qx -- "run dev" "$NPM_ARGS"
-  grep -qx -- "start --url http://localhost:3015" "$EVER_ARGS"
+  grep -q -- "CLONE_URL: http://localhost:3015" "$STUB_ARGS"
+  grep -q -- "@claude-in-chrome-reference.md" "$STUB_ARGS"
 }
 
 @test "invokes claude with the pinned model" {

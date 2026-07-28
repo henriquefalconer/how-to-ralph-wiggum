@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 # Tests for ralph-inspect.sh (Phase 1 loop).
 #
-# `claude` and `ever` are replaced by stubs. STUB_OUT / STUB_RC set the default
+# `claude` is replaced by a stub. STUB_OUT / STUB_RC set the default
 # claude response; STUB_OUT_<n> / STUB_RC_<n> override the nth invocation.
 # Run with: npx bats ralph_to_ralph/ralph-inspect.test.bats
 
@@ -15,7 +15,6 @@ setup() {
 
   export STUB_ARGS="$REPO/claude-args.txt"
   export STUB_CALLS="$REPO/claude-calls.txt"
-  export EVER_ARGS="$REPO/ever-args.txt"
   echo 0 > "$STUB_CALLS"
 
   cat > "$REPO/bin/claude" <<'STUB'
@@ -27,13 +26,6 @@ echo "${!out:-${STUB_OUT:-}}"
 exit "${!rc:-${STUB_RC:-0}}"
 STUB
   chmod +x "$REPO/bin/claude"
-
-  cat > "$REPO/bin/ever" <<'STUB'
-#!/bin/bash
-printf '%s\n' "$*" >> "$EVER_ARGS"
-exit "${EVER_RC:-0}"
-STUB
-  chmod +x "$REPO/bin/ever"
 
   printf '#!/bin/bash\nexit 0\n' > "$REPO/bin/sleep"
   chmod +x "$REPO/bin/sleep"
@@ -57,12 +49,13 @@ STUB
   [ -d "$REPO/screenshots" ]
 }
 
-@test "opens an Ever session on the target url and stops it on exit" {
+@test "drives the browser through claude-in-chrome, not a separate session" {
   export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
   run "$REPO/ralph_to_ralph/ralph-inspect.sh" https://example.com 1
   [ "$status" -eq 0 ]
-  grep -qx -- "start --url https://example.com" "$EVER_ARGS"
-  grep -qx -- "stop" "$EVER_ARGS"
+  # --chrome hands the agent the already-signed-in Chrome window
+  grep -qx -- "--chrome" "$STUB_ARGS"
+  grep -q -- "@claude-in-chrome-reference.md" "$STUB_ARGS"
 }
 
 @test "invokes claude with the pinned model" {
