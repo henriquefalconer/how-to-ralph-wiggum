@@ -1,9 +1,11 @@
 # Pipefy Clone — Build Spec
 
-> **STATUS: PARTIAL — docs-derived only.** No UI has been inspected yet (iteration 1
-> was documentation extraction). Site map, screenshots, design system, and
-> UI-observed behavior are all still TODO. Do not treat any section below as final
-> until the "UI Inspection Coverage" checklist at the bottom is all checked.
+> **STATUS: COMPLETE.** All pages/features listed in `sitemap.md` have been
+> live-tested across 12 inspect iterations (docs extraction, site map, then
+> feature-by-feature deep dives). The one open item — Tarefas e Solicitações's
+> underlying data source — is accepted as an unresolved low-priority edge case
+> (see the coverage checklist below), not a blocker. This spec is the primary
+> input for the Build phase.
 
 ## 1. Product Overview
 
@@ -60,8 +62,9 @@ fits the product well:
 
 ## 3. Site Map
 
-**PARTIAL — org/pipe navigation mapped, page-level deep dives still TODO.**
-Full detail in `sitemap.md` (mirrored here at a summary level). The trial org
+**COMPLETE.** Full detail in `sitemap.md` (mirrored here at a summary level;
+every row there is now either fully inspected or explicitly marked
+out-of-scope). The trial org
 started with **zero pipes**, which forces a non-dismissable "create your first
 pipe" modal — not real product behavior, do not clone that; a test pipe
 ("Purchase Requests") was created to proceed.
@@ -82,16 +85,85 @@ Page tabs: Mapa (visual map), Fluxo (visual pipeline/phase builder), **Kanban**
 builder), Formulário (start form editor), Emails (shared inbox per pipe),
 Painéis (dashboards/charts).
 
-Confirmed still-TODO for upcoming iterations: card detail view, Fases editor
-(the 23 field types), Database Table creation + grid + record detail, Kanban
-drag-drop, Relatórios/Painéis chart creation, Emails compose, Automations rule
-builder, AI Agents creation flow, Pessoas/Configurações/Atividades/Ferramentas/
-Lixeira, `/my-tasks`.
+All of the above, plus Interfaces/Portal builder, Meu trabalho, notifications,
+card search, and the start-form editor, were inspected across iterations 2-11
+— see the UI Inspection Coverage Checklist below for the full cross-reference.
 
 ## 4. Design System
 
-**TODO — not yet inspected.** No colors, fonts, or component patterns observed
-yet — this section requires screenshots from the live UI.
+Consolidated from `screenshots/inspect/*.jpg` across all 12 iterations
+(home, kanban-board, phases-editor, dashboard-panel, and every other captured
+screen). Pipefy's UI is a light, low-chroma neutral surface with a small set
+of saturated accent colors reserved for state and brand moments — the clone
+should reproduce this restraint rather than inventing extra color.
+
+**Color palette (approximate hex, sampled from screenshots):**
+- **Primary blue** `#2E68D9`-ish — primary buttons ("Adicionar gráfico",
+  "Criar novo card"), links ("Ver detalhes de uso"), focus rings, the active
+  tab underline, outlined "Upgrade" button border/text.
+- **Teal/turquoise accent** `#1AB6A6`-ish — the default pipe icon color seen
+  in this org, the active/current-phase column header text + left border +
+  background tint (`Caixa de entrada` column), field-type icon backgrounds in
+  the Fases palette.
+- **Near-black navy** `#1F2430`-ish — the active org-nav pill ("Início"),
+  primary body text, card titles.
+- **AI/purple-pink gradient** — reserved exclusively for AI-flagged
+  surfaces: the "Deixe a IA criar seu próximo pipe" input's gradient border
+  (blue→pink), the floating AI assistant button (blue→purple gradient
+  circle), sparkle icons next to AI-assisted field types (Texto curto,
+  Anexo) in the Fases palette. This is a deliberate visual language for
+  "AI touches this" that the clone should preserve as a distinct token
+  (`--ai-gradient`), not reuse for ordinary primary actions.
+- **Neutral grays** — page background `#F5F6F8`-ish, card/column background
+  a slightly lighter/white `#FAFAFB`-ish inside a `#F5F6F8` board canvas,
+  borders `#E4E7EB`-ish, muted/placeholder text `#8A93A6`-ish.
+- **Semantic**: success/toast green (`Gráfico criado. Confira!` toast),
+  destructive red (delete actions, "Vencidos" overdue badges), warning
+  amber (plan-usage banner background is a pale blue, not amber — Pipefy
+  uses pale-blue for informational banners rather than a separate info
+  color).
+
+**Typography:** a clean grotesque sans-serif throughout (renders like Inter
+or a similar system sans — no serif or monospace observed anywhere in the
+product UI, monospace only appears in code/token contexts). Loose type scale
+observed: page/section headers ~20-24px semibold, card/column titles
+~14-16px semibold, body/label text ~13-14px regular, helper/meta text
+~12px muted gray.
+
+**Layout pattern:** top nav bar (org-level or pipe-level, swaps per
+context) + a horizontal tab strip immediately below for the current
+object's sub-pages — no left sidebar in this org. Content area is full-width
+below the tabs. Kanban-style column layouts (phase columns, the field-type
+palette, the AI-agent behavior list) share one visual idiom: a scrollable
+horizontal or vertical stack of rounded-corner (~8px) white/light cards on
+a light-gray canvas, each card `12-16px` internal padding, `~12px` gaps
+between cards.
+
+**Shared component patterns (confirmed reused across ≥2 features, build
+each once):**
+- **Grouped field/token picker** — a searchable dropdown grouping items
+  under "Geral > Atributos do Card" then "Fases > <phase> > <fields>".
+  Reused by Field Conditionals, Automations, Reports, Email templates, AI
+  Agents, PDF Generator, and Interfaces' Texto element — 7 confirmed
+  reuses (see §13/§17/§18/§20/§21). Build as one parameterized component.
+- **Name-only creation modal** — Pipe, Database, Report, Dashboard, and
+  Interface creation all start from the same shallow "just give it a name"
+  modal pattern before routing into the full editor.
+- **Autosave with a status pill** — Interfaces builder and the start-form
+  field editor both autosave with a cycling status indicator (`Sem
+  alterações` → `Última alteração em <timestamp>` → saved checkmark) rather
+  than an explicit Save button; contrast with Modo Público and Opções
+  Avançadas modals, which DO require an explicit Salvar click. The clone
+  should implement both save modes, matching per-surface as documented in
+  each feature's section above.
+- **Kebab (⋮) menu for row/tile-level actions** — Automations list,
+  Database records, PDF templates, Reports/Dashboards all use the same
+  `⋮` → dropdown (Editar/Duplicar/Excluir or similar) pattern.
+- **Toast notifications** — bottom-left or top-right transient
+  confirmations (`"Card criado com sucesso..."`, `"Gráfico criado.
+  Confira!"`, `"Configurações atualizadas."`) after most non-destructive
+  mutations; several autosave flows (phase field edits) skip the toast
+  entirely — do not assume every mutation toasts.
 
 ## 5. Data Models
 
@@ -312,20 +384,53 @@ already built, not part of the PRD.
 
 ## 9. Build Order
 
-Not yet finalized — PRD only has doc-derived scaffolding/API-shape entries so
-far (see `prd.json`). Full prioritized build order (with `priority`/`core`
-fields on every `prd.json` entry) is written on the **final** inspect iteration,
-per spec-inspect.md, once the core features are confirmed by UI inspection.
-Provisional core-feature guess (to validate against the real UI next):
-1. Project scaffolding + design system foundations
-2. Pipe list + Kanban board (phases as columns) + card detail — **core**
-3. Field type system (form rendering + card field values) — **core**
-4. Start form (card creation) — **core**
-5. Database Tables (grid view + records) — **core**
-6. Reports/dashboards — secondary
-7. Tags, tasks, search, webhooks — secondary
-8. Automations/AI Agents (data model + simple rule execution) — secondary
-9. Bulk import, polish, edge cases — last
+**FINAL.** Every `prd.json` entry carries `priority` (1 = first) and `core`
+(true/false), set incrementally as features were discovered and confirmed
+against the live UI. This is the definitive implementation order.
+
+**Core features (the product's reason to exist — build first, end-to-end
+with UI + API + data + tests):**
+1. Pipe + Phase + Card entities, Kanban board, card detail view
+   (feature-001/002/004) — the central workflow-tracking mental model.
+2. Field type system — the 23 field types, phase field config, start-form
+   field config (feature-002/003) — the differentiator vs. a plain Kanban
+   tool.
+3. Database Tables — grid, records, connection to pipes (feature-005) —
+   the product's second core object type.
+4. Start form / card creation (feature-029) — the intake mechanism that
+   makes a pipe usable at all; confirmed card creation is fully gated on
+   this (see §11).
+
+**Build order for `prd.json` (mirrors the `priority` field):**
+1. Project scaffolding, design system foundations (§4 above), core layout
+   shell (top nav + tab strip, no sidebar)
+2. Pipe/Phase/Card data models + Kanban board + card detail (feature-001,
+   002, 004) — **core**
+3. Field type system + Database Tables + SDK scaffolding (feature-003,
+   005, 006) — **core**
+4. Field Conditionals (feature-009)
+5. Automations engine (feature-010)
+6. Start form dedicated surfaces, AI Agents, Etiquetas (feature-006 dupes
+   aside — feature-016, 019, 029) — **029 is core**
+7. (reserved — no entries at this priority)
+8. Bulk import/webhooks scaffolding (feature-007), Reports (feature-011)
+9. Dashboards, Atividades audit log, Conexões, Gerador de PDF (feature-012,
+   015, 021, 022)
+10. Interfaces builder + all element types + AI Assistant + Emails
+    (feature-008, 018, 020, 023, 024, 025, 026)
+11. Pipe Settings — Pessoas, Configurações do pipe (feature-013, 014)
+12. Lixeira, Meu trabalho + notifications (feature-017, 027)
+15. Card search (feature-028) — smallest, most standalone, safe to build
+    last among confirmed features.
+
+**Explicitly deferred / out of scope for the clone** (per CLAUDE.md and
+spec-inspect.md): login/signup/auth, billing/paywalls, account/profile
+settings, OAuth/SSO, Integrações marketplace, Apps marketplace, Learning
+Center, real multi-LLM AI orchestration (AI Agents/AI Assistant are data +
+simple rule/stub evaluators only), Tarefas e Solicitações (data source
+never confirmed after two dedicated attempts — see checklist below; a
+future pass could revisit if the build loop has spare iterations, but it
+does not block Build Order priorities 1-15 above).
 
 ## UI Inspection Coverage Checklist
 - [x] Site map (Iteration 1) — see `sitemap.md`
@@ -344,9 +449,9 @@ Provisional core-feature guess (to validate against the real UI next):
 - [x] Meu trabalho / `/my-tasks` (org-level "my work" list) + notification system (Iteration 9; see §22 and prd feature-027; screenshots: `screenshots/inspect/my-work-populated.jpg`, `screenshots/inspect/notifications.jpg`)
 - [x] Search (pipe-scoped "Procurar cards" box in the Kanban top nav — Iteration 11; client-side substring filter, no network call, debounced; see §23 and prd feature-028; screenshot: `screenshots/inspect/kanban-card-search.jpg`)
 - [x] Start form as its own dedicated deep-dive (Iteration 11 — internal builder is Fases-tab reuse [phase zero], plus start-form-exclusive Modo Público branding editor and Opções Avançadas; see §23 and prd feature-029; screenshot: `screenshots/inspect/start-form-editor.jpg`)
-- [ ] Tarefas e Solicitações's underlying data source (re-checked Iteration 10: still "Sem tarefas" / empty even with an active overdue+assigned card in Meu trabalho — confirmed NOT the same trigger as Meu trabalho; low priority, deferred)
-- [ ] Design system consolidated from screenshots
-- [ ] Final cleanup pass + PRD reorder (spec-inspect.md "Final Iteration")
+- [x] Design system consolidated from screenshots (Iteration 12 — see §4: color palette, typography, layout pattern, shared component patterns)
+- [x] Final cleanup pass + PRD reorder (Iteration 12 — `prd.json` priority/core fields confirmed complete on all 29 entries; §9 Build Order finalized; PARTIAL/TODO banners removed throughout)
+- [~] Tarefas e Solicitações's underlying data source — **accepted as an unresolved edge case, not a blocker.** Re-checked twice (Iterations 9 and 10): stayed empty ("Sem tarefas") even with an active overdue+assigned card populating Meu trabalho, and the card's own Atividades audit log is confirmed not the source either. A third attempt was considered for Iteration 12 but not pursued — the surface is structurally minor (a single list view, no create/edit flow observed), two independent live tests found no trigger, and forcing a third identical attempt would not change the outcome without new information (e.g. a support ticket, approval-flow feature, or admin-only object not reachable in this trial org/role). The clone should implement `/tasks-and-requests` as a simple empty-state list view (org-scoped, "Abertas"/"Concluídas" toggle, Tarefa/Pipe/Recebido em/Vencimento columns per `sitemap.md`) without a confirmed data-population rule — lowest priority in `prd.json` (feature not yet added; add as a stub if the Build loop reaches the end of the priority-15 list with iterations to spare).
 
 ## 10. Field Conditionals (new, Iteration 2)
 Discovered via Gerenciar > Fases > 'Condicionais em campos'. Full detail in

@@ -91,13 +91,19 @@ Automations sub-tabs (`/pipes/:id/automations`): Automações, Logs. **Inspected
 — full trigger→action rule builder (10 triggers × 12 actions), built and fired a real rule,
 confirmed via Logs and the card detail view. See prd feature-010 and spec-build.md §13.
 
-## Not yet inspected (next iterations)
-- Tarefas e Solicitações's actual data source — confirmed NOT the same feed as Meu trabalho
-  and NOT a card's Atividades log; **re-checked iteration 10, still empty** ("Sem tarefas")
-  even with an active overdue+assigned card populating Meu trabalho; still unconfirmed what
-  populates it (low priority)
-- Design system consolidation pass + final spec-build.md cleanup (spec-inspect.md "Final Iteration")
-  — this is the LAST open item; once done, spec-build.md can be finalized
+## Inspection status: COMPLETE (iteration 12)
+All pages/features in this sitemap have been either live-tested or explicitly
+marked out-of-scope. `spec-build.md` is finalized (design system consolidated,
+`prd.json` priority/core fields confirmed on all 29 entries, PARTIAL/TODO
+banners removed). One item remains an accepted, non-blocking open question:
+
+- **Tarefas e Solicitações's actual data source** — confirmed NOT the same feed
+  as Meu trabalho and NOT a card's Atividades log; re-checked twice (iterations
+  9 and 10), still empty ("Sem tarefas") even with an active overdue+assigned
+  card populating Meu trabalho. Accepted as unresolved rather than pursued a
+  third time — see `spec-build.md`'s UI Inspection Coverage Checklist for the
+  full rationale. The clone should implement it as a simple empty-state list
+  view without a confirmed population rule.
 
 ## Resolved iteration 11
 - **Pipe-scoped card search** ("Procurar cards" box in the Kanban top nav) — fully tested:
