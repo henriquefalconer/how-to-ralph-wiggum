@@ -9,7 +9,7 @@ ITERATIONS="${2:-999}"
 
 MAX_FAILURES="${RALPH_MAX_FAILURES:-3}"   # abort after N consecutive no-promise iterations
 
-STATE_DIR="ralph-to-ralph/.state"
+STATE_DIR="ralph/.state"
 TARGET_FILE="$STATE_DIR/inspect-target"
 
 # The session runner: usage accounting, resume-on-missing-promise, and the
@@ -21,7 +21,7 @@ trap 'reap_sessions; exit 130' INT
 trap 'reap_sessions; exit 143' TERM
 trap 'reap_sessions' EXIT
 
-echo "=== RALPH-TO-RALPH: Phase 1 (Inspect) ==="
+echo "=== Phase 1 (Inspect) ==="
 echo "Target: $TARGET_URL"
 echo "Iterations: $ITERATIONS"
 echo "Progress: $PROGRESS"
@@ -68,7 +68,7 @@ mkdir -p screenshots
 # --chrome and the agent works in the Chrome window that is already open.
 
 note "═══════════════════════════════════════════════════════"
-note "ralph-to-ralph Phase 1 (Inspect) starting — target=$TARGET_URL model=$MODEL max-iter=$ITERATIONS"
+note "Phase 1 (Inspect) starting — target=$TARGET_URL model=$MODEL max-iter=$ITERATIONS"
 
 consecutive_failures=0
 
@@ -78,7 +78,7 @@ for ((i=1; i<=ITERATIONS; i++)); do
   PROMPT_FILE="$RUN_DIR/prompt-inspect-$i.txt"
   {
     cat <<PROMPT
-@ralph-to-ralph/prompt-inspect.md @ralph-to-ralph/spec-inspect.md @claude-in-chrome-reference.md @prd.json
+@ralph/prompt-inspect.md @ralph/spec-inspect.md @claude-in-chrome-reference.md @prd.json
 
 TARGET URL: $TARGET_URL
 ITERATION: $i of $ITERATIONS

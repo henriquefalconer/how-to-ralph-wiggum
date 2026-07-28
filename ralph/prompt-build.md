@@ -93,7 +93,7 @@ The run's progress file (its path is given as `PROGRESS:` in this iteration's pr
 Most importantly, the first thing you should do is append (iteration number should be this iteration's number):
 ```
 ═══════════════════════════════════════════════════════
-  Ralph-to-Ralph Build Iteration N
+  Ralph Build Iteration N
 ═══════════════════════════════════════════════════════
 
 Brief explanation of what you will do (starting with a verb like "Finding most important item to address...", ending in ...)

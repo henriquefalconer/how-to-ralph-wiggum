@@ -1,12 +1,12 @@
 setup() {
   REPO="$BATS_TEST_TMPDIR/repo"
-  mkdir -p "$REPO/ralph-to-ralph/.state" "$REPO/bin"
-  cp "$BATS_TEST_DIRNAME/ralph-qa.sh" "$BATS_TEST_DIRNAME/ralph-lib.sh" "$REPO/ralph-to-ralph/"
+  mkdir -p "$REPO/ralph/.state" "$REPO/bin"
+  cp "$BATS_TEST_DIRNAME/ralph-qa.sh" "$BATS_TEST_DIRNAME/ralph-lib.sh" "$REPO/ralph/"
 
   export RALPH_RUN_ID="TESTRUN"
-  RUN_DIR="$REPO/ralph-to-ralph/.state/runs/TESTRUN"
+  RUN_DIR="$REPO/ralph/.state/runs/TESTRUN"
   PROGRESS_FILE="$RUN_DIR/progress.txt"
-  SENTINEL="$REPO/ralph-to-ralph/.state/qa-complete"
+  SENTINEL="$REPO/ralph/.state/qa-complete"
 
   export STUB_ARGS="$REPO/claude-args.txt"      # argv, one word per line
   export STUB_STDIN="$REPO/claude-stdin.txt"    # the assembled prompt
@@ -68,21 +68,21 @@ STUB
 
 @test "refuses to run without prd.json" {
   rm "$REPO/prd.json"
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
+  run "$REPO/ralph/ralph-qa.sh" https://example.com 1
   [ "$status" -eq 1 ]
   [[ "$output" == *"prd.json not found"* ]]
 }
 
 @test "QA_COMPLETE writes the sentinel the watchdog treats as proof of a full pass" {
   export STUB_OUT="<promise>QA_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
+  run "$REPO/ralph/ralph-qa.sh" https://example.com 1
   [ "$status" -eq 0 ]
   [ -f "$SENTINEL" ]
 }
 
 @test "running out of iterations leaves no sentinel" {
   export STUB_OUT="<promise>NEXT</promise>"
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 2
+  run "$REPO/ralph/ralph-qa.sh" https://example.com 2
   [ ! -f "$SENTINEL" ]
 }
 
@@ -92,7 +92,7 @@ STUB
   # otherwise the watchdog reads last cycle's verdict as this cycle's.
   echo "stale verdict from an earlier cycle" > "$SENTINEL"
   rm "$REPO/prd.json"
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
+  run "$REPO/ralph/ralph-qa.sh" https://example.com 1
   [ "$status" -eq 1 ]
   [ ! -f "$SENTINEL" ]
 }
@@ -100,7 +100,7 @@ STUB
 @test "clears a stale sentinel when the dev server never comes up" {
   echo "stale verdict from an earlier cycle" > "$SENTINEL"
   export CURL_RC=1
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
+  run "$REPO/ralph/ralph-qa.sh" https://example.com 1
   [ "$status" -eq 1 ]
   [[ "$output" == *"never became ready"* ]]
   [ ! -f "$SENTINEL" ]
@@ -108,14 +108,14 @@ STUB
 
 @test "seeds report-qa.json when missing" {
   export STUB_OUT="<promise>QA_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
+  run "$REPO/ralph/ralph-qa.sh" https://example.com 1
   [ "$status" -eq 0 ]
   [ "$(cat "$REPO/report-qa.json")" = "[]" ]
 }
 
 @test "starts the dev server and tells the agent where the clone is" {
   export STUB_OUT="<promise>QA_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
+  run "$REPO/ralph/ralph-qa.sh" https://example.com 1
   grep -qx -- "run dev" "$NPM_ARGS"
   grep -q -- "CLONE_URL: http://localhost:3015" "$STUB_STDIN"
   grep -q -- "@claude-in-chrome-reference.md" "$STUB_STDIN"
@@ -123,7 +123,7 @@ STUB
 
 @test "invokes claude with the pinned model" {
   export STUB_OUT="<promise>QA_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
+  run "$REPO/ralph/ralph-qa.sh" https://example.com 1
   [ "$status" -eq 0 ]
   grep -qx -- "--model" "$STUB_ARGS"
   grep -qx -- "claude-sonnet-5" "$STUB_ARGS"
@@ -131,13 +131,13 @@ STUB
 
 @test "passes the target url through as QA's source of truth" {
   export STUB_OUT="<promise>QA_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
+  run "$REPO/ralph/ralph-qa.sh" https://example.com 1
   grep -q "TARGET_URL: https://example.com" "$STUB_STDIN"
 }
 
 @test "omits the target-url context when no url is given" {
   export STUB_OUT="<promise>QA_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" "" 1
+  run "$REPO/ralph/ralph-qa.sh" "" 1
   [ "$status" -eq 0 ]
   ! grep -q "TARGET_URL:" "$STUB_STDIN"
   [[ "$output" == *"Target: none"* ]]
@@ -145,7 +145,7 @@ STUB
 
 @test "treats the second argument as the iteration count" {
   export STUB_OUT="<promise>NEXT</promise>"
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 2
+  run "$REPO/ralph/ralph-qa.sh" https://example.com 2
   [ "$status" -eq 0 ]
   [ "$(cat "$STUB_CALLS")" -eq 2 ]
   grep -q "ITERATION: 1 of 2" "$STUB_STDIN"
@@ -154,7 +154,7 @@ STUB
 @test "runs the Playwright suite up front when e2e tests exist" {
   mkdir -p "$REPO/tests/e2e"
   export STUB_OUT="<promise>QA_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
+  run "$REPO/ralph/ralph-qa.sh" https://example.com 1
   grep -q "playwright test" "$NPX_ARGS"
 }
 
@@ -162,7 +162,7 @@ STUB
   mkdir -p "$REPO/tests/e2e"
   export NPX_RC=1
   export STUB_OUT="<promise>QA_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 1
+  run "$REPO/ralph/ralph-qa.sh" https://example.com 1
   [ "$status" -eq 0 ]
   [[ "$output" == *"QA agent will investigate"* ]]
 }
@@ -170,7 +170,7 @@ STUB
 @test "QA_COMPLETE runs a final regression and exits 0" {
   mkdir -p "$REPO/tests/e2e"
   export STUB_OUT="<promise>QA_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 5
+  run "$REPO/ralph/ralph-qa.sh" https://example.com 5
   [ "$status" -eq 0 ]
   [[ "$output" == *"QA complete after 1 iterations"* ]]
   # once before the loop, once as the final regression
@@ -181,7 +181,7 @@ STUB
   export STUB_OUT="no promise"
   export RALPH_MAX_FAILURES=2
   export RALPH_RESUME_MAX=0
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 99
+  run "$REPO/ralph/ralph-qa.sh" https://example.com 99
   [ "$status" -eq 1 ]
   [ "$(cat "$STUB_CALLS")" -eq 2 ]
   [[ "$output" == *"2 consecutive iterations produced no promise"* ]]
@@ -195,7 +195,7 @@ STUB
 @test "a stranded QA session is resumed, and the pair writes ONE usage entry" {
   export STUB_OUT_1="I started the dev server in the background and am waiting"
   export STUB_OUT_2="<promise>QA_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 9
+  run "$REPO/ralph/ralph-qa.sh" https://example.com 9
   [ "$status" -eq 0 ]
   [ "$(cat "$STUB_CALLS")" -eq 2 ]
   grep -qx -- "--resume" "$STUB_ARGS"
@@ -208,7 +208,7 @@ STUB
 @test "QA sessions append to the same run-wide progress file as every other phase" {
   export STUB_OUT_1="<promise>NEXT</promise>"
   export STUB_OUT_2="<promise>QA_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-qa.sh" https://example.com 9
+  run "$REPO/ralph/ralph-qa.sh" https://example.com 9
   [ "$(find "$RUN_DIR" -name 'progress*.txt' | wc -l)" -eq 1 ]
   [ "$(grep -c 'Session usage' "$PROGRESS_FILE")" -eq 2 ]
   grep -q "Phase 3 (QA) starting" "$PROGRESS_FILE"

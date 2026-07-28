@@ -5,15 +5,15 @@
 # json`: it reads the prompt from STDIN and writes a session JSON to STDOUT.
 # STUB_OUT / STUB_RC set the default `result` text; STUB_OUT_<n> / STUB_RC_<n>
 # override the nth invocation, which is how a resume is driven.
-# Run with: npx bats ralph-to-ralph/ralph-inspect.test.bats
+# Run with: npx bats ralph/ralph-inspect.test.bats
 
 setup() {
   REPO="$BATS_TEST_TMPDIR/repo"
-  mkdir -p "$REPO/ralph-to-ralph/.state" "$REPO/bin"
-  cp "$BATS_TEST_DIRNAME/ralph-inspect.sh" "$BATS_TEST_DIRNAME/ralph-lib.sh" "$REPO/ralph-to-ralph/"
+  mkdir -p "$REPO/ralph/.state" "$REPO/bin"
+  cp "$BATS_TEST_DIRNAME/ralph-inspect.sh" "$BATS_TEST_DIRNAME/ralph-lib.sh" "$REPO/ralph/"
 
   export RALPH_RUN_ID="TESTRUN"
-  RUN_DIR="$REPO/ralph-to-ralph/.state/runs/TESTRUN"
+  RUN_DIR="$REPO/ralph/.state/runs/TESTRUN"
   PROGRESS_FILE="$RUN_DIR/progress.txt"
 
   export STUB_ARGS="$REPO/claude-args.txt"      # argv, one word per line
@@ -57,14 +57,14 @@ STUB
 }
 
 @test "requires a target url" {
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh"
+  run "$REPO/ralph/ralph-inspect.sh"
   [ "$status" -ne 0 ]
   [[ "$output" == *"Usage:"* ]]
 }
 
 @test "seeds prd.json and the run namespace on first run" {
   export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 1
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 1
   [ "$status" -eq 0 ]
   [ "$(cat "$REPO/prd.json")" = "[]" ]
   [ -d "$RUN_DIR" ]
@@ -74,36 +74,36 @@ STUB
 
 @test "records the target it is inspecting for" {
   export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 1
-  [ "$(cat "$REPO/ralph-to-ralph/.state/inspect-target")" = "https://example.com" ]
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 1
+  [ "$(cat "$REPO/ralph/.state/inspect-target")" = "https://example.com" ]
 }
 
 @test "keeps the previous run's artifacts when the target is unchanged" {
   # A restarted or resumed inspection of the same product must build on what it
   # already has — only a *different* target invalidates it.
   export STUB_OUT="<promise>NEXT</promise>"
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 1
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 1
   echo '[{"id":"f1"}]' > "$REPO/prd.json"
   echo "spec for example.com" > "$REPO/spec-build.md"
 
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 1
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 1
   [ "$status" -eq 0 ]
   [ "$(cat "$REPO/prd.json")" = '[{"id":"f1"}]' ]
   [ -f "$REPO/spec-build.md" ]
-  [ ! -d "$REPO/ralph-to-ralph/.state/archive" ]
+  [ ! -d "$REPO/ralph/.state/archive" ]
 }
 
 @test "archives the previous target's artifacts when the target changes" {
   # The inspect prompt tells the agent to *append* to prd.json. Pointed at a new
   # product with the old PRD still on disk, run #2 builds a chimera of both.
   export STUB_OUT="<promise>NEXT</promise>"
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://first-target.com 1
+  run "$REPO/ralph/ralph-inspect.sh" https://first-target.com 1
   echo '[{"id":"first-target-feature"}]' > "$REPO/prd.json"
   echo "spec for the first target" > "$REPO/spec-build.md"
   echo "sitemap for the first target" > "$REPO/sitemap.md"
-  printf 'https://first-target.com\n' > "$REPO/ralph-to-ralph/.state/inspect-complete"
+  printf 'https://first-target.com\n' > "$REPO/ralph/.state/inspect-complete"
 
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://second-target.com 1
+  run "$REPO/ralph/ralph-inspect.sh" https://second-target.com 1
   [ "$status" -eq 0 ]
   [[ "$output" == *"Target changed"* ]]
 
@@ -111,11 +111,11 @@ STUB
   [ "$(cat "$REPO/prd.json")" = "[]" ]
   [ ! -f "$REPO/spec-build.md" ]
   [ ! -f "$REPO/sitemap.md" ]
-  [ ! -f "$REPO/ralph-to-ralph/.state/inspect-complete" ]
-  [ "$(cat "$REPO/ralph-to-ralph/.state/inspect-target")" = "https://second-target.com" ]
+  [ ! -f "$REPO/ralph/.state/inspect-complete" ]
+  [ "$(cat "$REPO/ralph/.state/inspect-target")" = "https://second-target.com" ]
 
   # nothing is destroyed — the old run is recoverable
-  ARCHIVE=$(find "$REPO/ralph-to-ralph/.state/archive" -mindepth 1 -maxdepth 1 -type d | head -1)
+  ARCHIVE=$(find "$REPO/ralph/.state/archive" -mindepth 1 -maxdepth 1 -type d | head -1)
   [ -n "$ARCHIVE" ]
   grep -q "first-target-feature" "$ARCHIVE/prd.json"
   grep -q "first target" "$ARCHIVE/spec-build.md"
@@ -123,7 +123,7 @@ STUB
 
 @test "drives the browser through claude-in-chrome, not a separate session" {
   export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 1
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 1
   [ "$status" -eq 0 ]
   # --chrome hands the agent the already-signed-in Chrome window
   grep -qx -- "--chrome" "$STUB_ARGS"
@@ -132,7 +132,7 @@ STUB
 
 @test "invokes claude with the pinned model and asks for JSON output" {
   export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 1
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 1
   [ "$status" -eq 0 ]
   grep -qx -- "--model" "$STUB_ARGS"
   grep -qx -- "claude-sonnet-5" "$STUB_ARGS"
@@ -142,7 +142,7 @@ STUB
 
 @test "passes the target url, iteration and progress path into the prompt" {
   export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 7
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 7
   grep -q "TARGET URL: https://example.com" "$STUB_STDIN"
   grep -q "ITERATION: 1 of 7" "$STUB_STDIN"
   grep -q "PROGRESS: .*runs/TESTRUN/progress.txt" "$STUB_STDIN"
@@ -150,26 +150,26 @@ STUB
 
 @test "INSPECT_COMPLETE writes the sentinel the watchdog polls for" {
   export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 3
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 3
   [ "$status" -eq 0 ]
   # keyed by target URL — the watchdog compares it before skipping Phase 1
-  [ "$(cat "$REPO/ralph-to-ralph/.state/inspect-complete")" = "https://example.com" ]
+  [ "$(cat "$REPO/ralph/.state/inspect-complete")" = "https://example.com" ]
   [ "$(cat "$STUB_CALLS")" -eq 1 ]
 }
 
 @test "NEXT keeps iterating and leaves no sentinel when the budget runs out" {
   export STUB_OUT="<promise>NEXT</promise>"
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 3
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 3
   [ "$status" -eq 0 ]
   [ "$(cat "$STUB_CALLS")" -eq 3 ]
-  [ ! -f "$REPO/ralph-to-ralph/.state/inspect-complete" ]
+  [ ! -f "$REPO/ralph/.state/inspect-complete" ]
   [[ "$output" == *"may be incomplete"* ]]
 }
 
 @test "NEXT then INSPECT_COMPLETE stops at the completing iteration" {
   export STUB_OUT_1="<promise>NEXT</promise>"
   export STUB_OUT_2="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 9
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 9
   [ "$status" -eq 0 ]
   [ "$(cat "$STUB_CALLS")" -eq 2 ]
   [[ "$output" == *"complete after 2 iterations"* ]]
@@ -179,16 +179,16 @@ STUB
   export STUB_OUT="<promise>QA_COMPLETE</promise>"
   export RALPH_MAX_FAILURES=1
   export RALPH_RESUME_MAX=0
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 9
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 9
   [ "$status" -eq 1 ]
-  [ ! -f "$REPO/ralph-to-ralph/.state/inspect-complete" ]
+  [ ! -f "$REPO/ralph/.state/inspect-complete" ]
 }
 
 @test "aborts after MAX_FAILURES consecutive iterations with no promise" {
   export STUB_OUT="no promise in here"
   export RALPH_MAX_FAILURES=2
   export RALPH_RESUME_MAX=0
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 99
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 99
   [ "$status" -eq 1 ]
   [ "$(cat "$STUB_CALLS")" -eq 2 ]
   [[ "$output" == *"2 consecutive iterations produced no promise"* ]]
@@ -200,7 +200,7 @@ STUB
   export STUB_OUT_1="I started the gate in the background and am waiting for it"
   export STUB_OUT_2="<promise>NEXT</promise>"
   export STUB_OUT_3="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 9
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 9
   [ "$status" -eq 0 ]
   # call 2 is the resume of call 1's session, not a fresh iteration
   grep -qx -- "--resume" "$STUB_ARGS"
@@ -213,7 +213,7 @@ STUB
 @test "the resumed iteration and its parent write ONE usage entry, flagged resumed 1x" {
   export STUB_OUT_1="no promise, stranded on a background job"
   export STUB_OUT_2="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 9
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 9
   [ "$status" -eq 0 ]
   [ "$(cat "$STUB_CALLS")" -eq 2 ]
   # two invocations, ONE ledger entry
@@ -227,7 +227,7 @@ STUB
   export STUB_OUT="never promises anything"
   export RALPH_RESUME_MAX=2
   export RALPH_MAX_FAILURES=1
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 99
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 99
   [ "$status" -eq 1 ]
   # 1 original + 2 resumes, then the iteration is abandoned
   [ "$(cat "$STUB_CALLS")" -eq 3 ]
@@ -240,7 +240,7 @@ STUB
   export STUB_ERR=1
   export RALPH_RESUME_MAX=4
   export RALPH_MAX_FAILURES=1
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 99
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 99
   [ "$status" -eq 1 ]
   [ "$(cat "$STUB_CALLS")" -eq 1 ]
   run grep -qx -- "--resume" "$STUB_ARGS"
@@ -253,7 +253,7 @@ STUB
   export STUB_OUT_1="<promise>NEXT</promise>"
   export STUB_OUT_2="<promise>NEXT</promise>"
   export STUB_OUT_3="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 9
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 9
   [ "$status" -eq 0 ]
   # one file, three usage entries — not three files
   [ "$(find "$RUN_DIR" -name 'progress*.txt' | wc -l)" -eq 1 ]
@@ -265,16 +265,16 @@ STUB
 @test "each session gets its own numbered JSON in the run directory" {
   export STUB_OUT_1="<promise>NEXT</promise>"
   export STUB_OUT_2="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 9
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 9
   [ -f "$RUN_DIR/001-inspect-1.json" ]
   [ -f "$RUN_DIR/002-inspect-2.json" ]
   # the ledger names it by the repo-relative path the scripts work in
-  grep -qF -- "- transcript: ralph-to-ralph/.state/runs/TESTRUN/001-inspect-1.json" "$PROGRESS_FILE"
+  grep -qF -- "- transcript: ralph/.state/runs/TESTRUN/001-inspect-1.json" "$PROGRESS_FILE"
 }
 
 @test "the prompt points the agent at the progress file's tail, not the whole file" {
   export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 1
+  run "$REPO/ralph/ralph-inspect.sh" https://example.com 1
   grep -q "tail -200" "$STUB_STDIN"
   grep -q "Do NOT read the whole file" "$STUB_STDIN"
 }

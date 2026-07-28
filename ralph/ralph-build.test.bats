@@ -3,15 +3,15 @@
 #
 # `claude` is replaced by a stub each test drives: STUB_OUT / STUB_RC set the
 # default response, STUB_OUT_<n> / STUB_RC_<n> override the nth invocation.
-# Run with: npx bats ralph-to-ralph/ralph-build.test.bats
+# Run with: npx bats ralph/ralph-build.test.bats
 
 setup() {
   REPO="$BATS_TEST_TMPDIR/repo"
-  mkdir -p "$REPO/ralph-to-ralph/.state" "$REPO/bin"
-  cp "$BATS_TEST_DIRNAME/ralph-build.sh" "$BATS_TEST_DIRNAME/ralph-lib.sh" "$REPO/ralph-to-ralph/"
+  mkdir -p "$REPO/ralph/.state" "$REPO/bin"
+  cp "$BATS_TEST_DIRNAME/ralph-build.sh" "$BATS_TEST_DIRNAME/ralph-lib.sh" "$REPO/ralph/"
 
   export RALPH_RUN_ID="TESTRUN"
-  RUN_DIR="$REPO/ralph-to-ralph/.state/runs/TESTRUN"
+  RUN_DIR="$REPO/ralph/.state/runs/TESTRUN"
   PROGRESS_FILE="$RUN_DIR/progress.txt"
 
   export STUB_ARGS="$REPO/claude-args.txt"      # argv, one word per line
@@ -57,14 +57,14 @@ STUB
 
 @test "refuses to run without prd.json" {
   rm "$REPO/prd.json"
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 1
+  run "$REPO/ralph/ralph-build.sh" 1
   [ "$status" -eq 1 ]
   [[ "$output" == *"prd.json not found"* ]]
 }
 
 @test "refuses to run on a corrupt prd.json instead of reading it as 0 features" {
   echo '[{"id":"f1","passes":fals' > "$REPO/prd.json"
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 5
+  run "$REPO/ralph/ralph-build.sh" 5
   [ "$status" -eq 1 ]
   [[ "$output" == *"cannot parse prd.json"* ]]
   [ "$(cat "$STUB_CALLS")" -eq 0 ]
@@ -72,7 +72,7 @@ STUB
 
 @test "refuses to run on an empty prd.json instead of invoking an agent with nothing to build" {
   echo '[]' > "$REPO/prd.json"
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 5
+  run "$REPO/ralph/ralph-build.sh" 5
   [ "$status" -eq 1 ]
   [[ "$output" == *"contains no features"* ]]
   [ "$(cat "$STUB_CALLS")" -eq 0 ]
@@ -82,7 +82,7 @@ STUB
   export STUB_OUT="<promise>NEXT</promise>"
   export STUB_PRD_TRUNCATE=1
   export RALPH_RESUME_MAX=0
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 9
+  run "$REPO/ralph/ralph-build.sh" 9
   [ "$status" -eq 1 ]
   [[ "$output" == *"contains no features"* ]]
   [ "$(cat "$STUB_CALLS")" -eq 1 ]
@@ -90,7 +90,7 @@ STUB
 
 @test "refuses to run when prd.json is valid JSON but not a list" {
   echo '{"id":"f1"}' > "$REPO/prd.json"
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 5
+  run "$REPO/ralph/ralph-build.sh" 5
   [ "$status" -eq 1 ]
   [[ "$output" == *"not a JSON list"* ]]
   [ "$(cat "$STUB_CALLS")" -eq 0 ]
@@ -98,14 +98,14 @@ STUB
 
 @test "refuses to run without spec-build.md" {
   rm "$REPO/spec-build.md"
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 1
+  run "$REPO/ralph/ralph-build.sh" 1
   [ "$status" -eq 1 ]
   [[ "$output" == *"spec-build.md not found"* ]]
 }
 
 @test "exits 0 without calling claude when every feature already passes" {
   echo '[{"id":"f1","passes":true}]' > "$REPO/prd.json"
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 5
+  run "$REPO/ralph/ralph-build.sh" 5
   [ "$status" -eq 0 ]
   [[ "$output" == *"All 1 features already pass"* ]]
   [ "$(cat "$STUB_CALLS")" -eq 0 ]
@@ -113,7 +113,7 @@ STUB
 
 @test "invokes claude with the pinned model" {
   export STUB_OUT="<promise>COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 1
+  run "$REPO/ralph/ralph-build.sh" 1
   [ "$status" -eq 0 ]
   grep -qx -- "--model" "$STUB_ARGS"
   grep -qx -- "claude-sonnet-5" "$STUB_ARGS"
@@ -122,7 +122,7 @@ STUB
 @test "NEXT continues, COMPLETE ends the loop" {
   export STUB_OUT_1="<promise>NEXT</promise>"
   export STUB_OUT_2="<promise>COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 9
+  run "$REPO/ralph/ralph-build.sh" 9
   [ "$status" -eq 0 ]
   [ "$(cat "$STUB_CALLS")" -eq 2 ]
   [[ "$output" == *"Build complete after 2 iterations"* ]]
@@ -132,7 +132,7 @@ STUB
   export STUB_OUT="thinking out loud, but no promise"
   export RALPH_MAX_FAILURES=2
   export RALPH_RESUME_MAX=0
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 99
+  run "$REPO/ralph/ralph-build.sh" 99
   [ "$status" -eq 1 ]
   [ "$(cat "$STUB_CALLS")" -eq 2 ]
   [[ "$output" == *"2 consecutive iterations produced no promise"* ]]
@@ -143,7 +143,7 @@ STUB
   export STUB_RC=7
   export STUB_ERR=1          # a CLI-level failure is not resumable
   export RALPH_MAX_FAILURES=2
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 99
+  run "$REPO/ralph/ralph-build.sh" 99
   [ "$status" -eq 1 ]
   [ "$(cat "$STUB_CALLS")" -eq 2 ]
   [[ "$output" == *"2 consecutive iterations produced no promise"* ]]
@@ -153,7 +153,7 @@ STUB
   export STUB_OUT="no promise here"
   export RALPH_MAX_FAILURES=1
   export RALPH_RESUME_MAX=1
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 99
+  run "$REPO/ralph/ralph-build.sh" 99
   [ "$status" -eq 1 ]
   [[ "$output" == *"no promise after 1 resume(s)"* ]]
 }
@@ -165,7 +165,7 @@ STUB
   export STUB_OUT_4="<promise>COMPLETE</promise>"
   export RALPH_MAX_FAILURES=2
   export RALPH_RESUME_MAX=0
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 99
+  run "$REPO/ralph/ralph-build.sh" 99
   [ "$status" -eq 0 ]
   [ "$(cat "$STUB_CALLS")" -eq 4 ]
 }
@@ -178,7 +178,7 @@ STUB
 
 @test "passes the iteration count and pass tally into the prompt" {
   export STUB_OUT="<promise>COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 4
+  run "$REPO/ralph/ralph-build.sh" 4
   grep -q "ITERATION: 1 of 4" "$STUB_STDIN"
   grep -q "PROGRESS_COUNT: 0/1 features passed" "$STUB_STDIN"
   grep -q "PROGRESS: .*runs/TESTRUN/progress.txt" "$STUB_STDIN"
@@ -189,7 +189,7 @@ STUB
 @test "a stranded build session is resumed, and the pair writes ONE usage entry" {
   export STUB_OUT_1="I backgrounded the test run and am waiting on it"
   export STUB_OUT_2="<promise>COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 9
+  run "$REPO/ralph/ralph-build.sh" 9
   [ "$status" -eq 0 ]
   [ "$(cat "$STUB_CALLS")" -eq 2 ]
   grep -qx -- "--resume" "$STUB_ARGS"
@@ -201,7 +201,7 @@ STUB
 @test "build sessions append to the same run-wide progress file as every other phase" {
   export STUB_OUT_1="<promise>NEXT</promise>"
   export STUB_OUT_2="<promise>COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 9
+  run "$REPO/ralph/ralph-build.sh" 9
   [ "$(find "$RUN_DIR" -name 'progress*.txt' | wc -l)" -eq 1 ]
   [ "$(grep -c 'Session usage' "$PROGRESS_FILE")" -eq 2 ]
   grep -q "Phase 2 (Build) starting" "$PROGRESS_FILE"
@@ -210,8 +210,8 @@ STUB
 
 @test "the ledger reports context, models and the transcript path" {
   export STUB_OUT="<promise>COMPLETE</promise>"
-  run "$REPO/ralph-to-ralph/ralph-build.sh" 1
+  run "$REPO/ralph/ralph-build.sh" 1
   grep -q -- '- context .* tok peak of 1M .* inference calls' "$PROGRESS_FILE"
   grep -q -- '- models sonnet-5 \$0.5000' "$PROGRESS_FILE"
-  grep -qF -- '- transcript: ralph-to-ralph/.state/runs/TESTRUN/001-build-1.json' "$PROGRESS_FILE"
+  grep -qF -- '- transcript: ralph/.state/runs/TESTRUN/001-build-1.json' "$PROGRESS_FILE"
 }
