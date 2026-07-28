@@ -35,4 +35,19 @@ test.describe("smoke", () => {
     await page.waitForURL("http://localhost:3015/");
     await expect(page.getByTestId("create-pipe-tile")).toBeVisible();
   });
+
+  test("the Manage link opens the Fases settings editor", async ({ page }) => {
+    await page.goto("/");
+    await page.getByTestId("create-pipe-tile").click();
+    await page.getByTestId("create-from-scratch").click();
+    await page
+      .getByTestId("pipe-name-input")
+      .fill(`Smoke Phases ${Date.now()}`);
+    await page.getByTestId("submit-create-pipe").click();
+    await page.waitForURL(/\/pipes\/.+/);
+
+    await page.getByTestId("manage-pipe-link").click();
+    await page.waitForURL(/\/settings\/phases\/.+/);
+    await expect(page.getByTestId("phase-switcher")).toBeVisible();
+  });
 });

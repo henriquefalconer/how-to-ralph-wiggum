@@ -78,6 +78,7 @@ export async function createPipe(
       name: defaultPhaseNames.inbox,
       done: false,
       position: 0,
+      allowCardCreation: true,
     },
     {
       pipeId: pipe.id,

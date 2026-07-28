@@ -72,7 +72,7 @@
     "data_model": "phases: id, pipe_id (fk), name, position (int), done (bool), color, description (text), allow_card_creation (bool), sla_time (int, nullable), sla_unit (enum: hours|days, nullable), auto_assign_user_ids (jsonb array), collect_task_emails (bool)",
     "priority": 1,
     "core": true,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {
