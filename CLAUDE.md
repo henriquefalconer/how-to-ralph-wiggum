@@ -34,7 +34,7 @@ Phase 1: Inspect (Claude in Chrome) → Phase 2: Build (Claude + Playwright E2E)
 
 ## Internationalization — required on every page
 - **Every page is internationalized.** No user-facing string is hardcoded; all copy resolves through the i18n layer.
-- **Should support all major languages.** English, Mandarin Chinese, Hindi, Spanish, Arabic, French, Portuguese, Russian, German, Japanese.
+- **Should support all major languages.** English, Portuguese, Spanish, Mandarin Chinese, German, French, Japanese, Hindi, Arabic, Russian.
 
 ## Architecture
 - `src/` — source code
