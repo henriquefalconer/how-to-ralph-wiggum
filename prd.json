@@ -1,1 +1,309 @@
-[]
+[
+  {
+    "id": "feature-001",
+    "category": "data",
+    "description": "Core data model: Pipe entity (Kanban board) with ordered Phases, labels, and start form fields",
+    "page": "N/A (backend/API layer)",
+    "ui_details": "TBD — not yet observed in UI. Docs-derived only.",
+    "behavior": "A Pipe has id, uuid, name, color, users_count, cards_count, opened_cards_count. Has many ordered Phases, Labels ({id,name,color}), start_form_fields, and members ({user{id,email}, role_name}).",
+    "data_model": "pipes: id, uuid, name, color, org_id (fk). labels: id, pipe_id (fk), name, color.",
+    "priority": 1,
+    "core": true,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "pipe creation assigns default color and empty phase list",
+          "description": "Creating a pipe with only a name should succeed and produce sane defaults",
+          "input": "createPipe({ name: 'Purchase Requests' })",
+          "expected_output": "Pipe row with generated id/uuid, cards_count=0, opened_cards_count=0"
+        },
+        {
+          "name": "pipe requires a non-empty name",
+          "description": "Validation rejects blank pipe names",
+          "input": "createPipe({ name: '' })",
+          "expected_output": "Validation error, no row inserted"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "create a new pipe from the dashboard",
+          "steps": [
+            "Navigate to /",
+            "Click 'New Pipe' / '+ Create'",
+            "Fill name input with 'Purchase Requests'",
+            "Click 'Create'"
+          ],
+          "expected": "Redirects to the new pipe's Kanban board with one default phase visible"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "duplicate pipe name",
+          "steps": ["Create two pipes with the identical name"],
+          "expected": "Both are created; names are not required to be unique (matches target behavior — verify against real UI)"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-002",
+    "category": "data",
+    "description": "Core data model: Phase entity — an ordered column within a Pipe's Kanban board, holding a set of Fields",
+    "page": "N/A (backend/API layer)",
+    "ui_details": "TBD — not yet observed in UI.",
+    "behavior": "A Phase has id, name, done (boolean, marks terminal phase), cards_count, and an ordered list of Fields. Phases belong to exactly one Pipe and are ordered left-to-right on the board.",
+    "data_model": "phases: id, pipe_id (fk), name, position (int), done (bool)",
+    "priority": 1,
+    "core": true,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "phase ordering by position",
+          "description": "Phases for a pipe are returned sorted by position ascending",
+          "input": "listPhases(pipeId) after inserting phases with positions [2,0,1]",
+          "expected_output": "Array ordered [position 0, 1, 2]"
+        },
+        {
+          "name": "marking a phase done",
+          "description": "Setting done=true flags a phase as terminal for reporting purposes",
+          "input": "updatePhase(phaseId, { done: true })",
+          "expected_output": "Phase row has done=true"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "reorder phases via drag and drop",
+          "steps": [
+            "Navigate to a pipe's Kanban board",
+            "Drag the second column's header before the first column's header",
+            "Release"
+          ],
+          "expected": "Column order updates and persists after page reload"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "delete a phase that has cards in it",
+          "steps": ["Attempt to delete a phase containing 1+ cards"],
+          "expected": "Blocked with an error, or cards are migrated to an adjacent phase — verify exact behavior against real UI"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-003",
+    "category": "data",
+    "description": "Core data model: Field type system (23 types) shared across phase fields, start form fields, and table fields",
+    "page": "N/A (backend/API layer)",
+    "ui_details": "TBD — not yet observed in UI.",
+    "behavior": "A Field has id (slug auto-generated from label), label, type, required, help, description, editable, minimal_view, and options (for choice types). Field types: assignee_select, attachment, checklist_horizontal, checklist_vertical, cnpj, connector, cpf, currency, date, datetime, due_date, email, id, label_select, long_text, number, phone, radio_horizontal, radio_vertical, select, short_text, statement, time. connector fields reference another pipe or table via connectedRepoId.",
+    "data_model": "fields: id (slug, unique per phase/table), owner_type (phase|start_form|table), owner_id (fk), label, type (enum), required (bool), help (text), description (text), editable (bool), minimal_view (bool), options (jsonb array), connector_target_id (fk, nullable)",
+    "priority": 2,
+    "core": true,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "field id slug generation",
+          "description": "Field id is generated from the label: lowercased, special chars/spaces replaced with underscores",
+          "input": "createField({ label: 'Long Text Fiéld' })",
+          "expected_output": "field.id === 'long_text_fi_ld'"
+        },
+        {
+          "name": "select/radio/checklist fields require options",
+          "description": "Choice-type fields must be created with a non-empty options array",
+          "input": "createField({ type: 'select', options: [] })",
+          "expected_output": "Validation error: options required for select type"
+        },
+        {
+          "name": "id and statement fields reject value updates",
+          "description": "These two types are display-only per the target's docs",
+          "input": "updateFieldValue(cardId, 'some_statement_field', 'new value')",
+          "expected_output": "Error: field type is not editable"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "add a new select field to a phase",
+          "steps": [
+            "Open a phase's field editor",
+            "Click 'Add field'",
+            "Choose type 'Select'",
+            "Type label 'Priority'",
+            "Add options 'Low', 'Medium', 'High'",
+            "Click 'Save'"
+          ],
+          "expected": "New 'Priority' select field appears on cards in that phase with the three options in the dropdown"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "duplicate field label in the same phase",
+          "steps": ["Create a field labeled 'Name', then create another field labeled 'Name' in the same phase"],
+          "expected": "Either rejected as duplicate id, or auto-suffixed (e.g. 'name_2') — verify against real UI"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-004",
+    "category": "data",
+    "description": "Core data model: Card entity — the unit of work moving through a Pipe's phases, holding Card Field Values",
+    "page": "N/A (backend/API layer)",
+    "ui_details": "TBD — not yet observed in UI.",
+    "behavior": "A Card has id, title, done (bool), updated_at, belongs to a current phase, and has many field values ({name, value, filled_at, field}). Cards move between phases; moving a card updates its current phase and can trigger automations.",
+    "data_model": "cards: id, pipe_id (fk), phase_id (fk), title, done (bool), created_at, updated_at. card_field_values: id, card_id (fk), field_id (fk), value (text), filled_at",
+    "priority": 2,
+    "core": true,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "moving a card updates phase_id and cards_count on both phases",
+          "description": "moveCardToPhase decrements the source phase's cards_count and increments the destination's",
+          "input": "moveCardToPhase(cardId, fromPhaseId, toPhaseId)",
+          "expected_output": "card.phase_id === toPhaseId; source phase cards_count -1; dest phase cards_count +1"
+        },
+        {
+          "name": "card requires a title",
+          "description": "Cards cannot be created without a title",
+          "input": "createCard({ pipeId, title: '' })",
+          "expected_output": "Validation error, no row inserted"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "drag a card from one phase column to the next",
+          "steps": [
+            "Navigate to a pipe's Kanban board",
+            "Locate a card in the first column",
+            "Drag it into the second column",
+            "Release"
+          ],
+          "expected": "Card renders under the second column's header; card count badges update on both columns"
+        },
+        {
+          "name": "card cannot move to a phase that rejects it",
+          "steps": ["Attempt to move a card to a phase with unmet required-field conditions, if such a rule exists"],
+          "expected": "Move is rejected with an inline error matching the target's 'Card could not be moved to phase' error shape"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "very long card title",
+          "steps": ["Create a card with a 1000-character title"],
+          "expected": "Either truncated per a max length or stored in full — verify against real UI; title should not break the Kanban layout"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-005",
+    "category": "data",
+    "description": "Database Table entity — spreadsheet-like structured data object, separate from Pipes, with its own fields and records",
+    "page": "N/A (backend/API layer)",
+    "ui_details": "TBD — not yet observed in UI.",
+    "behavior": "A Table has id (alphanumeric), name, public (bool), and table_fields (same type system as phase fields). A Table Record has id, title, and record_fields with rich per-type value columns (date_value, datetime_value, float_value, native_value, report_value).",
+    "data_model": "tables: id, org_id (fk), name, public (bool). table_records: id, table_id (fk), title, created_at, updated_at. table_record_field_values: id, record_id (fk), field_id (fk), value (text), date_value, datetime_value, float_value",
+    "priority": 3,
+    "core": true,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "table record field value stores typed value alongside raw value",
+          "description": "A date-type field value populates both value (text) and date_value (date) columns",
+          "input": "setTableRecordFieldValue(recordId, dateFieldId, '25/12/2026')",
+          "expected_output": "record_field.value === '25/12/2026'; record_field.date_value is a valid parsed date"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "create a new record in a database table",
+          "steps": [
+            "Navigate to a Database Table's grid view",
+            "Click 'New Record'",
+            "Fill in the visible fields",
+            "Click 'Save'"
+          ],
+          "expected": "New row appears in the grid with the entered values"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "empty table (no records)",
+          "steps": ["Navigate to a table with zero records"],
+          "expected": "Empty state message shown instead of an empty grid"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-006",
+    "category": "sdk",
+    "description": "TypeScript SDK wrapping the clone's own REST API with typed methods mirroring Pipefy's GraphQL resource names",
+    "page": "N/A (packages/sdk)",
+    "ui_details": "N/A — developer-facing library, no UI.",
+    "behavior": "Target offers no npm/pip client library — its DX is GraphQL-only. Per spec-inspect.md SDK scope rules (TypeScript/Node only), the clone ships a thin TS SDK: client.pipes.get(id), client.pipes.create({name}), client.cards.create({pipeId, title, fields}), client.cards.moveToPhase(cardId, phaseId), client.tables.records.list(tableId), client.tables.records.create(tableId, {fields}).",
+    "data_model": "N/A",
+    "priority": 3,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "SDK client.cards.moveToPhase calls the correct REST endpoint",
+          "description": "Verifies the SDK method maps to PATCH /api/cards/:id/phase with the right body",
+          "input": "client.cards.moveToPhase('card-1', 'phase-2')",
+          "expected_output": "Underlying fetch called with PATCH /api/cards/card-1/phase, body { phaseId: 'phase-2' }"
+        },
+        {
+          "name": "SDK surfaces API errors as typed exceptions",
+          "description": "A 400 response from the API is thrown as a typed SDK error, not a raw fetch Response",
+          "input": "client.cards.create({ pipeId: 'p1', title: '' })  // server rejects empty title",
+          "expected_output": "Throws PipefyCloneApiError with status 400 and a message field"
+        }
+      ],
+      "e2e": [],
+      "edge_cases": [
+        {
+          "name": "SDK call with missing required field",
+          "steps": ["Call client.pipes.create({}) with no name"],
+          "expected": "Throws a validation error before making the network request"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-007",
+    "category": "data",
+    "description": "Webhook registration and outbound event delivery for pipe/table events",
+    "page": "N/A (backend/API layer)",
+    "ui_details": "TBD — not yet observed in UI (likely a settings-adjacent page, in scope since webhooks are core integration functionality, not auth/billing).",
+    "behavior": "Org/pipe/table-scoped webhook URLs receive an HTTP POST when relevant events occur (card created/moved/updated, table record created/updated). Mirrors organization-webhooks.md and pipe-table-webhooks.md event shapes.",
+    "data_model": "webhooks: id, scope_type (org|pipe|table), scope_id (fk), url, events (jsonb array of event names), created_at",
+    "priority": 8,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "card move triggers webhook POST with correct payload",
+          "description": "Moving a card fires a POST to every webhook subscribed to 'card.moved' for that pipe",
+          "input": "moveCardToPhase(cardId, fromPhaseId, toPhaseId) with one registered webhook subscribed to card.moved",
+          "expected_output": "One outbound POST recorded with body containing cardId, fromPhaseId, toPhaseId, timestamp"
+        }
+      ],
+      "e2e": [],
+      "edge_cases": [
+        {
+          "name": "webhook URL unreachable",
+          "steps": ["Register a webhook pointing at an invalid/unreachable URL, then trigger its event"],
+          "expected": "Delivery failure is logged but does not block or roll back the triggering action"
+        }
+      ]
+    }
+  }
+]
