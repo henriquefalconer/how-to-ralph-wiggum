@@ -71,11 +71,14 @@ Phase 1: Inspect (Claude in Chrome) → Phase 2: Build (Claude + Playwright E2E)
   Use `gh.exe` for any other GitHub work too (PRs, issues, API).
 - **`.env`** contains:
   - `NEON_DATABASE_URL` — Neon Postgres connection string
+  - `NEON_API_KEY` — Neon API key (Neon console -> Account settings -> API keys)
+  - `NEON_ORG_ID` — Neon org id (`org-...`); the API key is org-scoped, so `/projects` returns nothing without it
+  - `NEON_PROJECT_ID` — Neon project id, whose `read_write` endpoint must be the host in `NEON_DATABASE_URL`
   - `DASHBOARD_KEY` — master key for dashboard access
   - `RENDER_API_KEY` — Render API key (Account Settings -> API Keys)
   - `RENDER_SERVICE_ID` — Render service id (`srv-...`, from the service's dashboard URL)
 
-  These four are the whole list. Do not add credentials for the target product —
+  These seven are the whole list. Do not add credentials for the target product —
   the clone authenticates against its own API with its own keys, never the target's.
 - **Preflight** — `./scripts/preflight.sh` validates `.env` before a run and lists anything missing.
 
