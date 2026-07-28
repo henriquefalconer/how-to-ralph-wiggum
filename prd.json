@@ -40,7 +40,9 @@
       "edge_cases": [
         {
           "name": "duplicate pipe name",
-          "steps": ["Create two pipes with the identical name"],
+          "steps": [
+            "Create two pipes with the identical name"
+          ],
           "expected": "Both are created; names are not required to be unique (matches target behavior — verify against real UI)"
         }
       ]
@@ -51,9 +53,9 @@
     "category": "data",
     "description": "Core data model: Phase entity — an ordered column within a Pipe's Kanban board, holding a set of Fields",
     "page": "N/A (backend/API layer)",
-    "ui_details": "TBD — not yet observed in UI.",
-    "behavior": "A Phase has id, name, done (boolean, marks terminal phase), cards_count, and an ordered list of Fields. Phases belong to exactly one Pipe and are ordered left-to-right on the board.",
-    "data_model": "phases: id, pipe_id (fk), name, position (int), done (bool)",
+    "ui_details": "Confirmed: Gerenciar (pipe settings dropdown) > Fases opens a full-screen editor at /pipes/:id/settings/phases. Top-left is a phase switcher dropdown (phase names, clicking one navs to /settings/phases/:phaseId) + '+ Criar uma nova fase'. Top-right has 'Condicionais em campos' and 'Opções Avançadas' buttons (see feature-003/feature-009). Left rail is the field-type palette; center is the live phase form editor (drag-and-drop or click-to-add); phases already marked done show an 'Esta é uma fase final' badge above the phase name in the center panel.",
+    "behavior": "A Phase has id, name, done (boolean, marks terminal phase), cards_count, and an ordered list of Fields. Phases belong to exactly one Pipe and are ordered left-to-right on the board. Confirmed in UI (Gerenciar > Fases > Opções Avançadas modal, per-phase): editable name + color swatch, description text (shown to users working the pipe), 'Definir como fase final de processo' checkbox = the done flag (when checked, the phase view shows an 'Esta é uma fase final' badge), 'Permitir criar cards nesta fase' checkbox (lets cards be created directly into a non-initial phase), 'Gerenciar tarefas' radio (Coletar endereços de e-mail / Não coletar — task email-collection setting), 'Adicionar responsável' (auto-assign one or more members to cards entering this phase), 'Alerta de atraso' SLA (Tempo + Unidade fields — numeric duration + unit, e.g. hours/days, before a card is flagged late in this phase), and 'Excluir esta fase' (destructive, irreversible per the UI's own warning text).",
+    "data_model": "phases: id, pipe_id (fk), name, position (int), done (bool), color, description (text), allow_card_creation (bool), sla_time (int, nullable), sla_unit (enum: hours|days, nullable), auto_assign_user_ids (jsonb array), collect_task_emails (bool)",
     "priority": 1,
     "core": true,
     "passes": false,
@@ -70,6 +72,12 @@
           "description": "Setting done=true flags a phase as terminal for reporting purposes",
           "input": "updatePhase(phaseId, { done: true })",
           "expected_output": "Phase row has done=true"
+        },
+        {
+          "name": "SLA alert duration is per-phase, not per-pipe",
+          "description": "sla_time/sla_unit are nullable phase columns; a phase with no SLA configured never flags cards as late",
+          "input": "updatePhase(phaseId, { slaTime: null, slaUnit: null })",
+          "expected_output": "Cards in that phase are never marked overdue regardless of time spent"
         }
       ],
       "e2e": [
@@ -81,12 +89,25 @@
             "Release"
           ],
           "expected": "Column order updates and persists after page reload"
+        },
+        {
+          "name": "mark a phase as the final phase via Opções Avançadas",
+          "steps": [
+            "Navigate to a pipe's Gerenciar > Fases editor",
+            "Select the last phase in the phase switcher",
+            "Click 'Opções Avançadas'",
+            "Check 'Definir como fase final de processo'",
+            "Click 'Salvar'"
+          ],
+          "expected": "Modal closes; the phase form header now shows an 'Esta é uma fase final' badge; phase.done becomes true"
         }
       ],
       "edge_cases": [
         {
           "name": "delete a phase that has cards in it",
-          "steps": ["Attempt to delete a phase containing 1+ cards"],
+          "steps": [
+            "Attempt to delete a phase containing 1+ cards"
+          ],
           "expected": "Blocked with an error, or cards are migrated to an adjacent phase — verify exact behavior against real UI"
         }
       ]
@@ -97,7 +118,7 @@
     "category": "data",
     "description": "Core data model: Field type system (23 types) shared across phase fields, start form fields, and table fields",
     "page": "N/A (backend/API layer)",
-    "ui_details": "TBD — not yet observed in UI.",
+    "ui_details": "Confirmed: in Gerenciar > Fases, each field-type button in the left palette opens a config modal (Título do campo input, 'Escolha o tipo' dropdown that only swaps within the same conversion family — e.g. Texto curto<->Texto longo used internal values 'ShortText'/'LongText' [PascalCase, differs from the snake_case type names in the public GraphQL docs], Checklist vertical<->Checklist horizontal — confirming type conversion is restricted to compatible types, not any-to-any), toggles for Descrição, Texto de ajuda, 'Este campo é obrigatório', 'Validação customizada', 'Visualização compacta' (= minimal_view), 'Este campo é editável em outras fases' (on by default), 'Este campo deve ter valor único', plus a live right-hand preview pane that updates as you type/toggle. Choice-type fields (Checklist, and by extension Select/Radio/Label) add an 'Adicione as opções' section: a numbered list of option text inputs each with a delete (trash) icon, 'Adicionar opção +' to append one row, and 'Adicionar vários' for bulk paste. The Responsável (assignee_select) field's modal swaps 'Validação customizada'/'valor único' for a 'Sincronizar campos do card com este campo fixo' toggle instead. Anexo (attachment) shows an '+ Upload file' control in its preview. Saving shows a toast 'Configurações atualizadas.' and the field appears in the center form with hover-revealed icons: an AI-suggestion sparkle, an edit pencil, and a kebab '...' menu.",
     "behavior": "A Field has id (slug auto-generated from label), label, type, required, help, description, editable, minimal_view, and options (for choice types). Field types: assignee_select, attachment, checklist_horizontal, checklist_vertical, cnpj, connector, cpf, currency, date, datetime, due_date, email, id, label_select, long_text, number, phone, radio_horizontal, radio_vertical, select, short_text, statement, time. connector fields reference another pipe or table via connectedRepoId.",
     "data_model": "fields: id (slug, unique per phase/table), owner_type (phase|start_form|table), owner_id (fk), label, type (enum), required (bool), help (text), description (text), editable (bool), minimal_view (bool), options (jsonb array), connector_target_id (fk, nullable)",
     "priority": 2,
@@ -141,7 +162,9 @@
       "edge_cases": [
         {
           "name": "duplicate field label in the same phase",
-          "steps": ["Create a field labeled 'Name', then create another field labeled 'Name' in the same phase"],
+          "steps": [
+            "Create a field labeled 'Name', then create another field labeled 'Name' in the same phase"
+          ],
           "expected": "Either rejected as duplicate id, or auto-suffixed (e.g. 'name_2') — verify against real UI"
         }
       ]
@@ -186,14 +209,18 @@
         },
         {
           "name": "card cannot move to a phase that rejects it",
-          "steps": ["Attempt to move a card to a phase with unmet required-field conditions, if such a rule exists"],
+          "steps": [
+            "Attempt to move a card to a phase with unmet required-field conditions, if such a rule exists"
+          ],
           "expected": "Move is rejected with an inline error matching the target's 'Card could not be moved to phase' error shape"
         }
       ],
       "edge_cases": [
         {
           "name": "very long card title",
-          "steps": ["Create a card with a 1000-character title"],
+          "steps": [
+            "Create a card with a 1000-character title"
+          ],
           "expected": "Either truncated per a max length or stored in full — verify against real UI; title should not break the Kanban layout"
         }
       ]
@@ -234,7 +261,9 @@
       "edge_cases": [
         {
           "name": "empty table (no records)",
-          "steps": ["Navigate to a table with zero records"],
+          "steps": [
+            "Navigate to a table with zero records"
+          ],
           "expected": "Empty state message shown instead of an empty grid"
         }
       ]
@@ -270,7 +299,9 @@
       "edge_cases": [
         {
           "name": "SDK call with missing required field",
-          "steps": ["Call client.pipes.create({}) with no name"],
+          "steps": [
+            "Call client.pipes.create({}) with no name"
+          ],
           "expected": "Throws a validation error before making the network request"
         }
       ]
@@ -300,7 +331,9 @@
       "edge_cases": [
         {
           "name": "webhook URL unreachable",
-          "steps": ["Register a webhook pointing at an invalid/unreachable URL, then trigger its event"],
+          "steps": [
+            "Register a webhook pointing at an invalid/unreachable URL, then trigger its event"
+          ],
           "expected": "Delivery failure is logged but does not block or roll back the triggering action"
         }
       ]
@@ -341,8 +374,61 @@
       "edge_cases": [
         {
           "name": "empty interfaces list",
-          "steps": ["Navigate to /interfaces with zero pages created"],
+          "steps": [
+            "Navigate to /interfaces with zero pages created"
+          ],
           "expected": "Empty state message and 'Criar interface' CTA shown, no error"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-009",
+    "category": "data",
+    "description": "Field Conditionals — rule engine that shows/hides (and otherwise acts on) phase fields based on other field values",
+    "page": "Gerenciar > Fases > 'Condicionais em campos'",
+    "ui_details": "Button in the Fases editor's top-right opens a 'Condicionais de campo' panel: search box, 'Campo: Todos'/'Uso do campo: Todos' filters, a banner explaining 'As condicionais agora estão em uma única lista, e são processadas de cima para baixo. Em caso de conflito, a última prevalece' (conditionals are a single ordered list, processed top-to-bottom, last one wins on conflict), a scrollable list of existing conditionals (each rendered as a small card: trigger condition → 'Então faça isso' action), and a 'Criar condicional' button. The builder modal ('Criar condicional'): 'Nome da condicional' text input, 'Defina as condições' (a 'Selecione um campo' dropdown + 'Adicionar condição' to AND more field checks + 'Novo grupo de condições' to add an OR'd group), then two action sections — 'Quando as condições forem verdadeiras' (Ação dropdown, default 'Ocultar' [hide], + target field dropdown + 'Adicionar ação') and 'Quando as condições forem falsas' (same shape, mirrored action for the false branch).",
+    "behavior": "Not yet tested end-to-end (no conditional was saved during this pass — cancelled out of the builder after inspecting its shape). Confirmed structurally: conditionals are pipe-phase-scoped, ordered (array, not a set — order determines conflict resolution), each has a condition tree (AND within a group via 'Adicionar condição', OR across groups via 'Novo grupo de condições') and two action lists (true-branch, false-branch), where each action is at least {action: 'Ocultar'|..., targetFieldId}. Only 'Ocultar' was observed as a default action value — other action verbs (e.g. show/require) were not enumerated this pass; verify the full action-type list in a follow-up iteration by opening the action dropdown.",
+    "data_model": "field_conditionals: id, phase_id (fk), name, position (int, determines evaluation/conflict order), condition_groups (jsonb — array of AND-groups, each an array of {field_id, operator, value}), true_actions (jsonb array of {action, target_field_id}), false_actions (jsonb array of {action, target_field_id})",
+    "priority": 4,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "conditionals evaluate in position order with last-write-wins on conflict",
+          "description": "If two conditionals target the same field with contradictory actions, the one with the higher position (later in the list) determines the final state",
+          "input": "evaluateConditionals(cardFieldValues) with conditional A (position 0, hides field X) and conditional B (position 1, shows field X), both triggered",
+          "expected_output": "field X ends up visible (B, the later one, wins)"
+        },
+        {
+          "name": "AND within a condition group, OR across groups",
+          "description": "A conditional with two groups — group 1: [fieldA=1 AND fieldB=2], group 2: [fieldC=3] — triggers if either group fully matches",
+          "input": "cardFieldValues where fieldC=3 but fieldA/fieldB don't match group 1",
+          "expected_output": "conditional triggers (group 2 alone satisfies the OR)"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "create a conditional that hides a field",
+          "steps": [
+            "Open Gerenciar > Fases > Condicionais em campos > Criar condicional",
+            "Name it 'Hide priority unless approved'",
+            "Set condition: 'Status' field equals 'Pendente'",
+            "Under 'Quando as condições forem verdadeiras', leave Ação as 'Ocultar' and target the 'Prioridade' field",
+            "Save"
+          ],
+          "expected": "Conditional appears in the list; on a card's field-fill form, setting Status to 'Pendente' hides the Prioridade field"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "conditional references a field that gets deleted",
+          "steps": [
+            "Create a conditional targeting field X",
+            "Delete field X from the phase"
+          ],
+          "expected": "Either the conditional is auto-removed/disabled, or it's flagged as broken — verify against real UI in a follow-up pass"
         }
       ]
     }

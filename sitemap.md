@@ -68,7 +68,7 @@ Page tabs (`/pipes/:id`, `/pipes/:id/flow`, etc.):
 | Item | Purpose |
 |---|---|
 | Formulário inicial | Start form field editor (same as Formulário tab) |
-| Fases | **Phase editor** — add/reorder/rename phases, configure per-phase fields. Highest-priority page for the field-type-system deep dive. |
+| Fases | **Phase editor** (`/pipes/:id/settings/phases[/:phaseId]`) — phase switcher + field-type palette + live form builder + 'Condicionais em campos' (field conditional rules, see prd feature-009) + 'Opções Avançadas' (per-phase name/color/description, done flag, allow-card-creation, task email collection, auto-assign, SLA alert, delete). **Inspected iteration 2** — see prd feature-002/003/009 and `screenshots/inspect/phases-editor.jpg`. |
 | Pessoas | Pipe members/roles — **borderline out of scope** (auth-adjacent), but member references are needed for `assignee_select` fields, so model minimally |
 | Email | Pipe email settings (redundant with Emails tab's "Configurações") |
 | Configurações do pipe | General pipe settings (name, color, description, icon) |
@@ -86,7 +86,6 @@ builder, matches prd feature-007's webhook/automation model.
 
 ## Not yet inspected (next iterations)
 - Card detail view (need to create at least one card first)
-- Fases editor (phase/field CRUD — the 23-type field system)
 - Database Table creation + grid view + record detail
 - Kanban drag-and-drop card move (behavioral test)
 - Relatórios / Painéis actually building a chart

@@ -232,14 +232,24 @@ Provisional core-feature guess (to validate against the real UI next):
 ## UI Inspection Coverage Checklist
 - [x] Site map (Iteration 1) — see `sitemap.md`
 - [x] Home / pipes list (screenshot: `screenshots/inspect/home.jpg`)
+- [x] Phase/field editors (Fases — field config modal, choice-type options editor, phase Opções Avançadas [done/SLA/auto-assign], Condicionais em campos rule builder — screenshot: `screenshots/inspect/phases-editor.jpg`)
 - [ ] Kanban board view (seen empty; need card CRUD + drag-drop test)
 - [ ] Card detail view
 - [ ] Start form
 - [ ] Database Tables (list + detail)
 - [ ] Reports/dashboards
-- [ ] Phase/field/automation editors (Fases — the 23 field types)
+- [ ] Automation rule builder (separate from field conditionals — pipe-level Automações tab)
 - [ ] Interfaces / Portal builder (new feature, not in prd.json yet)
 - [ ] AI Agents creation flow
 - [ ] Search
 - [ ] Design system consolidated from screenshots
 - [ ] Final cleanup pass + PRD reorder (spec-inspect.md "Final Iteration")
+
+## 10. Field Conditionals (new, Iteration 2)
+Discovered via Gerenciar > Fases > 'Condicionais em campos'. Full detail in
+`prd.json` feature-009. Summary: a single ordered list of rules per phase,
+each with a condition tree (AND within a group, OR across groups via 'Novo
+grupo de condições') and two action branches (true/false), evaluated
+top-to-bottom with last-conflicting-rule-wins. Only the 'Ocultar' (hide)
+action was observed this pass — the full action-type list is still TODO for
+a follow-up iteration.
