@@ -1577,5 +1577,129 @@
         }
       ]
     }
+  },
+  {
+    "id": "feature-028",
+    "category": "search",
+    "description": "Pipe-scoped card search (\"Procurar cards\" box in the Kanban top nav) — client-side substring filter over already-loaded card titles, no server round-trip",
+    "page": "Kanban board (/pipes/:id)",
+    "ui_details": "CONFIRMED live iteration 11. A single search input top-right of the Kanban phase-column strip, placeholder 'Procurar cards', with a search-glyph prefix icon and a clear ('x') button that appears once text is entered. A separate filter (funnel) icon sits immediately to its right — distinct control, not tested this pass. The search box has no dropdown/autocomplete affordance; it is a plain text input.",
+    "behavior": "CONFIRMED live: typed 'João' into the box. Read `read_network_requests` immediately after — zero API/GraphQL calls fired (only an unrelated Intercom beacon), confirming the filter runs entirely client-side over cards already loaded into the Kanban board's in-memory state, not a server-side search endpoint. The filtered result did not appear instantly on keystroke: it applied a couple of seconds after the last keystroke (observed after pressing Return, but Return itself is not required — a follow-up screenshot with no Return press also showed the same debounce-then-filter behavior), consistent with a debounced client-side re-render rather than an Enter-triggered submit. Once applied, each phase column's card list is filtered independently by substring match against card title only (a 'Throwaway Test Card' did not match 'João' and was hidden; 'João Silva' did). The column's card-count badge updates to reflect the filtered count, and a phase with zero matches falls back to displaying that phase's normal empty-state copy (e.g. 'Aqui chegam os cards criados para este pipe') rather than a distinct 'no search results' message — the empty state is not search-aware. Clearing the box (the 'x' button) restores the full unfiltered board immediately.",
+    "data_model": "No new entity — a pure client-side derived view. searchQuery: string (component-local UI state, not persisted, not part of the Card entity or any URL param observed). Filter predicate: card.title.toLowerCase().includes(searchQuery.toLowerCase()), applied independently within each phase's already-fetched card array.",
+    "priority": 15,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "search filter is a case-insensitive substring match on card title only",
+          "description": "Matches the observed behavior of matching 'João Silva' but not a card whose title lacks the substring",
+          "input": "filterCardsByTitle([{title: 'João Silva'}, {title: 'Throwaway Test Card'}], 'joão')",
+          "expected_output": "returns only the 'João Silva' card (case-insensitive match)"
+        },
+        {
+          "name": "empty search query returns all cards unfiltered",
+          "description": "Clearing the box must restore the full board, not an empty result",
+          "input": "filterCardsByTitle([{title: 'A'}, {title: 'B'}], '')",
+          "expected_output": "returns both cards"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "typing a matching substring filters cards within each phase column independently",
+          "steps": [
+            "Navigate to a pipe's Kanban board with cards in multiple phases",
+            "Click the 'Procurar cards' box and type a substring matching only one card's title"
+          ],
+          "expected": "After a brief delay, only the matching card remains visible in its phase column; other phases with no matching card show their normal empty-state text and a count of 0"
+        },
+        {
+          "name": "clearing the search restores the full board",
+          "steps": [
+            "With an active search filter applied, click the 'x' clear button inside the search box"
+          ],
+          "expected": "All cards reappear across all phase columns with their original counts"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "search query matching zero cards",
+          "steps": [
+            "Type a string that matches no card title in any phase"
+          ],
+          "expected": "Every phase column shows a count of 0 and its normal (non-search-specific) empty-state message"
+        },
+        {
+          "name": "search query matching a substring across multiple phases",
+          "steps": [
+            "Type a substring shared by cards in two different phases"
+          ],
+          "expected": "Both phases show their matching card(s) simultaneously; column counts reflect only the filtered subset in each"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-029",
+    "category": "settings",
+    "description": "Start form (Formulário inicial) editor as a dedicated deep-dive: the pipe's public card-intake form — internal builder view, public-facing branding customization ('Modo Público'), and start-form-specific Opções Avançadas",
+    "page": "Gerenciar > Formulário inicial (/pipes/:id/settings/form); public-facing summary also surfaced at the pipe's own Formulário tab (/pipes/:id/form)",
+    "ui_details": "CONFIRMED live iteration 11. The pipe-level 'Formulário' tab (distinct from the settings modal) shows a summary: a card-preview of the form, 'Visualizar'/'Editar' buttons, a live '{N} solicitações' counter with 'Ver no pipe' link, and a 'Próximos passos' tips panel (3 static suggestion cards: 'Habilite o rastreio de solicitações', 'Crie emails padronizados', 'Analise e exporte relatórios' — the latter two link to the Emails (feature-018) and Relatórios (feature-011) features respectively, confirming this panel is a cross-feature upsell surface, not a start-form-specific tool). Clicking 'Editar' opens the SAME 'Configurações do pipe' modal as Fases (feature-002) — tab 'Formulário inicial' is simply another tab alongside Fases/Pessoas/Email/Configurações do pipe, confirming the start form is modeled as phase-zero of the pipe rather than a separate entity. Within that tab: a top toggle between 'Editar formulário' (default) and 'Modo Público'. 'Editar formulário' reuses the identical field-type palette + per-field config side-panel already documented for Fases (feature-002/003) — same 23 field types, same toggles (Descrição/Texto de ajuda/obrigatório/Validação customizada/Visualização compacta/editável em outras fases/valor único), same 'Dependências do campo' link (feature-009's Condicionais). Distinct default for start-form fields: 'Este campo é editável em outras fases' defaults ON (phase fields default this OFF), since start-form answers typically need to stay editable downstream. 'Modo Público' is a start-form-exclusive sub-view not present on phase editors: a left config column (Editar logo — JPG/GIF/PNG, max 2MB; Título do formulário; Descrição do formulário; Texto do botão de envio, default 'Enviar'; Cor ou imagem de fundo; Cor da marca — a 10-swatch brand-color picker, same palette family as the pipe-icon-color picker from feature-014) and a live right-side preview of the actual public form exactly as an anonymous visitor sees it, including real legal/safety boilerplate ('Nunca envie senhas ou dados confidenciais...', 'Denunciar abuso', 'Termos e condições' links) and a 'Powered by Pipefy' footer badge. A separate top-level 'Opções Avançadas' link opens a small modal with 3 start-form-specific fields distinct from the public-mode fields: 'Título do formulário inicial' (the INTERNAL name shown on the Kanban/pipe nav, separate from the public-facing 'Título do formulário'), 'Texto do botão de criar cards' (default 'Criar novo card' — the internal submit-button label, distinct from the public form's 'Texto do botão de envio'/'Enviar'), and 'Título do card' (a field-picker dropdown selecting which start-form field drives card.title — same mechanism independently confirmed in feature-014's Configurações do pipe general settings).",
+    "behavior": "CONFIRMED live: added a new required 'Texto curto' field ('Departamento') via the field-type palette — it inserted instantly with an autosave toast ('Configurações atualizadas.') and no explicit Save click needed, appearing simultaneously in the internal preview, the public Formulário tab summary, and the 'Modo Público' live preview. Toggling to 'Modo Público' requires an explicit 'Salvar' click per the visual design (Salvar button present, greyed until a change is made) — unlike the field-palette side, which autosaves per-field. Opções Avançadas is a True separate save action ('Salvar opções' button) scoped only to its own 3 fields.",
+    "data_model": "StartForm is not a separate entity — it is Phase id=0 (or a phase-like row flagged is_start_form=True) of the Pipe's ordered Phase list (feature-002), sharing the Field entity/type system (feature-003) and Field Conditionals (feature-009). Additional start-form-only attributes beyond the base Phase model: public_title (string, shown to anonymous visitors, defaults to pipe name), public_description (text, nullable), public_logo (nullable file ref, JPG/GIF/PNG ≤2MB), public_submit_button_text (string, default 'Enviar'), public_background (color hex or image ref), public_brand_color (enum from the shared 10-color pipe palette), internal_title (string, shown on the pipe's internal nav, defaults to pipe name — distinct from public_title), internal_create_button_text (string, default 'Criar novo card'), title_field_id (fk to a Field on this phase, drives card.title — same mechanism as feature-014).",
+    "priority": 6,
+    "core": true,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "start form is phase zero and inherits the shared field-type system",
+          "description": "Adding a field to the start form must use the identical Field entity/validation model as any other phase, just flagged to the start phase",
+          "input": "createField({phaseId: startPhase.id, type: 'short_text', title: 'Departamento', required: True})",
+          "expected_output": "field is persisted with phase_id == the pipe's start phase and appears in both the internal builder and the public form render"
+        },
+        {
+          "name": "internal title/button text are independent of public title/button text",
+          "description": "The two 'title' and two 'button text' fields observed live must not overwrite each other",
+          "input": "setInternalTitle(pipe, 'Purchase Requests'); setPublicTitle(pipe, 'Form')",
+          "expected_output": "pipe.internal_title === 'Purchase Requests' and pipe.public_title === 'Form' remain independently set"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "adding a field to the start form autosaves and appears everywhere the form is rendered",
+          "steps": [
+            "Open Gerenciar > Formulário inicial",
+            "Click a field type in the palette (e.g. 'Texto curto')",
+            "Type a field title, toggle 'Este campo é obrigatório' on, click Salvar"
+          ],
+          "expected": "A 'Configurações atualizadas.' toast appears with no page reload; the new required field appears in the internal preview, the pipe's Formulário tab summary, and the public Modo Público preview"
+        },
+        {
+          "name": "Modo Público branding changes only affect the public-facing form",
+          "steps": [
+            "Switch to 'Modo Público'",
+            "Change 'Texto do botão de envio' from 'Enviar' to a custom label, click Salvar"
+          ],
+          "expected": "The public preview's submit button reflects the new label; the internal 'Editar formulário' view's Kanban-side 'Criar novo card' button (governed separately by Opções Avançadas) is unaffected"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "start form with only the default required field",
+          "steps": [
+            "Open a freshly created pipe's Formulário inicial with no custom fields added"
+          ],
+          "expected": "Only the default 'Nome do solicitante' (or equivalent) required field is present; 'Criar novo card' on the Kanban remains gated/disabled behavior should match feature-001's documented gating-on-empty-form quirk"
+        },
+        {
+          "name": "uploading a logo file over the 2MB limit",
+          "steps": [
+            "In Modo Público, attempt to upload a logo file larger than 2MB"
+          ],
+          "expected": "Upload is rejected with a size-limit validation message; no logo is saved (behavior to be confirmed against the live product if a large test file becomes available — not tested this pass, no disposable oversized image on hand)"
+        }
+      ]
+    }
   }
 ]

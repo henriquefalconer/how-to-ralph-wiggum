@@ -58,10 +58,10 @@ Page tabs (`/pipes/:id`, `/pipes/:id/flow`, etc.):
 |---|---|---|---|
 | Mapa | (none, default view toggle) | Visual node map | Shows this pipe (and any connected pipes/databases) as boxes on a canvas; "Profundidade de camadas" + "Elementos (N)" controls. Read-only overview. |
 | Fluxo | `/flow` | Visual pipeline builder | Each phase rendered as a column card with quick-add shortcuts: "Adicionar agente de IA", "Adicionar automação", "Atribuir membros", "Adicionar campos". This is the phase/field editor entry point, alternate to Kanban. |
-| Kanban | (root) | Kanban board | **Core view. Inspected iteration 3** — phase columns (here: Caixa de entrada / Fazendo / Concluído — Pipefy's default 3-phase template), card counts per column (client-side staleness quirk on same-session move, see spec-build.md §11), "Criar novo card" (gated on start form having ≥1 field) / "Nova fase" buttons, drag-drop cards between columns, done-phase card styling. Card detail opens at `/open-cards/:cardId` (see prd feature-004, spec-build.md §11). |
+| Kanban | (root) | Kanban board | **Core view. Inspected iteration 3** — phase columns (here: Caixa de entrada / Fazendo / Concluído — Pipefy's default 3-phase template), card counts per column (client-side staleness quirk on same-session move, see spec-build.md §11), "Criar novo card" (gated on start form having ≥1 field) / "Nova fase" buttons, drag-drop cards between columns, done-phase card styling. Card detail opens at `/open-cards/:cardId` (see prd feature-004, spec-build.md §11). Top-nav "Procurar cards" search box **deep-dived iteration 11** — confirmed client-side, debounced, no network call; see prd feature-028, spec-build.md §23. |
 | Lista | `/list` (approx) | Configurable table view | Column-based list of cards; starts with "Nenhuma coluna selecionada — habilite as colunas" empty state; has its own "Criar novo card". |
 | Relatórios | `/reports_v2` | Reports builder | **Inspected iteration 6** — grouped field filter/column picker (shared with Automations token picker), live-query results table, saved report tiles with live count badges. See prd feature-011, spec-build.md §14. |
-| Formulário | (interfaces path) | Start-form editor | "Vamos começar adicionando alguns campos" + "Adicionar campos" CTA; side panel shows solicitation count, and "Próximos passos" tips (enable request tracking, create standardized emails, analyze reports). |
+| Formulário | (interfaces path) | Start-form editor | "Vamos começar adicionando alguns campos" + "Adicionar campos" CTA; side panel shows solicitation count, and "Próximos passos" tips (enable request tracking, create standardized emails, analyze reports). **Dedicated deep-dive iteration 11** — "Editar" opens the shared Fases-tab modal (start form = phase zero); confirmed start-form-exclusive "Modo Público" branding editor (logo/title/description/submit-button-text/background/brand-color with live public-form preview) and "Opções Avançadas" (internal title, internal create-button text, título do card field-picker). See prd feature-029, spec-build.md §23. |
 | Emails | (own path) | Shared team inbox | **Inspected iteration 4** — card-scoped compose only (no freeform compose), per-thread generated outbound alias distinct from the pipe's inbound-routing alias, reusable email templates sharing the 'Conteúdo dinâmico' token picker with Automations/Reports. See prd feature-018, spec-build.md §17. |
 | Painéis | `/dashboards` | Analytics dashboards | **Inspected iteration 6** — named dashboards of drag-resizable chart widgets, 8 viz types, live-recomputed aggregation metrics. See prd feature-012, spec-build.md §14. |
 | Learning Center | (org-level, pipe-scoped entry point) | Same help hub as org-level — out of scope |
@@ -92,15 +92,25 @@ Automations sub-tabs (`/pipes/:id/automations`): Automações, Logs. **Inspected
 confirmed via Logs and the card detail view. See prd feature-010 and spec-build.md §13.
 
 ## Not yet inspected (next iterations)
-- Pipe-scoped card search ("Procurar cards" box in the Kanban top nav) — never live-tested
-- Start form / Formulário inicial editor as its own dedicated deep-dive (field palette,
-  "Próximos passos" tips, solicitation count) — covered only incidentally so far via
-  card-creation gating in other features
 - Tarefas e Solicitações's actual data source — confirmed NOT the same feed as Meu trabalho
   and NOT a card's Atividades log; **re-checked iteration 10, still empty** ("Sem tarefas")
   even with an active overdue+assigned card populating Meu trabalho; still unconfirmed what
   populates it (low priority)
 - Design system consolidation pass + final spec-build.md cleanup (spec-inspect.md "Final Iteration")
+  — this is the LAST open item; once done, spec-build.md can be finalized
+
+## Resolved iteration 11
+- **Pipe-scoped card search** ("Procurar cards" box in the Kanban top nav) — fully tested:
+  confirmed client-side substring filter (zero network requests via `read_network_requests`),
+  debounced apply (~1-2s, not Enter-gated), matches card title only, independent per-phase-column
+  filtering, non-search-aware empty states. See prd feature-028, spec-build.md §23.
+- **Start form / Formulário inicial editor dedicated deep-dive** — fully tested: confirmed the
+  "Editar" builder reuses the Fases-tab modal (start form = phase zero of the pipe), discovered
+  the start-form-exclusive "Modo Público" public-branding editor (logo/title/description/
+  submit-button-text/background/brand-color + live public-form preview with real legal
+  boilerplate and "Powered by Pipefy" footer) and "Opções Avançadas" (internal title vs. public
+  title, internal create-button text vs. public submit-button text, título do card picker). See
+  prd feature-029, spec-build.md §23.
 
 ## Resolved iteration 10
 - **Lixeira restore flow** — fully tested: created a disposable card, deleted it via the

@@ -333,7 +333,7 @@ Provisional core-feature guess (to validate against the real UI next):
 - [x] Phase/field editors (Fases — field config modal, choice-type options editor, phase Opções Avançadas [done/SLA/auto-assign], Condicionais em campos rule builder — screenshot: `screenshots/inspect/phases-editor.jpg`)
 - [x] Kanban board view (card create, drag-drop move, done-phase styling — Iteration 3)
 - [x] Card detail view (Iteration 3)
-- [ ] Start form
+- [x] Start form (dedicated deep-dive, Iteration 11 — see below and §23)
 - [x] Database Tables (create flow, field-type palette incl. connection fields, record create/edit, Configurações de database — screenshots: `screenshots/inspect/database-grid.jpg`, `screenshots/inspect/database-record-detail.jpg`)
 - [x] Reports/dashboards (Reports builder — filter/column picker, saved report tiles; Dashboards — chart builder with 8 viz types, live aggregation metrics — Iteration 6; screenshots: `screenshots/inspect/reports-list.jpg`, `screenshots/inspect/dashboard-number-chart.jpg`, `screenshots/inspect/dashboard-panel.jpg`)
 - [x] Automation rule builder (separate from field conditionals — pipe-level Automações tab; 10 triggers × 12 actions, tested end-to-end incl. Logs — screenshot: `screenshots/inspect/automations-builder.jpg`; see §13 and prd feature-010)
@@ -342,8 +342,8 @@ Provisional core-feature guess (to validate against the real UI next):
 - [x] Emails compose flow (card-scoped compose, per-thread generated alias vs. pipe inbound alias, email templates with shared 'Conteúdo dinâmico' token picker — Iteration 4; see §17 and prd feature-018; screenshots: `screenshots/inspect/emails-inbox.jpg`, `screenshots/inspect/emails-compose.jpg`)
 - [x] AI Agents creation flow (3-step builder, trigger/instructions/model/skills/effort, Logs/Templates/MCP sub-tabs — Iteration 5; see §18 and prd feature-019; screenshots: `screenshots/inspect/ai-agents-empty.jpg`, `screenshots/inspect/ai-agents-behaviors-builder.jpg`, `screenshots/inspect/ai-agents-templates.jpg`)
 - [x] Meu trabalho / `/my-tasks` (org-level "my work" list) + notification system (Iteration 9; see §22 and prd feature-027; screenshots: `screenshots/inspect/my-work-populated.jpg`, `screenshots/inspect/notifications.jpg`)
-- [ ] Search (pipe-scoped "Procurar cards" box seen in the Kanban top nav — not yet live-tested)
-- [ ] Start form as its own dedicated deep-dive (covered incidentally throughout §11/§16/§17 via card-creation gating, but the Formulário/Formulário inicial editor itself — field palette, 'Próximos passos' tips, solicitation count — has not had its own focused pass)
+- [x] Search (pipe-scoped "Procurar cards" box in the Kanban top nav — Iteration 11; client-side substring filter, no network call, debounced; see §23 and prd feature-028; screenshot: `screenshots/inspect/kanban-card-search.jpg`)
+- [x] Start form as its own dedicated deep-dive (Iteration 11 — internal builder is Fases-tab reuse [phase zero], plus start-form-exclusive Modo Público branding editor and Opções Avançadas; see §23 and prd feature-029; screenshot: `screenshots/inspect/start-form-editor.jpg`)
 - [ ] Tarefas e Solicitações's underlying data source (re-checked Iteration 10: still "Sem tarefas" / empty even with an active overdue+assigned card in Meu trabalho — confirmed NOT the same trigger as Meu trabalho; low priority, deferred)
 - [ ] Design system consolidated from screenshots
 - [ ] Final cleanup pass + PRD reorder (spec-inspect.md "Final Iteration")
@@ -1300,3 +1300,88 @@ should still render the avatar button as a stub control.
 
 See `prd.json` feature-027. Screenshots: `screenshots/inspect/my-work-populated.jpg`,
 `screenshots/inspect/notifications.jpg`.
+
+## 23. Pipe-scoped Card Search & Start Form Editor Deep-Dive (Iteration 11, live UI test)
+
+### Card Search — "Procurar cards" (Kanban top nav)
+
+A single search input above the Kanban board, placeholder "Procurar
+cards", with a clear ("x") button once text is entered, plus a separate
+filter (funnel) icon immediately to its right (a distinct control, not
+tested this pass). **Confirmed entirely client-side**: typing "João"
+produced zero new network/GraphQL requests (checked via
+`read_network_requests` — only an unrelated Intercom beacon fired),
+confirming the filter runs over cards already loaded into the board's
+in-memory state rather than hitting a server-side search endpoint. The
+filter is **debounced**, not instant-per-keystroke or Enter-gated — it
+applied a couple of seconds after the last keystroke whether or not
+Return was pressed. Matching is a case-insensitive substring match
+against **card title only**, applied independently within each phase
+column: a "Throwaway Test Card" was hidden while "João Silva" remained,
+each column's count badge updated to the filtered count, and a phase
+with zero matches fell back to its normal per-phase empty-state copy
+(e.g. "Aqui chegam os cards criados para este pipe") rather than a
+distinct "no results" message — the empty state is not search-aware.
+Clearing the box restores the full board immediately. See prd
+feature-028; screenshot: `screenshots/inspect/kanban-card-search.jpg`.
+
+### Start Form (Formulário inicial) Editor
+
+The pipe's own **Formulário** tab (`/pipes/:id/form`, distinct from the
+settings modal) is a summary surface: a card-style preview of the form,
+"Visualizar"/"Editar" buttons, a live "{N} solicitações" counter with a
+"Ver no pipe" link, and a "Próximos passos" tips panel — 3 static
+suggestion cards ("Habilite o rastreio de solicitações", "Crie emails
+padronizados", "Analise e exporte relatórios") that link out to the
+Emails (feature-018) and Relatórios (feature-011) features, confirming
+this panel is a cross-feature upsell surface rather than a start-form
+tool.
+
+Clicking "Editar" opens the **same** "Configurações do pipe" modal used
+by Fases (feature-002) — "Formulário inicial" is just another tab
+alongside Fases / Pessoas / Email / Configurações do pipe. **The start
+form is modeled as phase-zero of the pipe, not a separate entity.**
+Inside that tab, a toggle switches between:
+
+- **Editar formulário** (default) — the identical field-type palette +
+  per-field config panel already documented for Fases (feature-002/003):
+  same 23 field types, same toggles (Descrição / Texto de ajuda /
+  obrigatório / Validação customizada / Visualização compacta / editável
+  em outras fases / valor único), same "Dependências do campo" link into
+  Condicionais (feature-009). One confirmed start-form-specific default:
+  "Este campo é editável em outras fases" defaults **ON** here (phase
+  fields default it OFF), since start-form answers typically need to
+  stay editable as the card advances. Adding a field autosaves instantly
+  (toast: "Configurações atualizadas.") with no explicit Save needed.
+- **Modo Público** (start-form-exclusive) — a config column (Editar logo
+  [JPG/GIF/PNG, max 2MB] / Título do formulário / Descrição do formulário
+  / Texto do botão de envio [default "Enviar"] / Cor ou imagem de fundo /
+  Cor da marca [10-swatch picker, same palette family as the pipe-icon
+  color picker in feature-014]) alongside a **live preview of the actual
+  public form** exactly as an anonymous visitor sees it — including real
+  legal/safety boilerplate ("Nunca envie senhas ou dados confidenciais
+  por meio de formulários desconhecidos...", "Denunciar abuso", "Termos e
+  condições" links) and a "Powered by Pipefy" footer badge. This mode
+  requires an explicit "Salvar" click (button is greyed until a change is
+  made) — unlike the autosaving field palette.
+
+A separate **"Opções Avançadas"** link (top-right of the tab, alongside
+Condicionais em campos) opens a small modal with 3 fields distinct from
+the Modo Público fields: **Título do formulário inicial** (the internal
+name shown on the pipe's own nav — separate from the public-facing
+"Título do formulário"), **Texto do botão de criar cards** (default
+"Criar novo card" — the internal Kanban create-button label, separate
+from the public "Texto do botão de envio"/"Enviar"), and **Título do
+card** (a field-picker selecting which start-form field drives
+`card.title` — the same mechanism independently confirmed in feature-014's
+Configurações do pipe). This has its own "Salvar opções" action, scoped
+only to these 3 fields.
+
+**Data model implication:** StartForm is Phase id=0 (or a
+`is_start_form: true`-flagged phase) of the Pipe's Phase list, sharing
+the Field entity/type system and Field Conditionals, plus start-form-only
+columns: `public_title`, `public_description`, `public_logo`,
+`public_submit_button_text`, `public_background`, `public_brand_color`,
+`internal_title`, `internal_create_button_text`, `title_field_id`.
+
+See prd feature-029; screenshot: `screenshots/inspect/start-form-editor.jpg`.
