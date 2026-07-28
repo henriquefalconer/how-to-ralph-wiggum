@@ -1,86 +1,70 @@
 #!/bin/bash
-# Pre-flight: provision all AWS infrastructure BEFORE the build loop starts
+# Pre-flight: validate that every backing service is wired up BEFORE the build loop starts
 # Run this once before ./ralph-watchdog.sh
 set -euo pipefail
+cd "$(dirname "$0")/.."
 
-REGION="${AWS_REGION:-us-east-1}"
-# Names every provisioned resource (RDS, S3, ECR). Override per target product:
-#   APP_NAME=pipefy-clone ./scripts/preflight.sh
-APP_NAME="${APP_NAME:-product-clone}"
+echo "=== Pre-flight Environment Check ==="
 
-echo "=== Pre-flight Infrastructure Setup ==="
-echo "Region: $REGION"
+MISSING=()
 
-# 1. RDS Postgres
-echo ""
-echo "--- RDS Postgres ---"
-if aws rds describe-db-instances --db-instance-identifier ${APP_NAME}-db --region $REGION 2>/dev/null | grep -q "available"; then
-  echo "RDS instance already exists and available."
-else
-  echo "Creating RDS Postgres instance..."
-  aws rds create-db-instance \
-    --db-instance-identifier ${APP_NAME}-db \
-    --db-instance-class db.t3.micro \
-    --engine postgres \
-    --engine-version 15 \
-    --master-username postgres \
-    --master-user-password "${DB_PASSWORD:-ProductClone2026!}" \
-    --allocated-storage 20 \
-    --publicly-accessible \
-    --backup-retention-period 0 \
-    --region $REGION \
-    --no-multi-az \
-    --storage-type gp3 || echo "RDS creation may already be in progress"
-  echo "Waiting for RDS to become available (this takes ~5-10 min)..."
-  aws rds wait db-instance-available --db-instance-identifier ${APP_NAME}-db --region $REGION
-fi
-RDS_ENDPOINT=$(aws rds describe-db-instances --db-instance-identifier ${APP_NAME}-db --region $REGION --query 'DBInstances[0].Endpoint.Address' --output text)
-echo "RDS Endpoint: $RDS_ENDPOINT"
-echo "DATABASE_URL=postgresql://postgres:${DB_PASSWORD:-ProductClone2026!}@${RDS_ENDPOINT}:5432/${APP_NAME}" >> .env
-
-# 2. SES - verify at least one sender identity for sandbox mode
-echo ""
-echo "--- SES Sender Identity ---"
-SES_IDENTITY="${SES_IDENTITY:-${SENDER_EMAIL:-foreverbrowsing.com}}"
-if aws sesv2 get-email-identity --email-identity "$SES_IDENTITY" --region $REGION >/dev/null 2>&1; then
-  STATUS=$(aws sesv2 get-email-identity --email-identity "$SES_IDENTITY" --region $REGION --query 'VerificationStatus' --output text)
-  echo "Using existing SES identity: $SES_IDENTITY ($STATUS)"
-else
-  aws sesv2 create-email-identity --email-identity "$SES_IDENTITY" --region $REGION 2>/dev/null || true
-  if [[ "$SES_IDENTITY" == *"@"* ]]; then
-    echo "Verification email sent to $SES_IDENTITY. Check the inbox and click the link."
+check_var() {
+  local name="$1"
+  local label="$2"
+  local value="${!name:-}"
+  if [ -n "$value" ]; then
+    echo "  OK       $name — $label"
   else
-    echo "Created SES domain identity $SES_IDENTITY. Add the SES DNS records or use the verified demo domain foreverbrowsing.com."
+    echo "  MISSING  $name — $label"
+    MISSING+=("$name")
   fi
-fi
+}
 
-# 3. S3 Bucket
+# 0. .env — the single source of truth for the clone's credentials
 echo ""
-echo "--- S3 Bucket ---"
-BUCKET="${APP_NAME}-storage-$(aws sts get-caller-identity --query Account --output text)"
-if aws s3 ls "s3://$BUCKET" 2>/dev/null; then
-  echo "S3 bucket $BUCKET already exists."
+echo "--- .env ---"
+if [ -f .env ]; then
+  echo "  OK       .env found"
+  set -a
+  # shellcheck disable=SC1091
+  source .env
+  set +a
 else
-  aws s3 mb "s3://$BUCKET" --region $REGION
-  aws s3api put-bucket-cors --bucket "$BUCKET" --cors-configuration '{
-    "CORSRules": [{"AllowedHeaders": ["*"], "AllowedMethods": ["GET","PUT","POST"], "AllowedOrigins": ["*"], "MaxAgeSeconds": 3600}]
-  }'
-  echo "S3 bucket created: $BUCKET"
+  echo "  MISSING  .env — create it in the project root"
+  MISSING+=(".env")
 fi
 
-# 4. ECR Repository
+# 1. Neon Postgres
 echo ""
-echo "--- ECR Repository ---"
-aws ecr describe-repositories --repository-names $APP_NAME --region $REGION 2>/dev/null || \
-  aws ecr create-repository --repository-name $APP_NAME --region $REGION
-echo "ECR repo ready: $APP_NAME"
+echo "--- Neon Postgres ---"
+check_var DATABASE_URL "Neon connection string (Neon dashboard -> Connection Details)"
 
-# 5. Summary
+# 2. Cloudflare R2
 echo ""
-echo "=== Pre-flight Complete ==="
-echo "RDS: $RDS_ENDPOINT"
-echo "S3: $BUCKET"
-echo "ECR: $APP_NAME"
-echo "SES: $SES_IDENTITY"
+echo "--- Cloudflare R2 ---"
+check_var R2_ACCOUNT_ID "Cloudflare account ID — endpoint is https://<id>.r2.cloudflarestorage.com"
+check_var R2_ACCESS_KEY_ID "R2 API token access key ID"
+check_var R2_SECRET_ACCESS_KEY "R2 API token secret access key"
+check_var R2_BUCKET "R2 bucket name"
+
+# 3. Auth wall
 echo ""
-echo "Next: ./ralph-watchdog.sh <target-url>"
+echo "--- Auth Wall ---"
+check_var DASHBOARD_KEY "master key that unlocks the dashboard and the API"
+
+# 4. Summary
+echo ""
+if [ ${#MISSING[@]} -eq 0 ]; then
+  echo "=== Pre-flight Complete — all checks passed ==="
+  echo ""
+  echo "Next: ./ralph-watchdog.sh <target-url>"
+else
+  echo "=== Pre-flight FAILED — ${#MISSING[@]} item(s) missing ==="
+  for item in "${MISSING[@]}"; do
+    echo "  - $item"
+  done
+  echo ""
+  echo "Neon, R2 and Render are each created from their own web dashboard."
+  echo "Set them up there, put the values in ./.env, then re-run this script."
+  exit 1
+fi

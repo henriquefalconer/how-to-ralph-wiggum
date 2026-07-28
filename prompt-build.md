@@ -50,19 +50,17 @@ Dashboard UI (Next.js frontend)
 Your Own API (Next.js API routes: /api/*)
     ↓
 Cloud Services:
-  - AWS SES → email sending/receiving
-  - RDS Postgres (Drizzle ORM) → all data persistence
-  - S3 → file storage (attachments, assets)
-  - App Runner → deployment
-  - EventBridge/SNS → webhook delivery
-  - ECR → Docker image registry
+  - Neon Postgres (Drizzle ORM) → all data persistence
+  - Cloudflare R2 → file storage (uploads, attachments, assets)
+  - Route handlers → webhook delivery (HTTP POST)
+  - GitHub Container Registry → Docker image registry
+  - Render → deployment
 ```
 
 ### Implementation Rules
 - **REST API**: Mirror the target product's API surface. Read `clone-product-docs/` for specs.
-- **AWS SES**: For email sending (`@aws-sdk/client-sesv2`). SES is in production mode.
-- **RDS Postgres**: `pg` + `drizzle-orm`. Run `make db-push` for schema changes.
-- **Domain verification**: SES `CreateEmailIdentity` + Cloudflare API for auto-adding DNS records. Show records table + "Auto configure" button.
+- **Neon Postgres**: `pg` + `drizzle-orm`. Run `make db-push` for schema changes.
+- **Cloudflare R2**: For file storage (`@aws-sdk/client-s3`, `@aws-sdk/s3-request-presigner`). R2 is S3-compatible — point the client at the R2 endpoint with `region: "auto"`.
 - **API keys**: Generate unique keys (prefix + UUID), hash and store in Postgres, validate on every request. Same keys unlock both API and dashboard.
 - **Webhooks**: POST to registered URLs when events occur.
 - **Logs**: Store every API request in Postgres.
@@ -70,11 +68,13 @@ Cloud Services:
 - **API docs**: Always add a `/docs` page with all endpoints, schemas, and examples.
 
 ### Credentials
-- **AWS**: Pre-configured via `~/.aws/credentials`. Use `us-east-1` for SES.
-- **`.env`**: `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ZONE_ID` (DNS), `DATABASE_URL` (Postgres), `DASHBOARD_KEY` (auth wall)
+- **`.env`**: `DATABASE_URL` (Neon Postgres), `R2_ACCOUNT_ID`/`R2_ACCESS_KEY_ID`/`R2_SECRET_ACCESS_KEY`/`R2_BUCKET` (Cloudflare R2), `DASHBOARD_KEY` (auth wall)
+- The R2 client endpoint is `https://<R2_ACCOUNT_ID>.r2.cloudflarestorage.com`.
+- Run `./scripts/preflight.sh` if anything looks unset — it reports what's missing.
 
 ### Deployment
-- Deploy via App Runner. Docker image → ECR → App Runner service.
+- Deploy on Render. Docker image → `ghcr.io` → Render web service.
+- Log in to the registry with the GitHub CLI: `"/mnt/c/Program Files/GitHub CLI/gh.exe" auth token | docker login ghcr.io -u <github-user> --password-stdin`.
 - Final iteration should deploy and output the live URL.
 
 ## Out of Scope

@@ -72,11 +72,11 @@ clone-product-docs/
 ├── INDEX.md              # List of all pages with one-line descriptions
 ├── overview.md
 ├── api-reference/
-│   ├── emails/
-│   │   ├── send-email.md
-│   │   ├── list-emails.md
+│   ├── files/
+│   │   ├── upload-file.md
+│   │   ├── list-files.md
 │   │   └── ...
-│   ├── domains/
+│   ├── webhooks/
 │   └── ...
 ├── guides/
 └── changelog.md
@@ -146,10 +146,10 @@ Once all features are inspected, do a final cleanup pass on `spec-build.md`:
 **Step 1: Identify the CORE features of this product.**
 Before reordering, first answer: "What is this product's reason to exist? What are the 3-5 features that make it valuable?"
 
-For example, if cloning an email API platform:
-- Core: sending emails via API, viewing email logs, managing API keys
-- Secondary: domains, webhooks, team settings
-- Nice-to-have: analytics charts, contact lists
+For example, if cloning a file storage API platform:
+- Core: uploading files via API, browsing the file list, managing API keys
+- Secondary: share links, webhooks, team settings
+- Nice-to-have: analytics charts, folder organization
 
 Or if cloning a CRM:
 - Core: contacts list, deal pipeline, activity feed

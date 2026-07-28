@@ -30,7 +30,7 @@ Ralph-to-Ralph runs a three-phase autonomous pipeline:
 **Claude Agent (Opus)** builds the full stack:
 - API routes + React components
 - Unit tests (Vitest)
-- AWS infrastructure (SES, RDS, S3)
+- Cloud infrastructure (Neon, R2, Render)
 
 ### Phase 3: QA (Ralph Loop #3)
 
@@ -60,8 +60,8 @@ A strict watchdog wraps the entire pipeline, ensuring all Ralph loops stay stabl
 ## Running It
 
 ```bash
-# 1. Provision the AWS infrastructure once (RDS, SES, S3, ECR)
-APP_NAME=my-clone ./scripts/preflight.sh
+# 1. Check the environment once (Neon, R2, dashboard key)
+./scripts/preflight.sh
 
 # 2. Point the pipeline at a target product
 ./scripts/start.sh https://example.com
@@ -74,7 +74,7 @@ every feature. Progress is visible in `prd.json` (`passes` flags),
 ### What a Completed Run Produces
 
 - **A real backend** — the clone serves its own REST API; it never proxies the target's
-- **Real cloud infrastructure** — AWS SES, RDS Postgres via Drizzle, S3, deployed on App Runner
+- **Real cloud infrastructure** — Neon Postgres via Drizzle, Cloudflare R2 storage, deployed on Render
 - **A dashboard** — pages matching the target product's UI, built from inspection screenshots
 - **A TypeScript SDK** in `packages/sdk/` when the target ships a client library
 - **API docs** — an auto-generated `/docs` page covering every endpoint
@@ -87,10 +87,10 @@ every feature. Progress is visible in `prd.json` (`passes` flags),
 - **Language:** TypeScript (strict mode)
 - **Styling:** Tailwind CSS
 - **UI:** Radix UI
-- **Database:** RDS Postgres via Drizzle ORM
-- **Email:** AWS SES
-- **Storage:** AWS S3
-- **Deployment:** AWS App Runner
+- **Database:** Neon serverless Postgres via Drizzle ORM
+- **Storage:** Cloudflare R2 (S3-compatible)
+- **Deployment:** Render (Docker web service)
+- **Registry:** GitHub Container Registry
 
 ## Team
 

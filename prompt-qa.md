@@ -49,8 +49,8 @@ Also run full `make test-e2e` to catch cross-feature regressions.
 ### Step 3: Real Backend Verification
 8. Verify real infrastructure, not mocks:
    - Test via curl/SDK directly, not just UI
-   - Send real email → arrives in inbox?
-   - Create domain → SES generates DKIM? Cloudflare gets DNS records?
+   - Create a record → row actually lands in Neon Postgres?
+   - Upload a file → object actually lands in the R2 bucket, and the returned URL serves it?
    - Create API key → authenticates real requests?
 </important>
 

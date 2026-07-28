@@ -20,7 +20,7 @@ This is a **generic product cloning system** — the target could be any SaaS st
 ### Phase A: Read ALL docs first (if nothing inspected yet)
 - Fetch and save all available documentation to `clone-product-docs/`
 - **Capture the Developer Experience (DX)** — this is just as important as the UI:
-  - **SDKs / client libraries**: Does the target offer an npm/pip/gem package? What languages? What's the full API surface? (e.g., `client.emails.send({react: <Component/>})`)
+  - **SDKs / client libraries**: Does the target offer an npm/pip/gem package? What languages? What's the full API surface? (e.g., `client.documents.create({react: <Component/>})`)
   - **React/template rendering**: Does the API accept React components, templates, or markup that gets rendered server-side?
   - **CLI tools**: Does the target have a CLI?
   - **Code examples**: What does the "getting started" flow look like for a developer?
@@ -42,29 +42,29 @@ This is a **generic product cloning system** — the target could be any SaaS st
   - Product overview and branding (`{productname}-clone`)
   - Complete design system (colors, typography, layout, shared components)
   - All data models with field types
-  - **Backend Architecture** — map each feature to the AWS/cloud service that powers it
+  - **Backend Architecture** — map each feature to the cloud service that powers it
   - **SDK/DX** — what SDK to build, what developer workflow to support
-  - **Deployment** — AWS deployment instructions (App Runner + RDS Postgres)
+  - **Deployment** — deployment instructions (Render Docker web service + Neon Postgres)
   - **Build Order** — prioritized list, core features first
 
 5. **Build for a REAL Product, Not a Mock:**
    The clone must be a **fully functional, deployable product** with its own backend. When writing `spec-build.md`:
 
    - **Identify the core infrastructure** the target product needs. Map each feature to the simplest cloud service:
-     - Email sending/receiving? → AWS SES
-     - File storage/uploads? → AWS S3
-     - Database? → RDS Postgres via Drizzle ORM
-     - DNS/domain verification? → AWS SES + Cloudflare API for auto-configuring DNS
+     - Database? → Neon Postgres via Drizzle ORM
+     - File storage/uploads? → Cloudflare R2 (S3-compatible)
+     - Large file transfer? → R2 presigned URLs
      - Webhooks? → HTTP POST to registered URLs
-     - Queues/async jobs? → SQS or Lambda
+     - Queues/async jobs? → Postgres-backed job table polled by a route handler
      - Search? → Postgres full-text search
      - Charts/analytics? → Postgres aggregation queries
+     - Hosting? → Render Docker web service
    - **The clone builds its OWN API** — it does NOT call the target product's API.
    - **No mock data, no SQLite, no fake backends.**
 
-   **Pre-configured cloud credentials:**
-   - AWS CLI and `@aws-sdk/*` configured via `~/.aws/credentials` (no env vars needed)
-   - `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ZONE_ID` in `.env` — for DNS record management
+   **Pre-configured cloud credentials (all in `.env`):**
+   - `DATABASE_URL` — Neon Postgres
+   - `R2_ACCOUNT_ID` / `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` / `R2_BUCKET` — Cloudflare R2
 
 6. **PRD Entry Priority:**
    - P0: Infrastructure (DB, cloud service setup)

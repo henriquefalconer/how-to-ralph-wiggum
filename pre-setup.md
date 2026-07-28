@@ -22,18 +22,33 @@ Everything listed here is already installed and configured. Do NOT reinstall, re
 - `npm run dev` — dev server on port **3015**
 - `npm run build` — production build
 
-## AWS Infrastructure (provisioned by `scripts/preflight.sh`)
-Resource names derive from `APP_NAME` in `scripts/preflight.sh` (default `product-clone`):
-- **RDS Postgres** — `${APP_NAME}-db` in us-east-1, connection string written to `.env` as `DATABASE_URL`
-- **AWS SES** — production mode (can send to anyone), `foreverbrowsing.com` domain verified with DKIM
-- **S3** — `${APP_NAME}-storage-<account-id>`, create prefixes as the clone needs them
-- **ECR** — `${APP_NAME}` repository at `<account-id>.dkr.ecr.us-east-1.amazonaws.com/${APP_NAME}`
-- **AWS CLI** — configured via `~/.aws/credentials`, use `us-east-1` for SES
+## Infrastructure (validated by `scripts/preflight.sh`)
+Every service below is on a free tier and is created from its own web dashboard.
+`scripts/preflight.sh` checks that `.env` has the credentials for all of them:
+- **Neon Postgres** — serverless Postgres, connection string in `.env` as `DATABASE_URL`
+- **Cloudflare R2** — S3-compatible object storage, bucket in `.env` as `R2_BUCKET`
+- **Render** — Docker web service built from the repo `Dockerfile`, free plan
+- **GitHub Container Registry** — images at `ghcr.io/<owner>/<repo>`
 
-## Cloudflare DNS
-- **API Token** — in `.env` as `CLOUDFLARE_API_TOKEN` (Edit zone DNS permission)
-- **Zone** — `foreverbrowsing.com`, zone ID in `.env` as `CLOUDFLARE_ZONE_ID`
-- Use Cloudflare REST API to auto-add DNS records for domain verification
+## Cloudflare R2 Client
+R2 speaks the S3 API, so use `@aws-sdk/client-s3` and `@aws-sdk/s3-request-presigner`:
+```ts
+new S3Client({
+  region: "auto",
+  endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+  },
+});
+```
+
+## Container Registry
+The GitHub CLI is a Windows binary, not on `PATH` as `gh`. Use it to log in to `ghcr.io`:
+```bash
+GH="/mnt/c/Program Files/GitHub CLI/gh.exe"
+"$GH" auth token | docker login ghcr.io -u "$("$GH" api user --jq .login)" --password-stdin
+```
 
 ## Project Structure (already scaffolded)
 ```
@@ -53,9 +68,10 @@ scripts/           — Infrastructure and deploy scripts
 ```
 
 ## .env Contents
-- `DATABASE_URL` — Postgres connection string
-- `CLOUDFLARE_API_TOKEN` — Cloudflare DNS API
-- `CLOUDFLARE_ZONE_ID` — foreverbrowsing.com zone
+- `DATABASE_URL` — Neon Postgres connection string
+- `R2_ACCOUNT_ID` — Cloudflare account ID (used to build the R2 endpoint)
+- `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` — R2 API token credentials
+- `R2_BUCKET` — R2 bucket name
 - `DASHBOARD_KEY` — master key for dashboard auth (set when needed)
 
 ## Target Product Login (if session expires)

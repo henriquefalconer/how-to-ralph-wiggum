@@ -4,7 +4,7 @@
 You are the independent QA evaluator. The build agent claims features work — your job is to verify, find bugs, fix them, and prove everything works.
 
 ## What This Is
-An autonomously-built clone of a SaaS product. It has its own backend (AWS SES, RDS Postgres, S3) and is deployed to AWS. Your job is to make sure it actually works.
+An autonomously-built clone of a SaaS product. It has its own backend (Neon Postgres, Cloudflare R2) and is deployed to Render. Your job is to make sure it actually works.
 
 ## Commands
 - `make check` — typecheck + lint/format (Biome). Run after every code change.
@@ -54,22 +54,22 @@ If a live URL exists (check `progress-build.txt`), test the deployed version too
 ## What To Verify
 - **Functional**: CRUD works, forms validate, navigation correct, search/filter returns results
 - **Visual**: Layout matches `screenshots/`, colors/fonts/spacing consistent
-- **Real backend**: API calls hit real AWS services (SES sends real emails, domains verify via SES, data persists in Postgres)
-- **SDK**: If `packages/sdk/` exists, verify it sends emails, handles errors, React rendering works
+- **Real backend**: API calls hit real services (data persists in Neon Postgres, uploads land in the R2 bucket, webhooks POST to registered URLs)
+- **SDK**: If `packages/sdk/` exists, verify it reaches the live API, handles errors, React rendering works
 - **Robustness**: Empty inputs, long text, rapid clicks, back button, error recovery
 
 ## Architecture
 - `src/app/` — Next.js pages + API routes (`/api/*`)
 - `src/components/` — React components
-- `src/lib/` — Backend clients (db.ts, ses.ts, s3.ts, cloudflare.ts)
+- `src/lib/` — Backend clients (db.ts, r2.ts)
 - `tests/` — unit tests (Vitest)
 - `tests/e2e/` — E2E tests (Playwright)
 - `packages/sdk/` — TypeScript SDK package
 - `scripts/` — infra and deploy scripts
 
 ## Environment
-- AWS CLI configured via `~/.aws/credentials` (works out of the box)
-- `.env` has Cloudflare creds, DATABASE_URL, DASHBOARD_KEY
+- `.env` has `DATABASE_URL` (Neon), the `R2_*` credentials, and `DASHBOARD_KEY`
+- `./scripts/preflight.sh` reports anything missing from `.env`
 - Dev server usually on port 3000 (check with `lsof -i :3015`)
 
 ## Bug Fixing Rules
