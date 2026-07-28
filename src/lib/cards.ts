@@ -7,6 +7,7 @@ import {
   pipes,
 } from "@/lib/db/schema";
 import { listFields } from "@/lib/fields";
+import { triggerWebhookEvent } from "@/lib/webhooks";
 import { and, asc, desc, eq } from "drizzle-orm";
 
 export type Card = typeof cards.$inferSelect;
@@ -82,6 +83,12 @@ export async function createCard(
       })),
     );
   }
+
+  await triggerWebhookEvent("pipe", pipeId, "card.created", {
+    cardId: card.id,
+    phaseId: card.phaseId,
+    title: card.title,
+  });
 
   return card;
 }
@@ -207,6 +214,12 @@ export async function moveCardToPhase(
     return [updatedCard];
   });
 
+  await triggerWebhookEvent("pipe", card.pipeId, "card.moved", {
+    cardId,
+    fromPhaseId,
+    toPhaseId,
+  });
+
   return updated;
 }
 
@@ -245,4 +258,10 @@ export async function setPhaseFieldValue(
       ],
       set: { value, filledAt: new Date() },
     });
+
+  await triggerWebhookEvent("pipe", card.pipeId, "card.updated", {
+    cardId,
+    fieldId,
+    value,
+  });
 }

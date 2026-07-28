@@ -365,7 +365,7 @@
     "data_model": "webhooks: id, scope_type (org|pipe|table), scope_id (fk), url, events (jsonb array of event names), created_at",
     "priority": 8,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {

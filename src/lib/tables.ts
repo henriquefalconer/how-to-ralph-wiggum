@@ -7,6 +7,7 @@ import {
 } from "@/lib/db/schema";
 import type { Field } from "@/lib/fields";
 import { listFields } from "@/lib/fields";
+import { triggerWebhookEvent } from "@/lib/webhooks";
 import { and, asc, count, desc, eq, inArray } from "drizzle-orm";
 
 export type Table = typeof tables.$inferSelect;
@@ -263,6 +264,11 @@ export async function createRecord(
     tableFields.map((field) => [field.id, values[field.id] ?? ""]),
   );
 
+  await triggerWebhookEvent("table", tableId, "table.record.created", {
+    recordId: record.id,
+    values: storedValues,
+  });
+
   return {
     record,
     title: titleFieldId ? (storedValues[titleFieldId] ?? "") : "",
@@ -341,6 +347,12 @@ export async function setRecordFieldValue(
     .update(tableRecords)
     .set({ updatedAt: now })
     .where(eq(tableRecords.id, recordId));
+
+  await triggerWebhookEvent("table", record.tableId, "table.record.updated", {
+    recordId,
+    fieldId,
+    value: rawValue,
+  });
 }
 
 export async function deleteRecord(recordId: string): Promise<void> {

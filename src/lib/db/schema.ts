@@ -211,3 +211,29 @@ export const cardTransitions = pgTable("card_transitions", {
     .references(() => phases.id, { onDelete: "cascade" }),
   movedAt: timestamp("moved_at").defaultNow().notNull(),
 });
+
+export const webhookScopeTypes = ["org", "pipe", "table"] as const;
+
+export const webhooks = pgTable("webhooks", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  scopeType: text("scope_type", { enum: webhookScopeTypes }).notNull(),
+  // Not a DB-level FK: scopeId points into whichever of
+  // organizations/pipes/tables scopeType selects.
+  scopeId: uuid("scope_id").notNull(),
+  url: text("url").notNull(),
+  events: jsonb("events").$type<string[]>().notNull().default([]),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const webhookDeliveries = pgTable("webhook_deliveries", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  webhookId: uuid("webhook_id")
+    .notNull()
+    .references(() => webhooks.id, { onDelete: "cascade" }),
+  event: text("event").notNull(),
+  payload: jsonb("payload").notNull(),
+  success: boolean("success").notNull(),
+  statusCode: integer("status_code"),
+  error: text("error"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
