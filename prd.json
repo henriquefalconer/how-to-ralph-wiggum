@@ -4,37 +4,44 @@
     "category": "data",
     "description": "Core data model: Pipe entity (Kanban board) with ordered Phases, labels, and start form fields",
     "page": "N/A (backend/API layer)",
-    "ui_details": "TBD — not yet observed in UI. Docs-derived only.",
-    "behavior": "A Pipe has id, uuid, name, color, users_count, cards_count, opened_cards_count. Has many ordered Phases, Labels ({id,name,color}), start_form_fields, and members ({user{id,email}, role_name}).",
-    "data_model": "pipes: id, uuid, name, color, org_id (fk). labels: id, pipe_id (fk), name, color.",
+    "ui_details": "Confirmed (Iteration 3, live test): Início dashboard's tabbed Pipes/Databases grid — the 'Criar pipe' (+) tile opens a template-gallery side modal (search box + 'Categorias de processos' left rail of industry categories + a grid of 'AI Studio' template cards) with two bottom CTAs: 'Criar pipe do zero' and 'Criar com IA'. Clicking 'Criar pipe do zero' opens a second, minimal modal on top: a single 'Nome do pipe' text input, 'Criar pipe' submit button disabled until non-empty — same two-step shape as feature-005's Database Table create flow (template gallery is Database's equivalent-less; Database create is name-only from the start). Submitting redirects straight to the new pipe's Kanban board at /pipes/:id. Back on Início, the pipe grid card shows the pipe's icon glyph in a colored square, name, and 'N cards' count.",
+    "behavior": "A Pipe has id, uuid, name, color, users_count, cards_count, opened_cards_count. Has many ordered Phases, Labels ({id,name,color}), start_form_fields, and members ({user{id,email}, role_name}). CONFIRMED: every pipe created via 'Criar pipe do zero' auto-provisions the SAME 3-phase starter template — Caixa de entrada (done=false), Fazendo (done=false), Concluído (done=true) — with cards_count=0 in each phase; this matches the org's pre-existing 'Purchase Requests' pipe, confirming it's a fixed default template rather than a blank pipe. CONFIRMED: color is server-assigned at creation (no color picker in either creation modal, and it's not derived from the name — two pipes created back-to-back got a teal swatch and a green swatch respectively); color is user-editable afterward via Configurações do pipe (feature-014), so it's a mutable field with a system-chosen initial value, not an immutable hash of the name. NOTE: the live app's frontend talks to a single batched POST https://app.pipefy.com/internal_api endpoint rather than discrete REST routes per action — irrelevant to the clone's own API design (which must expose conventional REST/JSON routes per spec-build.md), but confirms there is no literal endpoint shape to mirror, only UI-observed behavior.",
+    "data_model": "pipes: id, uuid, name, color (server-assigned on create, user-editable after), org_id (fk), cards_count (derived), opened_cards_count (derived). labels: id, pipe_id (fk), name, color. Pipe creation is a single required field (name) — all other fields (color, the 3 default phases) are server-populated side effects of the create action, not user input.",
     "priority": 1,
     "core": true,
     "passes": false,
     "tests": {
       "unit": [
         {
-          "name": "pipe creation assigns default color and empty phase list",
-          "description": "Creating a pipe with only a name should succeed and produce sane defaults",
+          "name": "pipe creation assigns default color and 3-phase starter template",
+          "description": "Creating a pipe with only a name should succeed, auto-assign a color, and create the fixed 3-phase template",
           "input": "createPipe({ name: 'Purchase Requests' })",
-          "expected_output": "Pipe row with generated id/uuid, cards_count=0, opened_cards_count=0"
+          "expected_output": "Pipe row with generated id/uuid, a non-null color, cards_count=0, opened_cards_count=0, and exactly 3 Phase rows named 'Caixa de entrada'/'Fazendo'/'Concluído' (only the last has done=true)"
         },
         {
           "name": "pipe requires a non-empty name",
           "description": "Validation rejects blank pipe names",
           "input": "createPipe({ name: '' })",
-          "expected_output": "Validation error, no row inserted"
+          "expected_output": "Validation error, no row inserted, submit button stays disabled client-side"
+        },
+        {
+          "name": "sequential pipe creations get different colors",
+          "description": "Color assignment isn't a static default or a hash of the name",
+          "input": "createPipe({ name: 'A' }) then createPipe({ name: 'B' })",
+          "expected_output": "The two pipes have different color values"
         }
       ],
       "e2e": [
         {
-          "name": "create a new pipe from the dashboard",
+          "name": "create a new pipe from the Início dashboard",
           "steps": [
             "Navigate to /",
-            "Click 'New Pipe' / '+ Create'",
-            "Fill name input with 'Purchase Requests'",
-            "Click 'Create'"
+            "Click the 'Criar pipe' (+) tile in the Pipes grid",
+            "Click 'Criar pipe do zero' in the template-gallery modal",
+            "Type 'Onboarding Clientes' into the 'Nome do pipe' input",
+            "Click 'Criar pipe'"
           ],
-          "expected": "Redirects to the new pipe's Kanban board with one default phase visible"
+          "expected": "Redirects to the new pipe's Kanban board showing 3 phase columns (Caixa de entrada / Fazendo / Concluído) each with a '0' card count; navigating back to Início shows a new grid card titled 'Onboarding Clientes' with '0 cards'"
         }
       ],
       "edge_cases": [
@@ -43,7 +50,14 @@
           "steps": [
             "Create two pipes with the identical name"
           ],
-          "expected": "Both are created; names are not required to be unique (matches target behavior — verify against real UI)"
+          "expected": "Both are created with distinct ids; names are not required to be unique (matches target behavior — confirmed no uniqueness validation error appears)"
+        },
+        {
+          "name": "submit with only whitespace as the name",
+          "steps": [
+            "Open 'Criar pipe do zero', type only spaces into 'Nome do pipe', attempt to click 'Criar pipe'"
+          ],
+          "expected": "Submit stays disabled/blocked — trimmed-empty name is treated the same as empty"
         }
       ]
     }

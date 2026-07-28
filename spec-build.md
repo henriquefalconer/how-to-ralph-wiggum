@@ -111,6 +111,13 @@ rename for clarity but should preserve the same concepts.
   Iteration 2** via Ferramentas > Etiquetas — see §15 below), `start_form_fields`,
   `members` (`{user{id,email}, role_name}`, **UI-confirmed Iteration 2** via
   Gerenciar > Pessoas — see §15 below)
+- **Creation flow — UI-confirmed Iteration 3** (see §16 below): creating a pipe
+  takes a single required input, `name`. `color` is a server-assigned side
+  effect (not user-chosen at creation, not derived from `name` — confirmed by
+  creating two pipes back-to-back and observing different colors), editable
+  afterward via Configurações do pipe. Every new pipe auto-provisions the SAME
+  3-phase starter template (`Caixa de entrada` → `Fazendo` → `Concluído`,
+  only the last has `done=true`), each starting at `cards_count=0`.
 - settings (confirmed Iteration 2, Gerenciar > Configurações do pipe — see §15):
   `icon`, `tags` (max 3), `item_name` (default "Cards"),
   `create_card_button_label`, `default_view`, **`title_field_id`** (fk,
@@ -306,7 +313,7 @@ Provisional core-feature guess (to validate against the real UI next):
 
 ## UI Inspection Coverage Checklist
 - [x] Site map (Iteration 1) — see `sitemap.md`
-- [x] Home / pipes list (screenshot: `screenshots/inspect/home.jpg`)
+- [x] Home / pipes list + pipe creation flow (Iteration 3 — template-gallery + name-only create modal, default 3-phase starter template, server-assigned color; see §16 and prd feature-001; screenshots: `screenshots/inspect/home.jpg`, `screenshots/inspect/home-pipes-grid.jpg`, `screenshots/inspect/pipe-create-modal.jpg`)
 - [x] Phase/field editors (Fases — field config modal, choice-type options editor, phase Opções Avançadas [done/SLA/auto-assign], Condicionais em campos rule builder — screenshot: `screenshots/inspect/phases-editor.jpg`)
 - [x] Kanban board view (card create, drag-drop move, done-phase styling — Iteration 3)
 - [x] Card detail view (Iteration 3)
@@ -695,3 +702,60 @@ follow-up. See `prd.json` feature-017.
 
 Screenshots: `screenshots/inspect/pipe-settings-pessoas.jpg`,
 `screenshots/inspect/pipe-settings-configuracoes.jpg`.
+
+## 16. Pipe Creation Flow & Início Dashboard (Iteration 3, live UI test)
+
+Deep-dove the org-level Início dashboard's pipe-creation entry point — the
+last remaining piece of feature-001 (Pipe entity, priority 1, core), which had
+been docs-only/TBD since it was defined in iteration 1 even though pipe
+creation itself was exercised once (out-of-band, to escape the empty-org
+onboarding modal) without documenting the flow's UI/behavior back into the
+spec.
+
+**Two-step modal flow.** From Início, the "Criar pipe" (+) tile in the Pipes
+grid opens a template-gallery side modal: search box + a "Categorias de
+processos" left rail (Administrativo e Facilities, Atendimento ao Cliente,
+Cadeia de Suprimentos, Compras, CSC, Finanças e Contabilidade, Jurídico,
+Marketing, ...) filtering a grid of "AI Studio" template cards (P2P, Onboarding,
+CRM, SRM, Quotation, Claims, ...), with two CTAs pinned at the bottom:
+"Criar pipe do zero" and "Criar com IA" (AI-prompted pipe generation, not
+tested this pass). Clicking "Criar pipe do zero" opens a second, minimal modal
+stacked on top: a single "Nome do pipe" input, "Criar pipe" submit disabled
+until non-empty — the same two-step shallow-form pattern as feature-005's
+Database Table create flow (which skips straight to the name-only step, since
+Database Tables have no template gallery).
+
+**Server-side side effects of creation.** Submitting with just a name
+(tested: "Onboarding Clientes") redirects immediately to the new pipe's Kanban
+board at `/pipes/:id` (new sequential-ish numeric id, e.g. `307274068` next to
+the org's existing `307273712`). Two things happen server-side that the create
+form gives no control over:
+1. **3 default phases are auto-provisioned** — `Caixa de entrada` / `Fazendo` /
+   `Concluído`, identical in name and order to the org's pre-existing
+   "Purchase Requests" pipe, each starting at 0 cards. This is a fixed starter
+   template applied to every new pipe, not an empty board.
+2. **A color is server-assigned.** Neither creation modal exposes a color
+   picker. Confirmed non-trivial by creating two pipes back to back: "Purchase
+   Requests" shows a teal grid-card swatch, "Onboarding Clientes" (created
+   this pass) shows green — so it isn't a static default, and it isn't a hash
+   of the name either (nothing about "Onboarding Clientes" vs "Purchase
+   Requests" explains teal vs. green beyond "assigned from some rotation/pool
+   at creation time"). Color remains user-editable afterward via Configurações
+   do pipe (§15) — so the clone should auto-assign *some* color on create
+   (e.g. cycling a fixed palette by creation order) and separately expose it
+   as an editable setting, rather than tying it to the name.
+
+**Home grid card.** Back on Início, each pipe renders as a card: colored icon
+square (bento-box glyph, same glyph for every pipe — only the background color
+differs) + name + "N cards" (live count, confirmed 0 for the freshly created
+pipe vs. 1 for "Purchase Requests").
+
+**Network shape (informational only).** `read_network_requests` during
+creation showed the SPA calling a single batched `POST
+https://app.pipefy.com/internal_api` endpoint rather than discrete REST calls
+per action. This confirms there's no literal endpoint contract worth mirroring
+— the clone's own API (conventional REST/JSON per §6/§7) should be designed
+from observed *behavior*, not from replaying Pipefy's internal transport.
+
+Screenshots: `screenshots/inspect/home-pipes-grid.jpg`,
+`screenshots/inspect/pipe-create-modal.jpg`.
