@@ -150,11 +150,28 @@ rename for clarity but should preserve the same concepts.
     tax ID formats)
 
 ### Database Table / Table Record
-- Table: `id` (alphanumeric), `name`, `public` (boolean)
-- has many: `table_fields` (same type system as above)
-- Table Record: `id`, `title`, `record_fields` (`{name, value, native_value,
-  date_value, datetime_value, float_value, report_value, filled_at,
-  updated_at, required, indexName}`)
+- Table: `id` (alphanumeric), `name`, `public` (boolean, confirmed in UI as
+  "Database público"/"Database privado"), `title_field_id` (fk, nullable —
+  **confirmed in UI**: "Título do registro" is an explicit dropdown, record
+  titles are NOT hardcoded to "first field," unlike Cards), `subtitle_template`
+  (confirmed UI: "Subtítulo do registro conectado", defaults to "Criado em"),
+  `create_button_label` (confirmed UI: "Texto do botão de criar registros",
+  defaults to "Criar registro"), `all_members_can_crud` (bool, confirmed UI:
+  "Autorizações" checkbox)
+- has many: `table_fields` (same type system as above, confirmed extra types
+  via live UI test: currency fields carry a nested currency-code sub-type;
+  connection fields for tables are narrower than phase connectors — only
+  "Conexão de database", not pipe-targeting)
+- Table Record: `id`, `title` (derived from `title_field_id`'s value, live —
+  re-derives if the title field's value changes, confirmed by editing a
+  field and seeing the grid retitle after reload), `record_fields` (`{name,
+  value, native_value, date_value, datetime_value, float_value,
+  report_value, filled_at, updated_at, required, indexName}`)
+- **Confirmed client staleness quirk (do not reproduce):** a newly created
+  record's field values render as "Vazio" and the grid's "N registros"
+  header count doesn't update until a full reload — same family as the
+  Kanban card-count bug (feature-004 §11). The clone must update both
+  synchronously.
 
 ### Report
 - Saved aggregation config over a pipe's cards: columns, filterable fields,
@@ -241,7 +258,7 @@ Provisional core-feature guess (to validate against the real UI next):
 - [x] Kanban board view (card create, drag-drop move, done-phase styling — Iteration 3)
 - [x] Card detail view (Iteration 3)
 - [ ] Start form
-- [ ] Database Tables (list + detail)
+- [x] Database Tables (create flow, field-type palette incl. connection fields, record create/edit, Configurações de database — screenshots: `screenshots/inspect/database-grid.jpg`, `screenshots/inspect/database-record-detail.jpg`)
 - [ ] Reports/dashboards
 - [ ] Automation rule builder (separate from field conditionals — pipe-level Automações tab)
 - [ ] Interfaces / Portal builder (new feature, not in prd.json yet)
@@ -325,3 +342,103 @@ badges do **not** live-update in the same client session after a
 drag-and-drop or quick-move — they only reflect the correct count after a
 full page reload. This is Pipefy's own client-cache staleness bug, not a
 feature; the clone should update counts synchronously on move.
+
+## 12. Database Tables (Iteration 4, live UI test)
+
+Tested end-to-end: created a real Database ("Suppliers") from the org
+Início > Databases tab, added fields, created a record, edited it, and
+opened Configurações de database.
+
+**Create flow.** Início > Databases tab (next to Pipes) has an empty state
+(promo video + "Criar database" CTA) or, once ≥1 exists, a grid list.
+"Criar database" opens a name-only modal ("Nome do database") — no template
+picker, no field setup at creation time; it lands directly on the new
+database's empty grid view at `/apollo_databases/:id` with a single
+"Título" column and a "Criar registro" FAB.
+
+**Field-type palette (grid `+` button) — confirms + extends feature-003's
+type system.** Same config-modal shape as the Fases editor (Título do
+campo, Escolha o tipo, Descrição/Texto de ajuda/obrigatório toggles, live
+preview pane, "Dependências do campo" link). Full palette observed via the
+grid's column `+`: Responsável, Anexo, Texto curto, Checkbox, Documentos,
+Moeda (with its own currency-code sub-type, e.g. "USD - US Dollar" —
+**new: currency fields have a nested currency-type selector** not
+documented in feature-003), Data, Data e hora, Data de vencimento, Email,
+ID, Etiquetas, Texto longo, Numérico, Número de telefone, Seleção de única
+opção (radio, vertical/horizontal), Seleção de lista (dropdown select),
+Texto fixo (statement), Tempo, and a separate **"Campos de conexão"**
+group containing only **Conexão de database** (a table-to-table connector —
+narrower than the phase-field `connector` type, which can target a pipe
+*or* a table). The **Formulário inicial** settings tab's own palette
+additionally lists **"Conteúdo dinâmico"** — a field type not seen in the
+Fases editor at all; not yet tested, flag for a follow-up pass.
+
+**"Dependências do campo" is read-only impact analysis, not a rule editor.**
+Clicking it opens "Nenhuma dependência encontrada" (when nothing references
+the field) with an info note: "Apps e integrações também podem depender
+deste campo, mas ainda não estão listados aqui." This is unrelated to the
+phase-level Field Conditionals (feature-009) — it's a "what would break if
+I change this field" viewer, not a conditional-logic system. Model as a
+derived/computed view in the clone (which reports/automations/other fields
+reference a given field), not as stored data.
+
+**Confirmed staleness quirk, same family as feature-004's Kanban count
+bug:** saving a new field via the grid's `+` picker does NOT render the new
+column in the grid until a full page reload — even though the save
+succeeded server-side (confirmed by re-opening the field editor and seeing
+"já está em uso" (label already in use) validation on the *supposedly
+unsaved* field). Same quirk on record creation: a newly created record's
+own submitted field values render as "Vazio" (empty) in the grid row until
+reload, and the "N registros em <name>" header count does not update
+either. **The clone must render both immediately, no reload required.**
+
+**Record creation.** "Criar registro" opens a compact form modal listing
+only the *non-title* fields (no separate "Título" input, unlike Cards'
+start form) — "Compartilhar formulário" and "Editar" links sit top-right of
+the same modal. **Currency fields auto-mask raw digit input as cents**:
+typing "15000" renders live as "$ 150.00" (last two digits become the
+decimal part) — a masked-input behavior the clone should replicate for
+`currency`-type fields.
+
+**Record detail view** opens as a modal at a deep-linkable URL
+(`/apollo_databases/:dbId/records/:recordId`): icon + title (auto-derived
+from whichever field is configured as "Título do registro" — see below) +
+a status/first-choice-field badge with a dropdown chevron next to it,
+"Informações de registro" (creator + relative timestamp), each field
+rendered as label + value with a hover-revealed "Editar" pencil that turns
+it into an inline editable control (radio group / input) with
+Salvar/Cancelar, and a footer "Atualizado em" absolute timestamp that
+updates live on save. A "⋮" kebab menu offers "Editar campos" (choose which
+fields render on this record) and "Deletar registro" (destructive, not
+tested — triggers what is presumably a confirm dialog, skipped per the
+no-dialogs rule). **Observed bug in the target (do not reproduce): the
+title-row status badge does not refresh after an inline field edit** — it
+kept showing the pre-edit value ("Ativo") even after a fresh page
+navigation, while the field's own value below correctly showed the updated
+"Inativo" and the grid row was also correct. Genuine target-app desync
+between the header badge and the field data, isolated to that one badge.
+
+**Configurações de database (Gerenciar > Configurações de database)** — the
+concrete UI behind feature-005's `public` boolean and more:
+- **Título do registro**: a dropdown selecting *which field's value* is
+  used as the record's display title — **record titles are NOT hardcoded
+  to "first field created," unlike Cards (whose title comes from the
+  start form's first field and never re-derives).** This is a real schema
+  difference between Pipes/Cards and Databases/Records worth preserving in
+  the clone: `tables.title_field_id` (nullable fk into `table_fields`).
+- **Subtítulo do registro conectado**: a template/field picker for the
+  subtitle shown when this record is referenced from elsewhere (e.g. a
+  connector field) — defaults to "Criado em".
+- **Texto do botão de criar registros**: customizable button label
+  (defaults to "Criar registro").
+- **Permissões**: "Database público" (all org members can access) vs.
+  "Database privado" (admins + invited people only) — radio, maps 1:1 to
+  `tables.public`.
+- **Autorizações**: a single checkbox, "Todas as pessoas neste database
+  podem criar, editar e deletar registros" — a table-wide CRUD-permission
+  toggle (finer-grained per-person permission is presumably gated behind
+  "Pessoas" tab, not tested this pass).
+- **Excluir database**: destructive, not tested.
+
+Screenshots: `screenshots/inspect/database-grid.jpg`,
+`screenshots/inspect/database-record-detail.jpg`.

@@ -23,7 +23,7 @@ state should just show an empty dashboard with a "Create pipe" CTA.
 
 | Nav label | URL | Page type | Notes |
 |---|---|---|---|
-| Início (Home) | `/organizations/:orgId` | Dashboard | Greeting header, "Meu trabalho / Templates / Ajuda / Estatísticas de uso" quick links, plan-usage banner, AI "create a pipe from a prompt" box, then tabbed **Pipes** / **Databases** grid of cards + "Criar pipe" / "Criar database" tiles |
+| Início (Home) | `/organizations/:orgId` | Dashboard | Greeting header, "Meu trabalho / Templates / Ajuda / Estatísticas de uso" quick links, plan-usage banner, AI "create a pipe from a prompt" box, then tabbed **Pipes** / **Databases** grid of cards + "Criar pipe" / "Criar database" tiles. **Databases tab inspected iteration 4** — create flow, field-type palette, record CRUD, Configurações de database; see prd feature-005 and spec-build.md §12. |
 | Portal | `/organizations/:orgId/interfaces/:interfaceId/pages/:pageId` | Public-ish employee service portal (built on the Interfaces feature) | Ships with a default sample template: hero banner, search bar, "Navegue por departamento" cards (IT Support / HR / Travel), "Escolha um formulário" section, "Políticas e documentos" section. Has an "Entrar" (sign in) button top-right — portal can apparently be viewed logged-out too. Out of scope to build as a separate auth surface; model as a page composed of pipe/database widgets. |
 | Tarefas e Solicitações (Tasks & Requests) | `/organizations/:orgId/tasks_and_requests` | List view | Cross-pipe inbox of assigned Tasks. Columns: Tarefa, Pipe, Recebido em, Vencimento. "Abertas"/"Concluídas" toggle. Empty state: "Tudo em dia! Novas tarefas serão listadas aqui." |
 | Interfaces | `/organizations/:orgId/interfaces` | Builder / list | "Drag and drop pipe/database data to build pages" — a no-code internal-tool/page builder. Empty state has a single "Criar interface" CTA. The Portal above is itself one Interfaces page. |
@@ -85,7 +85,6 @@ Automations sub-tabs (`/pipes/:id/automations`): Automações, Logs. Trigger→a
 builder, matches prd feature-007's webhook/automation model.
 
 ## Not yet inspected (next iterations)
-- Database Table creation + grid view + record detail
 - Relatórios / Painéis actually building a chart
 - Emails compose flow
 - Automations rule builder (create one rule)

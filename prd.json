@@ -235,10 +235,10 @@
     "id": "feature-005",
     "category": "data",
     "description": "Database Table entity — spreadsheet-like structured data object, separate from Pipes, with its own fields and records",
-    "page": "N/A (backend/API layer)",
-    "ui_details": "TBD — not yet observed in UI.",
-    "behavior": "A Table has id (alphanumeric), name, public (bool), and table_fields (same type system as phase fields). A Table Record has id, title, and record_fields with rich per-type value columns (date_value, datetime_value, float_value, native_value, report_value).",
-    "data_model": "tables: id, org_id (fk), name, public (bool). table_records: id, table_id (fk), title, created_at, updated_at. table_record_field_values: id, record_id (fk), field_id (fk), value (text), date_value, datetime_value, float_value",
+    "page": "Início > Databases tab (list) / /apollo_databases/:id (grid) / /apollo_databases/:id/records/:recordId (record detail) / /apollo_databases/:id/settings/general-settings (Configurações de database)",
+    "ui_details": "Confirmed (Iteration 4, live test): 'Criar database' is a name-only modal, lands on an empty grid ('Título' column + 'Criar registro' FAB). Grid column '+' opens the same field-config modal shape as the Fases editor (Título do campo, Escolha o tipo, toggles, live preview, 'Dependências do campo' link) with a fuller palette than phases: Responsável, Anexo, Texto curto, Checkbox, Documentos, Moeda (nested currency-code sub-type e.g. 'USD - US Dollar'), Data, Data e hora, Data de vencimento, Email, ID, Etiquetas, Texto longo, Numérico, Número de telefone, Seleção de única opção, Seleção de lista, Texto fixo, Tempo, plus a 'Campos de conexão' group with only 'Conexão de database' (narrower than phase connectors, which can also target a pipe). The Formulário inicial settings tab additionally lists 'Conteúdo dinâmico' — a field type not seen in the Fases editor, not yet tested. 'Dependências do campo' is a read-only impact-analysis viewer ('Nenhuma dependência encontrada' + note that apps/integrations aren't listed), NOT a rule editor — unrelated to feature-009's Field Conditionals. Record creation modal lists only non-title fields (no separate Título input, unlike Cards); currency fields auto-mask raw digit input as cents ('15000' -> '$ 150.00' live). Record detail opens as a deep-linkable modal (icon+title, status badge w/ dropdown, 'Informações de registro' creator/timestamp, per-field hover-'Editar' inline edit w/ Salvar/Cancelar, 'Atualizado em' footer, '⋮' kebab with 'Editar campos'/'Deletar registro'). Configurações de database (Gerenciar) has: 'Título do registro' (dropdown choosing which field is the record's display title), 'Subtítulo do registro conectado' (default 'Criado em'), 'Texto do botão de criar registros' (default 'Criar registro'), 'Permissões' (Database público/privado radio), 'Autorizações' (checkbox: all members can create/edit/delete records), 'Excluir database'. Screenshots: screenshots/inspect/database-grid.jpg, screenshots/inspect/database-record-detail.jpg.",
+    "behavior": "A Table has id (alphanumeric), name, public (bool), and table_fields (same type system as phase fields, richer palette per ui_details). A Table Record has id, title, and record_fields with rich per-type value columns (date_value, datetime_value, float_value, native_value, report_value). CONFIRMED: record title is NOT hardcoded to 'first field' — it's driven by an explicit title_field_id configured in Configurações de database, a real schema difference from Cards (whose title comes from the start form's first field and never re-derives). CONFIRMED client staleness quirk, same family as feature-004's Kanban count bug: saving a new field via '+' does not render the new column until reload (confirmed the save DID succeed server-side via a subsequent 'já está em uso' validation error on the label); a newly created record's own field values render as 'Vazio' and the 'N registros' header count doesn't update until reload either. CONFIRMED target-app bug (do not reproduce): the record detail modal's title-row status badge does not refresh after an inline field edit, persisting even across a fresh page navigation, while the field's own value and the grid row are both correct.",
+    "data_model": "tables: id, org_id (fk), name, public (bool), title_field_id (fk, nullable), subtitle_template (text, default 'Criado em'), create_button_label (text, default 'Criar registro'), all_members_can_crud (bool). table_records: id, table_id (fk), title (derived live from title_field_id's value), created_at, updated_at. table_record_field_values: id, record_id (fk), field_id (fk), value (text), date_value, datetime_value, float_value",
     "priority": 3,
     "core": true,
     "passes": false,
@@ -249,6 +249,18 @@
           "description": "A date-type field value populates both value (text) and date_value (date) columns",
           "input": "setTableRecordFieldValue(recordId, dateFieldId, '25/12/2026')",
           "expected_output": "record_field.value === '25/12/2026'; record_field.date_value is a valid parsed date"
+        },
+        {
+          "name": "record title is derived from the configured title_field_id, not the first field",
+          "description": "Changing a table's title_field_id changes which field's value future record.title reads from",
+          "input": "createTable({ name: 'Suppliers' }) with fields [valor, status]; setTitleField(tableId, 'status'); createRecord(tableId, { valor: 100, status: 'Ativo' })",
+          "expected_output": "record.title === 'Ativo', not '100'"
+        },
+        {
+          "name": "currency field input is masked as cents",
+          "description": "Raw digit entry into a currency field is interpreted as cents, matching the target's masked-input behavior",
+          "input": "formatCurrencyInput('15000')",
+          "expected_output": "'150.00'"
         }
       ],
       "e2e": [
@@ -256,11 +268,21 @@
           "name": "create a new record in a database table",
           "steps": [
             "Navigate to a Database Table's grid view",
-            "Click 'New Record'",
-            "Fill in the visible fields",
-            "Click 'Save'"
+            "Click 'Criar registro'",
+            "Fill in the visible fields (not the title — no separate title input)",
+            "Click 'Criar registro' submit"
           ],
-          "expected": "New row appears in the grid with the entered values"
+          "expected": "New row appears in the grid immediately with the entered values (no reload needed, unlike the target's own staleness bug) and the 'N registros' count updates synchronously"
+        },
+        {
+          "name": "edit a record field inline from the record detail view",
+          "steps": [
+            "Open a record's detail view",
+            "Hover the 'Status' field and click 'Editar'",
+            "Select a different option",
+            "Click 'Salvar'"
+          ],
+          "expected": "Field value updates immediately, 'Atualizado em' timestamp refreshes, and the header status badge ALSO updates (the clone should not reproduce the target's badge-desync bug)"
         }
       ],
       "edge_cases": [
@@ -270,6 +292,13 @@
             "Navigate to a table with zero records"
           ],
           "expected": "Empty state message shown instead of an empty grid"
+        },
+        {
+          "name": "duplicate field label in the same table",
+          "steps": [
+            "Create a field labeled 'Status', then attempt to create another field labeled 'Status' in the same table"
+          ],
+          "expected": "Rejected with a 'já está em uso' (already in use) validation error, matching the confirmed target behavior"
         }
       ]
     }
