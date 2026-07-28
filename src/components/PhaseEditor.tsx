@@ -1,11 +1,17 @@
 "use client";
 
+import {
+  FIELD_TYPES,
+  type FieldType,
+  isChoiceFieldType,
+} from "@/lib/field-types";
+import type { Field } from "@/lib/fields";
 import type { Dictionary } from "@/lib/i18n";
 import type { Phase } from "@/lib/phases";
 import * as Dialog from "@radix-ui/react-dialog";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface PipeSummary {
   id: string;
@@ -17,11 +23,13 @@ export function PhaseEditor({
   pipe,
   phases,
   currentPhaseId,
+  fields,
   dictionary,
 }: {
   pipe: PipeSummary;
   phases: Phase[];
   currentPhaseId: string;
+  fields: Field[];
   dictionary: Dictionary;
 }) {
   const router = useRouter();
@@ -52,6 +60,20 @@ export function PhaseEditor({
   );
   const [saving, setSaving] = useState(false);
 
+  const [fieldModalOpen, setFieldModalOpen] = useState(false);
+  const [editingFieldId, setEditingFieldId] = useState<string | null>(null);
+  const [fieldType, setFieldType] = useState<FieldType>("short_text");
+  const [fieldLabel, setFieldLabel] = useState("");
+  const [fieldRequired, setFieldRequired] = useState(false);
+  const [fieldHelp, setFieldHelp] = useState("");
+  const [fieldDescription, setFieldDescription] = useState("");
+  const [fieldOptions, setFieldOptions] = useState<
+    { key: string; value: string }[]
+  >([{ key: "0", value: "" }]);
+  const [fieldError, setFieldError] = useState<string | null>(null);
+  const [savingField, setSavingField] = useState(false);
+  const nextOptionKey = useRef(1);
+
   useEffect(() => {
     if (!currentPhase) return;
     setName(currentPhase.name);
@@ -69,6 +91,113 @@ export function PhaseEditor({
   }, [currentPhase]);
 
   if (!currentPhase) return null;
+
+  function keyedOptions(values: string[]): { key: string; value: string }[] {
+    return values.map((value) => {
+      const key = String(nextOptionKey.current);
+      nextOptionKey.current += 1;
+      return { key, value };
+    });
+  }
+
+  function openCreateFieldModal(type: FieldType) {
+    setEditingFieldId(null);
+    setFieldType(type);
+    setFieldLabel("");
+    setFieldRequired(false);
+    setFieldHelp("");
+    setFieldDescription("");
+    setFieldOptions(keyedOptions([""]));
+    setFieldError(null);
+    setFieldModalOpen(true);
+  }
+
+  function openEditFieldModal(field: Field) {
+    setEditingFieldId(field.id);
+    setFieldType(field.type as FieldType);
+    setFieldLabel(field.label);
+    setFieldRequired(field.required);
+    setFieldHelp(field.help ?? "");
+    setFieldDescription(field.description ?? "");
+    setFieldOptions(
+      keyedOptions(field.options.length > 0 ? field.options : [""]),
+    );
+    setFieldError(null);
+    setFieldModalOpen(true);
+  }
+
+  async function handleSaveField() {
+    setSavingField(true);
+    setFieldError(null);
+    const trimmedOptions = fieldOptions
+      .map((option) => option.value.trim())
+      .filter((value) => value.length > 0);
+
+    try {
+      const url = editingFieldId
+        ? `/api/phases/${currentPhase?.id}/fields/${editingFieldId}`
+        : `/api/phases/${currentPhase?.id}/fields`;
+      const response = await fetch(url, {
+        method: editingFieldId ? "PATCH" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          label: fieldLabel,
+          type: fieldType,
+          required: fieldRequired,
+          help: fieldHelp || null,
+          description: fieldDescription || null,
+          options: isChoiceFieldType(fieldType) ? trimmedOptions : undefined,
+        }),
+      });
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        throw new Error(body.error ?? "Failed to save field");
+      }
+      setFieldModalOpen(false);
+      router.refresh();
+    } catch (err) {
+      setFieldError(
+        err instanceof Error ? err.message : "Failed to save field",
+      );
+    } finally {
+      setSavingField(false);
+    }
+  }
+
+  async function handleDeleteField(fieldId: string) {
+    try {
+      const response = await fetch(
+        `/api/phases/${currentPhase?.id}/fields/${fieldId}`,
+        { method: "DELETE" },
+      );
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        throw new Error(body.error ?? "Failed to delete field");
+      }
+      router.refresh();
+    } catch {
+      // Surfaced implicitly by the field remaining in the list; kept minimal for now.
+    }
+  }
+
+  function updateOption(key: string, value: string) {
+    setFieldOptions((options) =>
+      options.map((option) => (option.key === key ? { key, value } : option)),
+    );
+  }
+
+  function removeOption(key: string) {
+    setFieldOptions((options) =>
+      options.filter((option) => option.key !== key),
+    );
+  }
+
+  function addOption() {
+    setFieldOptions((options) => [
+      ...options,
+      { key: String(nextOptionKey.current++), value: "" },
+    ]);
+  }
 
   async function handleSwitchPhase(phaseId: string) {
     router.push(`/pipes/${pipe.id}/settings/phases/${phaseId}`);
@@ -163,9 +292,19 @@ export function PhaseEditor({
         <p className="mb-2 text-xs font-semibold uppercase text-gray-500">
           {dictionary.phaseSettings.fieldPaletteHeading}
         </p>
-        <p className="text-xs text-gray-400">
-          {dictionary.phaseSettings.fieldPalettePlaceholder}
-        </p>
+        <div className="grid grid-cols-2 gap-1.5">
+          {FIELD_TYPES.map((type) => (
+            <button
+              key={type}
+              type="button"
+              data-testid={`field-type-${type}`}
+              onClick={() => openCreateFieldModal(type)}
+              className="rounded-md border border-gray-200 px-2 py-1.5 text-left text-xs text-gray-700 hover:border-blue-400 hover:bg-blue-50"
+            >
+              {dictionary.fieldEditor.types[type]}
+            </button>
+          ))}
+        </div>
       </aside>
 
       <div className="flex-1 p-6">
@@ -217,6 +356,71 @@ export function PhaseEditor({
         >
           {currentPhase.name}
         </h1>
+
+        <div className="mt-6">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-sm font-semibold text-gray-700">
+              {dictionary.fieldEditor.fieldsHeading}
+            </p>
+            <button
+              type="button"
+              data-testid="add-field-button"
+              onClick={() => openCreateFieldModal("short_text")}
+              className="text-xs font-medium text-blue-600 hover:underline"
+            >
+              + {dictionary.fieldEditor.addField}
+            </button>
+          </div>
+
+          {fields.length === 0 ? (
+            <p data-testid="fields-empty" className="text-xs text-gray-400">
+              {dictionary.fieldEditor.emptyState}
+            </p>
+          ) : (
+            <ul className="space-y-2">
+              {fields.map((field) => (
+                <li
+                  key={field.id}
+                  data-testid="field-row"
+                  data-field-id={field.id}
+                  className="flex items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2"
+                >
+                  <div>
+                    <span className="text-sm font-medium text-gray-800">
+                      {field.label}
+                    </span>
+                    <span className="ml-2 text-xs text-gray-400">
+                      {dictionary.fieldEditor.types[field.type as FieldType]}
+                    </span>
+                    {field.required && (
+                      <span className="ml-2 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-800">
+                        {dictionary.fieldEditor.requiredBadge}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      data-testid="edit-field-button"
+                      onClick={() => openEditFieldModal(field)}
+                      className="text-xs text-gray-500 hover:underline"
+                    >
+                      ✎
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="delete-field-button"
+                      onClick={() => handleDeleteField(field.id)}
+                      className="text-xs text-red-500 hover:underline"
+                    >
+                      {dictionary.fieldEditor.deleteField}
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         <Link
           href={`/pipes/${pipe.id}`}
@@ -444,6 +648,178 @@ export function PhaseEditor({
                     {dictionary.phaseSettings.save}
                   </button>
                 </div>
+              </div>
+            </div>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+
+      <Dialog.Root open={fieldModalOpen} onOpenChange={setFieldModalOpen}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 bg-black/40" />
+          <Dialog.Content
+            data-testid="field-editor-modal"
+            className="fixed top-1/2 left-1/2 max-h-[85vh] w-full max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg bg-white p-6 shadow-xl"
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <Dialog.Title className="text-lg font-semibold text-gray-900">
+                {dictionary.fieldEditor.types[fieldType]}
+              </Dialog.Title>
+              <Dialog.Close className="text-gray-400 hover:text-gray-600">
+                ✕
+              </Dialog.Close>
+            </div>
+
+            <div className="space-y-4">
+              {!editingFieldId && (
+                <div>
+                  <label
+                    className="mb-1 block text-sm font-medium text-gray-700"
+                    htmlFor="field-type-select"
+                  >
+                    {dictionary.fieldEditor.typeLabel}
+                  </label>
+                  <select
+                    id="field-type-select"
+                    data-testid="field-type-select"
+                    value={fieldType}
+                    onChange={(event) =>
+                      setFieldType(event.target.value as FieldType)
+                    }
+                    className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                  >
+                    {FIELD_TYPES.map((type) => (
+                      <option key={type} value={type}>
+                        {dictionary.fieldEditor.types[type]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div>
+                <label
+                  className="mb-1 block text-sm font-medium text-gray-700"
+                  htmlFor="field-label-input"
+                >
+                  {dictionary.fieldEditor.labelInputLabel}
+                </label>
+                <input
+                  id="field-label-input"
+                  data-testid="field-label-input"
+                  type="text"
+                  value={fieldLabel}
+                  onChange={(event) => setFieldLabel(event.target.value)}
+                  placeholder={dictionary.fieldEditor.labelPlaceholder}
+                  className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                />
+              </div>
+
+              <label className="flex items-center gap-2 text-sm text-gray-700">
+                <input
+                  data-testid="field-required-checkbox"
+                  type="checkbox"
+                  checked={fieldRequired}
+                  onChange={(event) => setFieldRequired(event.target.checked)}
+                />
+                {dictionary.fieldEditor.requiredCheckbox}
+              </label>
+
+              <div>
+                <label
+                  className="mb-1 block text-sm font-medium text-gray-700"
+                  htmlFor="field-help-input"
+                >
+                  {dictionary.fieldEditor.helpLabel}
+                </label>
+                <input
+                  id="field-help-input"
+                  data-testid="field-help-input"
+                  type="text"
+                  value={fieldHelp}
+                  onChange={(event) => setFieldHelp(event.target.value)}
+                  className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                />
+              </div>
+
+              <div>
+                <label
+                  className="mb-1 block text-sm font-medium text-gray-700"
+                  htmlFor="field-description-input"
+                >
+                  {dictionary.fieldEditor.descriptionLabel}
+                </label>
+                <textarea
+                  id="field-description-input"
+                  data-testid="field-description-input"
+                  value={fieldDescription}
+                  onChange={(event) => setFieldDescription(event.target.value)}
+                  className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+
+              {isChoiceFieldType(fieldType) && (
+                <div>
+                  <p className="mb-1 text-sm font-medium text-gray-700">
+                    {dictionary.fieldEditor.optionsHeading}
+                  </p>
+                  <div className="space-y-2">
+                    {fieldOptions.map((option) => (
+                      <div key={option.key} className="flex items-center gap-2">
+                        <input
+                          data-testid="field-option-input"
+                          type="text"
+                          value={option.value}
+                          onChange={(event) =>
+                            updateOption(option.key, event.target.value)
+                          }
+                          placeholder={dictionary.fieldEditor.optionPlaceholder}
+                          className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                        />
+                        <button
+                          type="button"
+                          data-testid="remove-option-button"
+                          onClick={() => removeOption(option.key)}
+                          className="text-xs text-red-500 hover:underline"
+                        >
+                          {dictionary.fieldEditor.removeOption}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    data-testid="add-option-button"
+                    onClick={addOption}
+                    className="mt-2 text-xs font-medium text-blue-600 hover:underline"
+                  >
+                    + {dictionary.fieldEditor.addOption}
+                  </button>
+                </div>
+              )}
+
+              {fieldError && (
+                <p className="text-sm text-red-600">{fieldError}</p>
+              )}
+
+              <div className="flex justify-end gap-2 border-t border-gray-100 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setFieldModalOpen(false)}
+                  className="rounded-md px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
+                >
+                  {dictionary.fieldEditor.cancel}
+                </button>
+                <button
+                  type="button"
+                  data-testid="save-field-button"
+                  disabled={savingField || !fieldLabel.trim()}
+                  onClick={handleSaveField}
+                  className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {dictionary.fieldEditor.save}
+                </button>
               </div>
             </div>
           </Dialog.Content>

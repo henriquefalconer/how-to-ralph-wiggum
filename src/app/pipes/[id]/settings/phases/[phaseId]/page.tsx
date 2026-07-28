@@ -1,5 +1,6 @@
 import { PhaseEditor } from "@/components/PhaseEditor";
 import { TopNav } from "@/components/TopNav";
+import { listFields } from "@/lib/fields";
 import { getTranslations } from "@/lib/i18n";
 import { getPipeWithPhases } from "@/lib/pipes";
 import { notFound } from "next/navigation";
@@ -22,6 +23,8 @@ export default async function PhaseSettingsPage({
     notFound();
   }
 
+  const fields = await listFields("phase", currentPhase.id);
+
   return (
     <main className="min-h-screen bg-[#F5F6F8]">
       <TopNav locale={locale} dictionary={dictionary} />
@@ -29,6 +32,7 @@ export default async function PhaseSettingsPage({
         pipe={pipe}
         phases={phases}
         currentPhaseId={currentPhase.id}
+        fields={fields}
         dictionary={dictionary}
       />
     </main>

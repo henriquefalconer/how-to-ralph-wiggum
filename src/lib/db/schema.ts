@@ -3,6 +3,7 @@ import {
   integer,
   jsonb,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uuid,
@@ -53,3 +54,55 @@ export const labels = pgTable("labels", {
   name: text("name").notNull(),
   color: text("color").notNull(),
 });
+
+export const fieldOwnerTypes = ["phase", "start_form", "table"] as const;
+
+export const fieldTypes = [
+  "assignee_select",
+  "attachment",
+  "checklist_horizontal",
+  "checklist_vertical",
+  "cnpj",
+  "connector",
+  "cpf",
+  "currency",
+  "date",
+  "datetime",
+  "due_date",
+  "email",
+  "id",
+  "label_select",
+  "long_text",
+  "number",
+  "phone",
+  "radio_horizontal",
+  "radio_vertical",
+  "select",
+  "short_text",
+  "statement",
+  "time",
+] as const;
+
+export const fields = pgTable(
+  "fields",
+  {
+    // The slug id (e.g. "long_text_fi_ld"), unique per (ownerType, ownerId) scope — not globally.
+    id: text("id").notNull(),
+    ownerType: text("owner_type", { enum: fieldOwnerTypes }).notNull(),
+    ownerId: uuid("owner_id").notNull(),
+    label: text("label").notNull(),
+    type: text("type", { enum: fieldTypes }).notNull(),
+    required: boolean("required").notNull().default(false),
+    help: text("help"),
+    description: text("description"),
+    editable: boolean("editable").notNull().default(true),
+    minimalView: boolean("minimal_view").notNull().default(false),
+    options: jsonb("options").$type<string[]>().notNull().default([]),
+    connectorTargetId: uuid("connector_target_id"),
+    position: integer("position").notNull().default(0),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.ownerType, table.ownerId, table.id] }),
+  ],
+);

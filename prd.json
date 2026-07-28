@@ -137,7 +137,7 @@
     "data_model": "fields: id (slug, unique per phase/table), owner_type (phase|start_form|table), owner_id (fk), label, type (enum), required (bool), help (text), description (text), editable (bool), minimal_view (bool), options (jsonb array), connector_target_id (fk, nullable)",
     "priority": 2,
     "core": true,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {

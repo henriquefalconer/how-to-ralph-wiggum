@@ -14,6 +14,7 @@ export default defineConfig({
     // run files one at a time and give queries generous headroom.
     fileParallelism: false,
     testTimeout: 30000,
+    hookTimeout: 30000,
   },
   resolve: {
     alias: {
