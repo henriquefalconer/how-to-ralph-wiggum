@@ -340,7 +340,7 @@ Provisional core-feature guess (to validate against the real UI next):
 - [ ] Interfaces / Portal builder (prd feature-008, discovered Iteration 1, not yet deep-dived)
 - [x] Pipe Settings — Pessoas / Configurações do pipe / Atividades / Ferramentas (Etiquetas + Gerador de PDF) / Lixeira (Iteration 2; see §15 and prd feature-013 through feature-017; screenshots: `screenshots/inspect/pipe-settings-pessoas.jpg`, `screenshots/inspect/pipe-settings-configuracoes.jpg`)
 - [x] Emails compose flow (card-scoped compose, per-thread generated alias vs. pipe inbound alias, email templates with shared 'Conteúdo dinâmico' token picker — Iteration 4; see §17 and prd feature-018; screenshots: `screenshots/inspect/emails-inbox.jpg`, `screenshots/inspect/emails-compose.jpg`)
-- [ ] AI Agents creation flow
+- [x] AI Agents creation flow (3-step builder, trigger/instructions/model/skills/effort, Logs/Templates/MCP sub-tabs — Iteration 5; see §18 and prd feature-019; screenshots: `screenshots/inspect/ai-agents-empty.jpg`, `screenshots/inspect/ai-agents-behaviors-builder.jpg`, `screenshots/inspect/ai-agents-templates.jpg`)
 - [ ] `/my-tasks` (org-level "my work" list)
 - [ ] Search
 - [ ] Design system consolidated from screenshots
@@ -835,3 +835,80 @@ cancelled/left at default.
 
 Screenshots: `screenshots/inspect/emails-inbox.jpg`,
 `screenshots/inspect/emails-compose.jpg`.
+
+## 18. AI Agents (Iteration 5, live UI test)
+
+Deep-dove the pipe-level Agentes de IA tab (`/pipes/:id/ai_agents`) — the top
+item on `sitemap.md`'s not-yet-inspected list and a whole feature area with
+zero prior `prd.json` coverage. Full detail is in prd feature-019.
+
+**A 3-step builder, one agent = many behaviors.** "Criar novo agente" opens
+a left-rail wizard: (1) Geral — name + a free-text role/objective
+description; (2) Conhecimento — attach RAG sources (Pipe ou base de dados,
+Documento, or the new Texto simples type, which is a Nome + "Quando usar
+este conhecimento" retrieval-trigger hint + Conteúdo — i.e. an explicit
+per-chunk retrieval description, not just raw text); (3) Comportamentos —
+where each behavior is its own independent trigger→instructions rule,
+and a single agent can hold multiple behavior cards via "+ Adicionar novo
+comportamento".
+
+**Behaviors reuse Automations' trigger vocabulary almost exactly.** The
+"Sempre que..." trigger picker exposes the same 9 event types confirmed in
+feature-010 (Automations), minus the recurring-activity trigger. Selecting
+a phase-based trigger reveals a live "Para fase" dropdown populated from the
+pipe's actual phases. **UI quirk to reproduce faithfully:** picking a value
+in that phase dropdown visually closes the trigger modal without needing
+the explicit "Adicionar gatilho" submit click — build the equivalent modal
+behavior rather than "fixing" it into always requiring an explicit save.
+
+**The instructions box's `/` palette is the 4th confirmed reuse of the
+grouped field/token-picker component**, after Automations (feature-010),
+Reports (feature-011), and Email templates (feature-018). It exposes an
+"Ações" group (update card fields, create card, create connected card,
+create record, send email template, move card) followed by "Atributos do
+card" (12 card-level fields) then one group per phase name listing that
+phase's own fields. The clone should implement this picker once, parameterized
+by `{actions[], cardAttributes[], phaseFieldGroups[]}`, and reuse it across
+all four features rather than four separate implementations.
+
+**Per-behavior model/skills/effort controls, not agent-wide.** Each
+behavior card has its own bottom toolbar: a model-tier picker (org default,
+then Classic [deprecation banner: retires 2026-10-01 → auto-migrates to
+Standard at the same per-execution cost], Lite, Pro [shows live rolling
+credit cost], Standard); a Skills toggle row (Análise de documentos,
+Pesquisa na Web, Cálculos e análises); and an Esforço "Máximo" reasoning
+toggle (Beta, gated to Pro). Model the clone's schema so these live on
+`ai_agent_behaviors`, not on `ai_agents` — a build-critical distinction,
+since the wizard's "Geral" step (agent-level) never surfaces them.
+
+**Non-obvious side effect: agent creation is NOT client-only-until-save.**
+Clicking "Criar novo agente" immediately persists a draft server-side —
+confirmed because after filling in name/description/a trigger and then
+explicitly discarding via the in-app "Sair sem salvar?" confirm modal, the
+agent list still showed a new row with a "Rascunho" status badge. This
+contrasts with every other create-flow inspected so far (Automations,
+Database Tables, Pipe creation) which stay client-side until an explicit
+save. Deleting a saved/draft agent requires typing the literal word
+"deletar" into a confirm input before the delete button activates —
+the same type-to-confirm pattern should extend to any other destructive
+delete the clone implements, not just this one.
+
+**Sub-tabs, briefly surveyed:** Logs (Agente/Comportamento/Card
+processado/Status/Horário de início columns, date-range display, "Filtrar
+por" dropdown, empty state) shares its run-log shape with
+`automation_runs` (feature-010) — model both as the same underlying
+`ai_agent_runs`/`automation_runs` pattern (id, ref to the rule, card_id,
+status, timestamps, message). Templates is a 9-card gallery (3 "por
+função": extract-data / summarize / sentiment; 6 "por área": compliance,
+HR, legal, accounts-payable, operations, procurement) — build this as
+seed data for an agent-behavior preset, not a separate entity. MCP is an
+empty state pointing at external tool connections; its "Adicionar
+conexões" CTA did not open a working modal in this trial org (likely
+plan-gated) — out of scope for the clone's own API-only backend.
+
+**Not triggered, by design:** actually saving-and-firing a behavior end
+to end (would consume real AI credits) and the MCP connection flow.
+
+Screenshots: `screenshots/inspect/ai-agents-empty.jpg`,
+`screenshots/inspect/ai-agents-behaviors-builder.jpg`,
+`screenshots/inspect/ai-agents-templates.jpg`.

@@ -963,5 +963,78 @@
         }
       ]
     }
+  },
+  {
+    "id": "feature-019",
+    "category": "data",
+    "description": "AI Agents: pipe-scoped autonomous agents with a 3-step builder (identity, knowledge/RAG sources, behaviors), each behavior being its own trigger→instructions rule with a model/skills/effort picker",
+    "page": "Gerenciar (pipe top nav) > Agentes de IA — /pipes/:id/ai_agents (list), /pipes/:id/ai_agents/agent_builder/:uuid/{basic_info|knowledge|behaviors} (builder), /pipes/:id/ai_agents/logs (run history), /pipes/:id/ai_agents/templates (gallery), /pipes/:id/ai_agents_mcp (MCP tool connections)",
+    "ui_details": "Confirmed (iteration 5, live test). Empty state: illustration + 'Vamos criar seu primeiro agente!' + 'Criar novo agente' CTA. Clicking it immediately creates a server-side draft (visible afterward in the list with a 'Rascunho' status badge) and opens a 3-step left-rail wizard: (1) Geral — 'Nome' text input + 'Descreva o papel e os objetivos do Agente' textarea, with quick-link chips to help docs ('Como criar um Agente de IA', 'Escrevendo instruções eficazes', 'Governança de IA'); (2) Conhecimento — 'Adicionar conhecimento' dropdown offers 3 source types: 'Pipe ou base de dados' (use cards/records from a pipe as context), 'Documento' (upload files), 'Texto simples' (Novo) — a modal with Nome + 'Quando usar este conhecimento' (a free-text RAG-retrieval-trigger description) + Conteúdo (raw text) fields; a 'Dados neste pipe' section separately lists pipe-native fields already available as context; (3) Comportamentos — the core builder, one card per behavior with an editable title, 'Testar' button, active/inactive toggle, and a kebab menu (only 'Deletar'). Each behavior card has 'Adicionar um gatilho' opening a 'Sempre que...' modal: an event-type combobox with the SAME 9 trigger types as Automations (feature-010) minus the recurring-activity trigger ('Um card entrar em uma fase', 'Um campo é atualizado', 'Um card for criado', 'Um alerta é acionado', 'Um card sair de uma fase', 'Um e-mail for recebido', 'Todos os cards conectados forem movidos para uma fase', 'Uma resposta HTTP é recebida', 'Um botão da interface é clicado'); choosing a phase-based trigger reveals a 'Para fase' dropdown (populated with the pipe's real phases) plus a collapsed 'Adicionar condições' expander, and a 'Adicionar gatilho' submit — but selecting a value in the phase dropdown visually closes the modal without an explicit save unless 'Adicionar gatilho' is clicked (a UI quirk to reproduce carefully, not fight). Below the trigger, 'Detalhe as instruções' is a free-text instructions box (placeholder example: 'Analisar [Relatório de despesas] para verificar a conformidade... Se o relatório exceder os limites, então [Mover card para Revisão Financeira]') supporting a '/' slash-command palette identical in structure to the Automations/Reports/Email-templates token picker: an 'Ações' group (Atualizar campos do card, Criar um card, Criar um card conectado, Criar um registro, Enviar template de email, Mover card) followed by an 'Atributos do card' group (A última fase em que o card estava, Comentários, Criado em, Criador, Data de vencimento, Emails, Etiquetas, Fase atual, Finalizado em, [ID], Responsáveis, Título) then one group per phase name (e.g. 'Start form', 'Caixa de entrada') listing that phase's own fields. A bottom toolbar has 3 dropdowns: model picker ('Modelo Padrão da Organização' + a 'Pipefy AI' section with Classic [banner: deprecated 2026-10-01, auto-migrates to Standard at the same per-execution cost], Lite ['Rápido para tarefas simples em grande volume'], Pro [shows live credit cost, e.g. '2 créditos até 8 de out', 'Mais capaz para comportamentos complexos'], Standard ['Equilíbrio entre qualidade e custo para o dia a dia']); a Skills toggle-list (Análise de documentos — lê PDFs/imagens; Pesquisa na Web — pesquisa dados em tempo real; Cálculos e análises — executa código); and an Esforço toggle ('Máximo', tagged Beta, gated behind Pipefy AI Pro + reasoning skills, 'Racionaliza mais profundamente em trabalhos complexos e documentos grandes antes de agir'). A 'Melhorar instruções' link and '+ Adicionar novo comportamento' let a single agent hold multiple independent behavior cards. Leaving the builder without saving triggers an in-app 'Sair sem salvar?' confirm modal (not a native beforeunload dialog). Deleting a saved agent from the list's kebab (Editar/Duplicar/Excluir) requires typing the literal word 'deletar' into a confirm input before the red 'Deletar agente' button activates. Sub-tabs: 'Logs' — a run-history table (Agente, Comportamento, Card processado, Status, Horário de início columns; a date-range display; 'Filtrar por: Todos' dropdown; 'Atualizar logs' button; empty state 'Ainda não há dados de execução disponíveis...'); 'Templates' — a 2-section gallery, 'por função' (Extrair dados de documentos, Resumir conteúdo, Analisar sentimento) and 'por área' (Análise de documentos/Conformidade, Triagem de candidatos de RH/RH, Análise de contrato/Jurídico, Validação da fatura/Contas a pagar, Controle de qualidade/Operações, Seleção de fornecedores/Compras), each card has a colored category tag + title + description + 'Editar agente' button; 'MCP' (tagged 'Novo' in the tab strip) — an empty state ('Dê aos seus agentes acesso a tools externas, fontes de dados e ações através de conexões compatíveis com MCP') + 'Adicionar conexões' CTA (did not open a working modal in this trial org — likely plan-gated). Screenshots: screenshots/inspect/ai-agents-empty.jpg, ai-agents-behaviors-builder.jpg, ai-agents-templates.jpg.",
+    "behavior": "Confirmed via live interaction (not a full run, since firing an agent has real AI-cost side effects out of this project's inspection scope): opening 'Criar novo agente' persists a draft agent server-side immediately — even after explicitly discarding via 'Sair sem salvar?', the agent reappears in the list with status 'Rascunho' and must be separately deleted (type-to-confirm 'deletar'). This means agent creation is NOT a client-only draft-until-save flow like most other builders in this product (contrast with the Automations/Database-table create modals) — every 'Criar novo agente' click has a server side-effect. The trigger-selection modal for phase-based events auto-populates the phase dropdown from the pipe's real phase list (Caixa de entrada/Fazendo/Concluido in this org) and reuses the exact same grouped instructions-token-picker component confirmed independently in Automations (feature-010), Reports (feature-011), and Email templates (feature-018) — now a 4th confirmed reuse, meaning the clone should build this token picker once as a shared component parameterized by {actions[], cardAttributes[], phaseFieldGroups[]}. Model tier selection shows live credit-cost text for the Pro tier scoped to a rolling date window ('2 créditos até 8 de out'), implying usage-based billing tracked per-org — the clone should stub a flat per-tier cost model rather than real billing. Not yet tested: actually firing a saved+enabled behavior end-to-end and confirming a Logs row and a card mutation (deferred — same category as the un-triggered Automations HTTP/email actions); the 'Pipe ou base de dados' and 'Documento' knowledge-source flows (opened the type picker but did not complete either, consistent with this pass's focus on the Comportamentos step); and the MCP 'Adicionar conexões' flow, which did not visibly open.",
+    "data_model": "ai_agents: id, pipe_id (fk), name, description, status (enum: draft|active|inactive), created_at, updated_at. ai_agent_knowledge_sources: id, agent_id (fk), type (enum: pipe_database|document|plain_text), name, usage_description (text, for plain_text — the 'Quando usar este conhecimento' trigger hint), content (text, for plain_text) | file_ref (for document) | source_pipe_id (for pipe_database). ai_agent_behaviors: id, agent_id (fk), title, enabled (bool), trigger_type (enum, 9 values — same enum as automations.trigger_type minus 'recurring_activity'), trigger_config (jsonb — e.g. {phaseId, conditions[]}), instructions (text, with embedded slash-inserted action/field tokens), model_tier (enum: org_default|classic|lite|pro|standard), skills (jsonb — {documentAnalysis: bool, webSearch: bool, codeExecution: bool}), effort (enum: standard|maximum), created_at, updated_at. ai_agent_runs: id, agent_id (fk), behavior_id (fk), card_id (fk), status (enum: success|error|running), started_at, finished_at, message (text) — same shape as automation_runs (feature-010), surfaced in the Logs tab.",
+    "priority": 6,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "creating an agent persists a draft immediately, independent of wizard completion",
+          "description": "Opening the create-agent wizard must create a server-side ai_agents row with status='draft' before any field is filled in, matching the observed 'Rascunho' row left behind after an unsaved exit",
+          "input": "createAgent(pipeId) called on 'Criar novo agente' click, before any basic_info/knowledge/behaviors data is submitted",
+          "expected_output": "An ai_agents row exists with status='draft', name='Agente sem título' (the observed default placeholder), and no behaviors"
+        },
+        {
+          "name": "behavior trigger_type enum matches automations minus recurring_activity",
+          "description": "The AI Agent trigger picker must expose the same 9 event types as Automations (feature-010's 10 types) with 'Uma atividade for recorrente' excluded",
+          "input": "GET /ai_agent_behaviors/trigger_types",
+          "expected_output": "Returns exactly: card_entered_phase, field_updated, card_created, alert_triggered, card_exited_phase, email_received, connected_cards_moved_to_phase, http_response_received, interface_button_clicked"
+        },
+        {
+          "name": "deleting an agent requires the literal confirm string",
+          "description": "The delete-agent action must reject unless the client-submitted confirmation text exactly equals 'deletar'",
+          "input": "deleteAgent(agentId, confirmText='delete')",
+          "expected_output": "Request rejected / button stays disabled client-side; only confirmText==='deletar' allows the delete to proceed"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "create an agent, add a phase-enter behavior, discard, and verify the draft persists",
+          "steps": [
+            "Navigate to a pipe's Agentes de IA tab (empty state), click 'Criar novo agente'",
+            "On step 1 Geral, type a name into 'Nome'",
+            "Go to step 3 Comportamentos, click 'Quando isso acontecer...', select 'Um card entrar em uma fase', pick a phase from 'Para fase'",
+            "Click the 'Agentes de IA' breadcrumb to leave, click 'Sair sem salvar' in the confirm modal"
+          ],
+          "expected": "Redirected to the Agentes de IA list; a row appears with the typed name (or 'Agente sem título' if the name never committed) and a 'Rascunho' status badge"
+        },
+        {
+          "name": "delete a draft agent via the type-to-confirm flow",
+          "steps": [
+            "From the Agentes de IA list, click the kebab menu on a draft row",
+            "Click 'Excluir agente'",
+            "Type 'deletar' into the confirmation input",
+            "Click 'Deletar agente'"
+          ],
+          "expected": "A success toast appears ('Agente de IA excluído com sucesso'), the row disappears, and the list returns to its empty state if it was the only agent"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "delete confirm button stays disabled until the exact string is typed",
+          "steps": [
+            "Open the delete-agent confirm modal",
+            "Type 'Deletar' (wrong case) or 'delete' into the input"
+          ],
+          "expected": "The red 'Deletar agente' button remains disabled; only the exact lowercase 'deletar' enables it"
+        },
+        {
+          "name": "empty Logs tab before any behavior has run",
+          "steps": [
+            "Navigate to a pipe's Agentes de IA > Logs sub-tab with zero prior executions"
+          ],
+          "expected": "Table headers render (Agente, Comportamento, Card processado, Status, Horário de início) with the empty-state message 'Ainda não há dados de execução disponíveis...' and no rows"
+        }
+      ]
+    }
   }
 ]

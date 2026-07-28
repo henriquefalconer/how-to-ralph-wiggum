@@ -77,16 +77,18 @@ Page tabs (`/pipes/:id`, `/pipes/:id/flow`, etc.):
 | Lixeira (beta) | Deleted-cards trash/restore. **Inspected iteration 2** — 15-day retention, single Cards tab, empty state confirmed; restore flow not exercised (would require deleting the pipe's only test card). See prd feature-017. |
 
 AI Agents sub-tabs (`/pipes/:id/ai_agents`): Agentes de IA, Logs, Templates, MCP (new).
-Empty state: "Vamos criar seu primeiro agente!" — agents "seguem instruções, aprendem
-com documentos, e executam tarefas". Per project rules, modeled as data + simple rule
-evaluator only, no real multi-LLM orchestration.
+**Inspected iteration 5** — 3-step builder (Geral/Conhecimento/Comportamentos), behaviors
+reuse Automations' 9 trigger types + the same grouped token-picker component (4th confirmed
+reuse), per-behavior model/skills/effort pickers, agent creation persists a server-side draft
+immediately (not client-only-until-save). Logs/Templates/MCP sub-tabs surveyed. See prd
+feature-019 and spec-build.md §18. Per project rules, modeled as data + simple rule evaluator
+only, no real multi-LLM orchestration.
 
 Automations sub-tabs (`/pipes/:id/automations`): Automações, Logs. **Inspected iteration 5**
 — full trigger→action rule builder (10 triggers × 12 actions), built and fired a real rule,
 confirmed via Logs and the card detail view. See prd feature-010 and spec-build.md §13.
 
 ## Not yet inspected (next iterations)
-- AI Agents agent creation flow
 - `/my-tasks` (org-level "my work" list) — confirm relation to Tarefas e Solicitações
 - Account/notification menus (low priority, auth-adjacent)
 - Interfaces / Portal builder deep dive (prd feature-008 exists from the site-map pass, but the actual page-composer UI hasn't been exercised)
