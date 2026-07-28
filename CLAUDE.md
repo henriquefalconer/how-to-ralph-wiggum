@@ -33,9 +33,8 @@ Phase 1: Inspect (Claude in Chrome) → Phase 2: Build (Claude + Playwright E2E)
 - Small, focused commits — one feature per commit
 
 ## Internationalization — required on every page
-- **Every page is internationalized.** No user-facing string is hardcoded; all copy resolves through the i18n layer. A page that renders untranslated text is not done.
-- **Language settings let the user switch freely between any of the major languages**, at any time, from anywhere in the app. The choice persists and applies immediately across every page.
-- **Inspect covers language, not just layout.** When inspecting the target, open each page in each supported language on the reference URL and record how it renders — translated copy, text expansion and truncation, date/number/currency formats, and any RTL handling. Those observations belong in `spec-build.md` and in the relevant `prd.json` entries, and QA verifies against them.
+- **Every page is internationalized.** No user-facing string is hardcoded; all copy resolves through the i18n layer.
+- **Should support all major languages.** English, Mandarin Chinese, Hindi, Spanish, Arabic, French, Portuguese, Russian, German, Japanese.
 
 ## Architecture
 - `src/` — source code

@@ -4,6 +4,10 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
+# shellcheck source=ralph-resume.sh
+. "$(dirname "$0")/ralph-resume.sh"
+parse_resume "$@"; set -- ${RESUME_ARGS[@]+"${RESUME_ARGS[@]}"}
+
 ITERATIONS="${1:-999}"
 
 MAX_FAILURES="${RALPH_MAX_FAILURES:-3}"   # abort after N consecutive no-promise iterations
@@ -62,6 +66,7 @@ require_prd() {
 count_passes() { local s; s=$(read_prd 2>/dev/null) || s="0 0"; echo "${s%% *}"; }
 total_tasks()  { local s; s=$(read_prd 2>/dev/null) || s="0 0"; echo "${s##* }"; }
 
+[ "$RESUMING" = 1 ] && resume_banner "$PROGRESS" "build"
 note "═══════════════════════════════════════════════════════"
 note "Phase 2 (Build) starting — model=$MODEL max-iter=$ITERATIONS"
 

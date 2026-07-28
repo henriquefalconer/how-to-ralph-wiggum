@@ -8,7 +8,7 @@
 setup() {
   REPO="$BATS_TEST_TMPDIR/repo"
   mkdir -p "$REPO/ralph/.state" "$REPO/bin"
-  cp "$BATS_TEST_DIRNAME/ralph-watchdog.sh" "$REPO/ralph/"
+  cp "$BATS_TEST_DIRNAME/ralph-watchdog.sh" "$BATS_TEST_DIRNAME/ralph-resume.sh" "$REPO/ralph/"
 
   export INSPECT_ARGS="$REPO/inspect-args.txt"
   export BUILD_ARGS="$REPO/build-args.txt"
