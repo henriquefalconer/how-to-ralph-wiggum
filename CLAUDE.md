@@ -69,7 +69,9 @@ Phase 1: Inspect (Claude + Ever CLI) → Phase 2: Build (Claude + Playwright E2E
   - `DASHBOARD_KEY` — master key for dashboard access
   - `RENDER_API_KEY` — Render API key (Account Settings -> API Keys)
   - `RENDER_SERVICE_ID` — Render service id (`srv-...`, from the service's dashboard URL)
-  - Target product API keys (for testing/comparing only, not for the clone's backend)
+
+  These four are the whole list. Do not add credentials for the target product —
+  the clone authenticates against its own API with its own keys, never the target's.
 - **Preflight** — `./scripts/preflight.sh` validates `.env` before a run and lists anything missing.
 
 ## Deployment — `scripts/render.sh`
@@ -96,6 +98,9 @@ Render REST API and reads its credentials from `.env`.
   ```
 
 The `RENDER_API_KEY` and `RENDER_SERVICE_ID` in `.env` can be used to edit any configuration in Render as needed.
+
+## Git Branch
+Never change branches — always commit and push to whichever branch is already checked out.
 
 ## Out of Scope — DO NOT build
 - **Docker — do NOT use it in this project.**
