@@ -93,7 +93,6 @@ series = json.load(sys.stdin)
 mb = sum(v.get('value', 0) for s in series for v in s.get('values', []))
 print(f'  OK       bandwidth {mb:.1f} MB of 5120 MB ({mb/5120*100:.1f}%)')
 " 2>/dev/null || echo "  WARN     could not read bandwidth from the Render API"
-  echo "  --       pipeline minutes: not exposed by Render's API — see the dashboard"
 fi
 
 # 6. Summary
