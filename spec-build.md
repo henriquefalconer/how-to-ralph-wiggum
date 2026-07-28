@@ -107,8 +107,19 @@ rename for clarity but should preserve the same concepts.
 ### Pipe
 - `id`, `uuid`, `name`, `color`, `users_count`, `cards_count`,
   `opened_cards_count`
-- has many: `phases` (ordered), `labels` (`{id, name, color}`),
-  `start_form_fields`, `members` (`{user{id,email}, role_name}`)
+- has many: `phases` (ordered), `labels` (`{id, name, color}`, **UI-confirmed
+  Iteration 2** via Ferramentas > Etiquetas — see §15 below), `start_form_fields`,
+  `members` (`{user{id,email}, role_name}`, **UI-confirmed Iteration 2** via
+  Gerenciar > Pessoas — see §15 below)
+- settings (confirmed Iteration 2, Gerenciar > Configurações do pipe — see §15):
+  `icon`, `tags` (max 3), `item_name` (default "Cards"),
+  `create_card_button_label`, `default_view`, **`title_field_id`** (fk,
+  nullable — drives `card.title`, see the Card section's corrected note below),
+  `kanban_preview_field_ids`, `connected_card_field_ids`,
+  `expiration_alert_time`/`expiration_alert_unit`/`expiration_alert_business_days_only`
+  (pipe-wide overdue alert, distinct from the per-phase SLA in §Phase),
+  `visibility`, `ai_agents_enabled`, `ai_copilot_enabled`,
+  `allow_bulk_actions`, `restrict_edit_to_assignee`, `restrict_delete_to_admin`
 
 ### Phase
 - `id`, `name`, `done` (boolean — marks a terminal/"done" phase),
@@ -123,11 +134,19 @@ rename for clarity but should preserve the same concepts.
 - has many: `fields` (Card Field Values: `{name, value, filled_at, field{id,label}}`)
 - relations: connected cards (via `connector` fields / `throughConnectors`),
   activities/timeline, emails, tasks, attachments
-- **Confirmed (Iteration 3, live UI test):** `title` is set once, at creation
-  time, from the *first field's value on the start form* — it does not
-  re-derive if that field's value later changes, and it is a completely
-  separate value from any same-labeled field owned by a phase (see field
-  scoping note below). Card detail route: `/open-cards/:cardId`.
+- **CORRECTED (Iteration 2, live UI test — supersedes the Iteration 3 note
+  below):** `title` is **not** hardcoded to the first start-form field. It is
+  driven live by `pipe.title_field_id` (configured via Gerenciar >
+  Configurações do pipe's "Título do card" picker — defaults to the first
+  start-form field but is independently changeable at any time), the exact
+  same pattern as the Database Table's `title_field_id` (§ below). Confirmed
+  via the pipe's own audit log (Gerenciar > Atividades > Alterações de
+  configuração), which recorded the literal change: `Atualizou a configuração
+  do título do card de "—" para "Nome do solicitante"`.
+- ~~(Iteration 3 note, now superseded): title set once at creation from the
+  first field's value, does not re-derive~~ — it is a completely separate
+  value from any same-labeled field owned by a phase (see field scoping note
+  below — this part still holds). Card detail route: `/open-cards/:cardId`.
 
 ### Field (phase field / start form field / table field — shared type system)
 - `id` (aka `field_id`/slug — auto-generated from label, lowercase +
@@ -295,7 +314,11 @@ Provisional core-feature guess (to validate against the real UI next):
 - [x] Database Tables (create flow, field-type palette incl. connection fields, record create/edit, Configurações de database — screenshots: `screenshots/inspect/database-grid.jpg`, `screenshots/inspect/database-record-detail.jpg`)
 - [x] Reports/dashboards (Reports builder — filter/column picker, saved report tiles; Dashboards — chart builder with 8 viz types, live aggregation metrics — Iteration 6; screenshots: `screenshots/inspect/reports-list.jpg`, `screenshots/inspect/dashboard-number-chart.jpg`, `screenshots/inspect/dashboard-panel.jpg`)
 - [x] Automation rule builder (separate from field conditionals — pipe-level Automações tab; 10 triggers × 12 actions, tested end-to-end incl. Logs — screenshot: `screenshots/inspect/automations-builder.jpg`; see §13 and prd feature-010)
-- [ ] Interfaces / Portal builder (new feature, not in prd.json yet)
+- [ ] Interfaces / Portal builder (prd feature-008, discovered Iteration 1, not yet deep-dived)
+- [x] Pipe Settings — Pessoas / Configurações do pipe / Atividades / Ferramentas (Etiquetas + Gerador de PDF) / Lixeira (Iteration 2; see §15 and prd feature-013 through feature-017; screenshots: `screenshots/inspect/pipe-settings-pessoas.jpg`, `screenshots/inspect/pipe-settings-configuracoes.jpg`)
+- [ ] Emails compose flow
+- [ ] AI Agents creation flow
+- [ ] `/my-tasks` (org-level "my work" list)
 - [ ] AI Agents creation flow
 - [ ] Search
 - [ ] Design system consolidated from screenshots
@@ -607,3 +630,68 @@ id 307273712), creating a real saved Report and a real saved Dashboard/chart.
 Screenshots: `screenshots/inspect/reports-list.jpg`,
 `screenshots/inspect/dashboard-number-chart.jpg`,
 `screenshots/inspect/dashboard-panel.jpg`.
+
+## 15. Pipe Settings — Pessoas, Configurações do pipe, Atividades, Ferramentas, Lixeira (Iteration 2, live UI test)
+
+Deep-dove the remaining five entries in the Gerenciar dropdown (`prd.json`
+feature-013 through feature-017). All are modals layered over the current
+pipe page rather than dedicated full-page routes, except Pessoas and
+Configurações do pipe which share a tabbed "Configurações" modal with
+Formulário inicial/Fases/Email.
+
+### Pessoas — `/pipes/:id/settings/members`
+Member list (Nome/Função columns) + "Convidar pessoas" + search. The Função
+dropdown enumerates 4 roles (Membro do pipe, Admin do Pipe, Somente leitura,
+Visão restrita), each with a one-line permission description; in this trial
+org only Admin do Pipe was free — the other 3 were tagged "Upgrade". Per
+spec-inspect.md's paywall exclusion, the clone implements all 4 roles with no
+gating. Did not test "Convidar pessoas" (would send a real email to a second
+address). See `prd.json` feature-013.
+
+### Configurações do pipe — `/pipes/:id/settings/general-settings`
+The single largest settings surface: identity (icon/name/tags), item naming,
+create-button label, default view + **"Título do card" field picker (the
+`title_field_id` config — see the corrected Card section above)**, Kanban
+card-face field picker, connected-card field chips, a **pipe-wide** "Alerta de
+expirado" (Tempo+Unidade+business-days-only toggle — distinct from the
+per-phase "Alerta de atraso" SLA in §Phase), Privacidade e visibilidade,
+2 AI-tool toggles, 3 edit-permission toggles, Clonar pipe, and a destructive
+Excluir pipe banner (not clicked). See `prd.json` feature-014.
+
+### Atividades (audit log) — modal, no dedicated route
+Two tabs: **Atividade de cards** and **Alterações de configuração**, both
+with Data e hora / Executado por / Tipo de recurso / Detalhes columns, a
+"Buscar por autor" search, and "Exportar logs". The header text ("Acesse via
+API ou saiba mais") implies a public read API backs this log. Every mutating
+action from prior iterations (pipe creation, field creation ×2, card
+create/move/complete, automation creation) appeared here as a human-readable
+sentence, live, in the correct tab — this is the mechanism that let this
+iteration cross-confirm the `title_field_id` finding above (the config-change
+tab literally recorded `Atualizou a configuração do título do card de "—"
+para "Nome do solicitante"`). See `prd.json` feature-015.
+
+### Ferramentas — panel (Apps / Conexões / Etiquetas / Gerador de PDF)
+- **Etiquetas** (Labels): confirmed end-to-end by creating a real label
+  ("Urgente", default color `#35FFDD`) — name + hex color, persists
+  immediately with no reload needed. Supersedes feature-001's original
+  placeholder `labels: {id, name, color}` model with a UI-confirmed one. See
+  `prd.json` feature-016.
+- **Gerador de PDF**: a template list (toggle-enabled rows, e.g. "Introdução
+  (exemplo)") + "Criar novo modelo" — lets a pipe define PDF export templates
+  for its cards. Not deep-dived (low priority, maps loosely to feature-004's
+  card detail "PDF" tab); noted for completeness only.
+- **Apps** / **Conexões**: not deep-dived this pass — Apps is a third-party
+  marketplace (out of scope, same as Integrações), Conexões configures
+  pipe-to-pipe/table data connections (overlaps with the `connector` field
+  type already modeled in §Field).
+
+### Lixeira (trash) — modal, tagged "Beta"
+Single "Cards" tab. Subtext: "Os cards ficam aqui por 15 dias. Depois disso,
+não podem ser restaurados." Empty in this pipe (never tested with a real
+delete, to preserve the "João Silva" card fixture other features' tests
+depend on) — empty state: "A lixeira está vazia. Os cards excluídos
+aparecerão aqui." Restore flow and purge timing are unconfirmed; flagged as a
+follow-up. See `prd.json` feature-017.
+
+Screenshots: `screenshots/inspect/pipe-settings-pessoas.jpg`,
+`screenshots/inspect/pipe-settings-configuracoes.jpg`.

@@ -176,8 +176,8 @@
     "description": "Core data model: Card entity — the unit of work moving through a Pipe's phases, holding Card Field Values",
     "page": "Kanban board (/pipes/:id) + Card detail (/open-cards/:cardId)",
     "ui_details": "Confirmed (Iteration 3, live test): Kanban 'Criar novo card' / a phase column's '+' is BLOCKED until the pipe's start form has ≥1 field — with an empty start form both open a 'Compartilhar formulário' promo modal instead of a create form. Once the start form has a field, the same buttons open an inline popover create-form (title + fields + 'Criar novo card' submit); required-field validation shows a red border + 'deve ser informado' inline, no toast, submit blocked. On success: toast 'Card criado com sucesso. Para abri-lo, clique aqui' + card appears at top of its phase column titled with the first field's submitted value. Card detail view (3 columns): LEFT = title, quick actions (Adicionar responsável/Vencimento/Adicionar etiquetas), tab strip (Form/Atividades/Anexos/Checklists/Comentários/Email/PDF/+), read-only 'Formulário Inicial' section (creator + relative timestamp + submitted field values), 'Histórico' phase-transition timeline, 'Editar visualização do card' link. MIDDLE = 'Fase atual' badge + gear (phase settings) + Compartilhar, then the current phase's own fields as a live autosave-on-blur form (no save button; no toast on this particular autosave). RIGHT = 'Mover card para fase' one-click button naming the next phase, 'Configurar mover cards', 'Mover cards com IA'. Cards in a done:true phase render a checkmark + '<N>min' badge and dimmed title text.",
-    "behavior": "A Card has id, title, done (bool), updated_at, belongs to a current phase, and has many field values ({name, value, filled_at, field}). Cards move between phases (drag-and-drop on Kanban, or the detail view's quick-mover button); moving a card fires toast 'Card movido com sucesso para <Fase>. Para reabri-lo, clique aqui' and appends a Histórico entry. Card title is set once at creation from the FIRST field's submitted value on the start form and does not re-derive later. CONFIRMED: a start-form field and a phase field with the identical label are separate Field rows with independent values — the clone must not merge/dedupe fields by label across owner types (start_form vs phase). Confirmed non-cloneable client quirk: phase column card-count badges do not live-update after a same-session move — only correct after a full reload; the clone should update counts synchronously instead.",
-    "data_model": "cards: id, pipe_id (fk), phase_id (fk), title, done (bool), created_at, updated_at. card_field_values: id, card_id (fk), field_id (fk), value (text), filled_at",
+    "behavior": "A Card has id, title, done (bool), updated_at, belongs to a current phase, and has many field values ({name, value, filled_at, field}). Cards move between phases (drag-and-drop on Kanban, or the detail view's quick-mover button); moving a card fires toast 'Card movido com sucesso para <Fase>. Para reabri-lo, clique aqui' and appends a Histórico entry. CORRECTED (Iteration 2, confirmed via Gerenciar > Configurações do pipe + its Atividades > Alterações de configuração log): card title is NOT hardcoded to the first start-form field — it is driven by an explicit 'Título do card' field-picker in Configurações do pipe (defaults to the first start-form field but is independently changeable at any time), the same title_field_id pattern as feature-005's Database Table records. The config-change log literally records 'Atualizou a configuração do título do card de \"—\" para \"Nome do solicitante\"'. CONFIRMED: a start-form field and a phase field with the identical label are separate Field rows with independent values — the clone must not merge/dedupe fields by label across owner types (start_form vs phase). Confirmed non-cloneable client quirk: phase column card-count badges do not live-update after a same-session move — only correct after a full reload; the clone should update counts synchronously instead.",
+    "data_model": "cards: id, pipe_id (fk), phase_id (fk), title (derived live from pipe.title_field_id's value), done (bool), created_at, updated_at. card_field_values: id, card_id (fk), field_id (fk), value (text), filled_at. pipes gains: title_field_id (fk, nullable, defaults to the start form's first field)",
     "priority": 2,
     "core": true,
     "passes": false,
@@ -642,6 +642,237 @@
             "Add a filter to a chart that excludes every card in the pipe"
           ],
           "expected": "Chart renders a zero value / empty series, not an error"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-013",
+    "category": "settings",
+    "description": "Pipe member management: invite members, assign a per-member role scoped to the pipe",
+    "page": "Gerenciar > Pessoas — /pipes/:id/settings/members",
+    "ui_details": "Confirmed (Iteration 2, live test): modal header 'N pessoa(s) em <PipeName>', 'Convidar pessoas' primary button, 'Pesquisar por nome' search input, table with Nome (avatar+name+email, self-row tagged 'Esse é você!') and Função columns. The Função cell is a dropdown listing 4 roles each with a one-line description: Membro do pipe ('Pode criar cards e acessar todos os cards existentes no pipe para editá-los/movê-los') [Upgrade-gated in this trial org], Admin do Pipe ('...Pode acessar as configurações do pipe.') [selectable, current value], Somente leitura ('Só pode ver e comentar nos cards.') [Upgrade-gated], Visão restrita ('Pode criar e editar cards que criou ou que foram atribuídos a ela. Não pode deletar cards.') [Upgrade-gated]. Each row also has a remove (X) icon. Did NOT click 'Convidar pessoas' — inviting a real address was skipped to avoid an unauthorized side effect (would require entering a second person's email and sending mail).",
+    "behavior": "Not fully tested end-to-end (invite flow untested). Confirmed the role dropdown enumerates 4 fixed roles with descriptive copy, and that 3 of the 4 are gated behind 'Upgrade' in a trial org — this is a billing/plan concern (out of scope per spec-inspect.md's paywall exclusion); the clone should implement all 4 roles as freely selectable with no upgrade gate.",
+    "data_model": "pipe_members: id, pipe_id (fk), user_id (fk), role (enum: pipe_member|pipe_admin|read_only|restricted_view), invited_at, joined_at (nullable)",
+    "priority": 11,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "restricted_view role cannot delete cards",
+          "description": "A pipe_member with role=restricted_view is blocked from the card-delete action even on cards they created",
+          "input": "deleteCard(cardId, actingUser) where actingUser's pipe role is 'restricted_view'",
+          "expected_output": "Authorization error; card is not deleted"
+        },
+        {
+          "name": "read_only role cannot edit card field values",
+          "description": "A pipe_member with role=read_only can view and comment but not mutate field values",
+          "input": "updateCardFieldValue(cardId, fieldId, value, actingUser) where actingUser's role is 'read_only'",
+          "expected_output": "Authorization error; field value unchanged"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "change a member's role via the Função dropdown",
+          "steps": [
+            "Navigate to Gerenciar > Pessoas",
+            "Click the Função dropdown on a member row",
+            "Select a different role",
+            "Verify the dropdown closes and the new role is displayed"
+          ],
+          "expected": "Member row now shows the newly selected role, persisted after modal close/reopen"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "remove the pipe's only admin",
+          "steps": [
+            "With exactly one Admin do Pipe member, click that member's remove (X) icon"
+          ],
+          "expected": "Either blocked with an error (a pipe must always have ≥1 admin), or allowed and the pipe becomes adminless — verify against real UI in a follow-up pass"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-014",
+    "category": "settings",
+    "description": "Pipe general settings: identity (icon/name/tags), item naming, default view, card-title field picker, Kanban/connected-card display fields, pipe-wide expiration alert, visibility, AI-tool toggles, edit permissions, clone/delete pipe",
+    "page": "Gerenciar > Configurações do pipe — /pipes/:id/settings/general-settings",
+    "ui_details": "Confirmed (Iteration 2, live test, full scroll-through): Ícone do pipe (icon picker dropdown) + Nome do pipe (text input, pre-filled 'Purchase Requests'); Tags do pipe (multi-select, up to 3, 'Novo' badge); Item do pipe (placeholder '\"Cards\" é o padrão' — lets an org rename the 'Cards' noun pipe-wide); Texto do botão de criar cards (text input, default 'Criar novo card'); a 'Visual' section with a default-view chip picker (Kanban shown selected) and 'Título do card' — a field-picker dropdown (this is the title_field_id config confirmed cross-referentially in feature-004's correction, currently set to 'Nome do solicitante'); 'Campos a serem exibidos nos cards do kanban' (empty multi-select — lets extra fields render on Kanban card faces); 'Campos a serem exibidos nos cards conectados' (chip list, default 'Criado em' + 'Fase atual', removable, with a clear-all X); 'Alerta de expirado' — Tempo (numeric stepper) + Unidade (dropdown, default 'minutos') + a toggle 'Os alertas serão contados de segunda a sexta-feira' (business-days-only option) — this is a PIPE-WIDE overdue alert, distinct from feature-002's per-phase SLA 'Alerta de atraso'; 'Permissões' > 'Privacidade e visibilidade' (chip dropdown, observed value 'Aberto para <org name>' with helper text 'Qualquer pessoa em <org> pode visualizar e ingressar como Membro deste pipe'); 'Ferramentas de IA' (2 toggles: 'Permitir Agentes de IA neste pipe' / 'Permitir Copilot de IA neste pipe', both on by default); 3 edit-permission toggles ('Permitir que membros do pipe executem ações em massa' / 'As pessoas neste pipe só podem editar os cards atribuídos a elas' / 'Somente administradores do pipe podem excluir cards', all off by default); 'Clonar pipe' section with a 'Clonar pipe para' button (copies fields/phases/settings to another org); and a destructive red banner 'Excluir o pipe. Essa é uma ação permanente e não pode ser desfeita.' with an 'Excluir pipe' button (not clicked, to avoid an irreversible action).",
+    "behavior": "Every field on this page maps 1:1 to a pipes-table column; the 'Título do card' field's change was independently confirmed via the Atividades > Alterações de configuração log (see feature-004). The two overdue-alert mechanisms (this page's pipe-wide 'Alerta de expirado' vs. feature-002's per-phase 'Alerta de atraso') are separate features that likely compose (a card can be late for its current phase AND expired for the whole pipe) — not yet tested which fires first or whether both can be true simultaneously.",
+    "data_model": "pipes: icon, tags (jsonb array, max 3), item_name (text, default 'Cards'), create_card_button_label (text, default 'Criar novo card'), default_view (enum: kanban|list|...), title_field_id (fk, nullable — see feature-004), kanban_preview_field_ids (jsonb array), connected_card_field_ids (jsonb array, default ['created_at','current_phase']), expiration_alert_time (int, default 0), expiration_alert_unit (enum: minutes|hours|days), expiration_alert_business_days_only (bool), visibility (enum: org_open|invite_only), ai_agents_enabled (bool, default true), ai_copilot_enabled (bool, default true), allow_bulk_actions (bool, default false), restrict_edit_to_assignee (bool, default false), restrict_delete_to_admin (bool, default false)",
+    "priority": 11,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "changing title_field_id changes future card.title derivation",
+          "description": "Same pattern as feature-005's table title_field_id test, applied to pipes",
+          "input": "updatePipeSettings(pipeId, { titleFieldId: 'status' }); createCard(pipeId, { status: 'Aprovado', outro_campo: 'x' })",
+          "expected_output": "card.title === 'Aprovado'"
+        },
+        {
+          "name": "item_name overrides the default 'Cards' label used in UI copy",
+          "description": "A custom item_name is substituted wherever the product would otherwise say 'Cards'",
+          "input": "updatePipeSettings(pipeId, { itemName: 'Tickets' })",
+          "expected_output": "UI-facing strings for this pipe render 'Tickets' instead of 'Cards' (e.g. the create-button default text, counts)"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "toggle 'Somente administradores do pipe podem excluir cards' and verify enforcement",
+          "steps": [
+            "Navigate to Gerenciar > Configurações do pipe",
+            "Enable 'Somente administradores do pipe podem excluir cards'",
+            "Attempt to delete a card as a non-admin pipe member"
+          ],
+          "expected": "Delete action is hidden or blocked for the non-admin member"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "expiration alert with Tempo=0",
+          "steps": [
+            "Leave 'Alerta de expirado' Tempo at its default value 0"
+          ],
+          "expected": "No expiration alert ever fires (0 is treated as disabled, not an instant-expire threshold) — verify against real UI in a follow-up pass"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-015",
+    "category": "data",
+    "description": "Pipe-scoped audit log: card-activity timeline + configuration-change timeline, searchable and exportable",
+    "page": "Gerenciar > Atividades — modal (no dedicated URL; opens over whatever pipe page is current)",
+    "ui_details": "Confirmed (Iteration 2, live test): two tabs — 'Atividade de cards' and 'Alterações de configuração' — plus 'Enviar feedback', an 'Exportar logs' download icon, and a 'Buscar por autor' search input. Header subtext: 'Rastreie as ações deste pipe e seus responsáveis. Acesse via API ou saiba mais.' (implies a public read API for this log exists — worth mirroring as a REST endpoint). Table columns: Data e hora (sortable, newest first observed), Executado por (avatar + name + email), Tipo de recurso (a chip: Card / Automação / Pipe / Campo, etc.), Detalhes (a server-rendered sentence describing exactly what changed, e.g. 'Moveu o card \"João Silva\" de \"Concluído\" para \"Fazendo\"', 'Criou a automação \"Sync requester name on move to Fazendo\" com o gatilho \"Um card entrar em uma fase\" e a ação \"Atualize um campo no card ou registro\"', 'Atualizou a configuração do título do card de \"—\" para \"Nome do solicitante\"', 'Criou este pipe').",
+    "behavior": "Confirmed live: every mutating action performed across this run's prior iterations (pipe creation, field creation on two different phases, card create/move/complete, automation creation) shows up as its own row in the correct tab, newest-first, with no manual refresh needed — this is a real-time/live-query log, same live-recompute pattern already confirmed for feature-011/012.",
+    "data_model": "audit_log_entries: id, pipe_id (fk), actor_user_id (fk), category (enum: card_activity|config_change), resource_type (enum: card|automation|pipe|field|phase|table|...), message (text, server-rendered human-readable sentence), occurred_at",
+    "priority": 9,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "card move is logged under card_activity with both phase names in the message",
+          "description": "moveCardToPhase produces an audit_log_entries row in the correct category with a human-readable message",
+          "input": "moveCardToPhase(cardId, 'Fazendo', 'Concluído')",
+          "expected_output": "New row: category='card_activity', resource_type='card', message contains both 'Fazendo' and 'Concluído'"
+        },
+        {
+          "name": "a pipe settings change is logged under config_change",
+          "description": "Updating pipes.title_field_id produces a config_change row, not a card_activity row",
+          "input": "updatePipeSettings(pipeId, { titleFieldId: 'status' })",
+          "expected_output": "New row: category='config_change', resource_type='pipe', message describes old -> new value"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "filter the log by author",
+          "steps": [
+            "Navigate to Gerenciar > Atividades",
+            "Type the current user's name into 'Buscar por autor'"
+          ],
+          "expected": "Table filters to only rows where Executado por matches the typed name"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "empty log (brand new pipe, before any activity)",
+          "steps": [
+            "Open Atividades immediately after creating a pipe with zero further actions taken"
+          ],
+          "expected": "At minimum a single 'Criou este pipe' row exists — verify whether a truly empty state is reachable at all"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-016",
+    "category": "data",
+    "description": "Pipe-scoped Labels (Etiquetas): name + color, used to categorize/filter cards",
+    "page": "Gerenciar (top nav) > Ferramentas > Etiquetas — modal",
+    "ui_details": "Confirmed (Iteration 2, live test — created a real label): empty state shows an icon, 'Crie etiquetas para filtrar e identificar cards conforme o critério desejado.' + 'Saiba mais' link, and a 'Criar etiqueta' CTA. The creation form is exactly 2 fields: 'Nome da etiqueta' (text input) and 'Cor' (a swatch preview + hex value, defaulted to '#35FFDD' with no color picker interaction attempted this pass) plus Cancelar/Salvar buttons. After saving, the modal shows the non-empty list state: each label as a color-dot + name row with a trailing kebab (⋮, presumably edit/delete — not opened this pass) and a 'Criar uma nova etiqueta' button below the list.",
+    "behavior": "Created label 'Urgente' with the default teal color — it persisted and appeared in the list immediately on next open, no reload needed (unlike the Kanban/Database staleness quirks in feature-004/005). This confirms and supersedes feature-001's original 'labels: {id, name, color}' placeholder, now UI-verified end to end.",
+    "data_model": "labels: id, pipe_id (fk), name, color (hex string, e.g. '#35FFDD'), created_at",
+    "priority": 6,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "label creation requires a non-empty name",
+          "description": "Validation rejects a blank label name",
+          "input": "createLabel(pipeId, { name: '', color: '#35FFDD' })",
+          "expected_output": "Validation error, no row inserted"
+        },
+        {
+          "name": "label color defaults when not specified",
+          "description": "Creating a label without an explicit color falls back to the UI's default swatch",
+          "input": "createLabel(pipeId, { name: 'Urgente' })",
+          "expected_output": "label.color === '#35FFDD'"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "create a label and confirm it appears without reload",
+          "steps": [
+            "Navigate to Gerenciar > Ferramentas > Etiquetas",
+            "Click 'Criar etiqueta'",
+            "Type 'Urgente' into 'Nome da etiqueta'",
+            "Click 'Salvar'"
+          ],
+          "expected": "Modal returns to the list view showing 'Urgente' with its color dot, no page reload required"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "duplicate label name in the same pipe",
+          "steps": [
+            "Create a label named 'Urgente', then attempt to create a second label also named 'Urgente'"
+          ],
+          "expected": "Either rejected as duplicate, or both are allowed to coexist — verify against real UI in a follow-up pass"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-017",
+    "category": "data",
+    "description": "Pipe-scoped card trash (Lixeira): deleted cards are retained for 15 days before permanent purge",
+    "page": "Gerenciar (top nav) > Ferramentas > Lixeira — modal, tagged 'Beta'",
+    "ui_details": "Confirmed (Iteration 2, live test): header 'Lixeira' + a 'Beta' tag, subtext 'Os cards ficam aqui por 15 dias. Depois disso, não podem ser restaurados.', a single 'Cards' tab (the tab strip's singularity suggests Lixeira may extend to other resource types later — e.g. Database records — but only Cards was present in this build), an 'Enviar feedback' link, and — since this pipe has never had a card deleted — the empty state: 'A lixeira está vazia. Os cards excluídos aparecerão aqui.' Deleting the pipe's one real card ('João Silva') to observe the populated/restore state was deliberately skipped this pass, since that card is the fixture feature-004/010's confirmed automation test depends on.",
+    "behavior": "Not yet tested end-to-end — the restore action, the exact permanent-purge trigger (background job vs. lazy-on-view), and whether resource types besides Card ever populate this view are all unconfirmed. Follow-up: create a disposable throwaway card, delete it, verify it lands here with a restore control, and confirm restoring it re-inserts into its original phase.",
+    "data_model": "cards gains: deleted_at (timestamp, nullable), purge_at (timestamp, nullable — computed as deleted_at + 15 days)",
+    "priority": 12,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "deleting a card sets deleted_at and purge_at, does not hard-delete the row",
+          "description": "Card delete is a soft delete for the first 15 days",
+          "input": "deleteCard(cardId)",
+          "expected_output": "card.deleted_at is set; card.purge_at === deleted_at + 15 days; row still exists in the cards table"
+        },
+        {
+          "name": "a soft-deleted card is excluded from the Kanban board and normal queries",
+          "description": "listCards(pipeId) omits cards with deleted_at set",
+          "input": "deleteCard(cardId); listCards(pipeId)",
+          "expected_output": "Deleted card is absent from the result"
+        }
+      ],
+      "e2e": [],
+      "edge_cases": [
+        {
+          "name": "empty trash",
+          "steps": [
+            "Navigate to Gerenciar > Ferramentas > Lixeira on a pipe with zero deleted cards"
+          ],
+          "expected": "Empty state 'A lixeira está vazia. Os cards excluídos aparecerão aqui.' shown, no error"
         }
       ]
     }

@@ -69,12 +69,12 @@ Page tabs (`/pipes/:id`, `/pipes/:id/flow`, etc.):
 |---|---|
 | Formulário inicial | Start form field editor (same as Formulário tab) |
 | Fases | **Phase editor** (`/pipes/:id/settings/phases[/:phaseId]`) — phase switcher + field-type palette + live form builder + 'Condicionais em campos' (field conditional rules, see prd feature-009) + 'Opções Avançadas' (per-phase name/color/description, done flag, allow-card-creation, task email collection, auto-assign, SLA alert, delete). **Inspected iteration 2** — see prd feature-002/003/009 and `screenshots/inspect/phases-editor.jpg`. |
-| Pessoas | Pipe members/roles — **borderline out of scope** (auth-adjacent), but member references are needed for `assignee_select` fields, so model minimally |
-| Email | Pipe email settings (redundant with Emails tab's "Configurações") |
-| Configurações do pipe | General pipe settings (name, color, description, icon) |
-| Atividades (new) | Activity/audit log for the pipe |
-| Ferramentas | Not yet opened |
-| Lixeira (beta) | Deleted-cards trash/restore |
+| Pessoas | Pipe members/roles. **Inspected iteration 2** — member list + 4-tier role picker (Membro do pipe / Admin do Pipe / Somente leitura / Visão restrita, 3 of 4 upgrade-gated in this trial org — clone should not gate them). See prd feature-013. |
+| Email | Pipe email settings (redundant with Emails tab's "Configurações") — not yet opened |
+| Configurações do pipe | General pipe settings. **Inspected iteration 2** — icon/name/tags, item naming, default view, "Título do card" field picker (drives `card.title` — corrects the iteration-3 "first field" assumption, see spec-build.md Card section), Kanban/connected-card field pickers, pipe-wide expiration alert, visibility, AI-tool toggles, edit-permission toggles, clone/delete pipe. See prd feature-014. |
+| Atividades | Activity/audit log for the pipe. **Inspected iteration 2** — 2-tab log (Atividade de cards / Alterações de configuração), searchable by author, exportable, live (no reload needed). See prd feature-015. |
+| Ferramentas | Tool panel: Apps (marketplace, out of scope) / Conexões (not deep-dived) / Etiquetas / Gerador de PDF. **Etiquetas inspected iteration 2** — created a real label, name+hex-color model confirmed (prd feature-016). Gerador de PDF noted but not deep-dived (template list + toggle + "Criar novo modelo"). |
+| Lixeira (beta) | Deleted-cards trash/restore. **Inspected iteration 2** — 15-day retention, single Cards tab, empty state confirmed; restore flow not exercised (would require deleting the pipe's only test card). See prd feature-017. |
 
 AI Agents sub-tabs (`/pipes/:id/ai_agents`): Agentes de IA, Logs, Templates, MCP (new).
 Empty state: "Vamos criar seu primeiro agente!" — agents "seguem instruções, aprendem
@@ -88,6 +88,8 @@ confirmed via Logs and the card detail view. See prd feature-010 and spec-build.
 ## Not yet inspected (next iterations)
 - Emails compose flow
 - AI Agents agent creation flow
-- Pessoas / Configurações do pipe / Atividades / Ferramentas / Lixeira
 - `/my-tasks` (org-level "my work" list) — confirm relation to Tarefas e Solicitações
 - Account/notification menus (low priority, auth-adjacent)
+- Interfaces / Portal builder deep dive (prd feature-008 exists from the site-map pass, but the actual page-composer UI hasn't been exercised)
+- Ferramentas > Conexões and > Gerador de PDF (noted structurally in iteration 2, not deep-dived)
+- Lixeira restore flow (currently empty; needs a disposable throwaway card to test)
