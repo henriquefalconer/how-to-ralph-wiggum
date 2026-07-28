@@ -82,6 +82,25 @@ test.describe("smoke", () => {
     await expect(page.getByTestId("card-title")).toBeVisible();
   });
 
+  test("the Manage tabs navigate from Fases to Automações", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.getByTestId("create-pipe-tile").click();
+    await page.getByTestId("create-from-scratch").click();
+    await page
+      .getByTestId("pipe-name-input")
+      .fill(`Smoke Automations ${Date.now()}`);
+    await page.getByTestId("submit-create-pipe").click();
+    await page.waitForURL(/\/pipes\/.+/);
+
+    await page.getByTestId("manage-pipe-link").click();
+    await page.waitForURL(/\/settings\/phases\/.+/);
+    await page.getByTestId("manage-tab-automations").click();
+    await page.waitForURL(/\/automations$/);
+    await expect(page.getByTestId("automations-empty-state")).toBeVisible();
+  });
+
   test("the Databases tab creates a database and loads its grid page", async ({
     page,
   }) => {

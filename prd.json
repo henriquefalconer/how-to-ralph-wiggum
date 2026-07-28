@@ -397,7 +397,7 @@
     "data_model": "automations: id, pipe_id (fk), name, enabled (bool), trigger_type (enum, 10 values), trigger_config (jsonb — e.g. {phaseId, conditions[]}), action_type (enum, 12 values), action_config (jsonb — e.g. {targetFieldId, targetFieldOwnerId, value: string with embedded {{token}} refs}), created_at, updated_at, updated_by_user_id. automation_runs: id, automation_id (fk), card_id (fk), card_title (denormalized for the log list), status (enum: success|error), message (text), started_at.",
     "priority": 5,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {

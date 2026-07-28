@@ -1,3 +1,4 @@
+import { executeAutomationsForTrigger } from "@/lib/automations";
 import { db } from "@/lib/db";
 import {
   cardFieldValues,
@@ -218,6 +219,13 @@ export async function moveCardToPhase(
     cardId,
     fromPhaseId,
     toPhaseId,
+  });
+
+  await executeAutomationsForTrigger(card.pipeId, "card_entered_phase", {
+    pipeId: card.pipeId,
+    cardId,
+    cardTitle: updated.title,
+    phaseId: toPhaseId,
   });
 
   return updated;

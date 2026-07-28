@@ -237,3 +237,70 @@ export const webhookDeliveries = pgTable("webhook_deliveries", {
   error: text("error"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const automationTriggerTypes = [
+  "card_entered_phase",
+  "field_updated",
+  "card_created",
+  "recurring_activity",
+  "alert_triggered",
+  "card_exited_phase",
+  "email_received",
+  "connected_cards_moved_to_phase",
+  "http_response_received",
+  "interface_button_clicked",
+] as const;
+
+export const automationActionTypes = [
+  "ask_ai",
+  "send_task",
+  "move_card",
+  "update_field",
+  "create_connected_record",
+  "create_record",
+  "move_parent_card",
+  "distribute_assignees",
+  "apply_formula",
+  "http_request",
+  "apply_sla_rules",
+  "send_email_template",
+] as const;
+
+export const automationRunStatuses = ["success", "error"] as const;
+
+export const automations = pgTable("automations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  pipeId: uuid("pipe_id")
+    .notNull()
+    .references(() => pipes.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  enabled: boolean("enabled").notNull().default(true),
+  triggerType: text("trigger_type", {
+    enum: automationTriggerTypes,
+  }).notNull(),
+  triggerConfig: jsonb("trigger_config")
+    .$type<Record<string, unknown>>()
+    .notNull()
+    .default({}),
+  actionType: text("action_type", { enum: automationActionTypes }).notNull(),
+  actionConfig: jsonb("action_config")
+    .$type<Record<string, unknown>>()
+    .notNull()
+    .default({}),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const automationRuns = pgTable("automation_runs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  automationId: uuid("automation_id")
+    .notNull()
+    .references(() => automations.id, { onDelete: "cascade" }),
+  cardId: uuid("card_id")
+    .notNull()
+    .references(() => cards.id, { onDelete: "cascade" }),
+  cardTitle: text("card_title").notNull(),
+  status: text("status", { enum: automationRunStatuses }).notNull(),
+  message: text("message").notNull(),
+  startedAt: timestamp("started_at").defaultNow().notNull(),
+});

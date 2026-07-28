@@ -1,3 +1,4 @@
+import { ManageTabs } from "@/components/ManageTabs";
 import { PhaseEditor } from "@/components/PhaseEditor";
 import { TopNav } from "@/components/TopNav";
 import { listFields } from "@/lib/fields";
@@ -28,6 +29,7 @@ export default async function PhaseSettingsPage({
   return (
     <main className="min-h-screen bg-[#F5F6F8]">
       <TopNav locale={locale} dictionary={dictionary} />
+      <ManageTabs pipeId={pipe.id} active="phases" dictionary={dictionary} />
       <PhaseEditor
         pipe={pipe}
         phases={phases}
