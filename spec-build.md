@@ -260,7 +260,7 @@ Provisional core-feature guess (to validate against the real UI next):
 - [ ] Start form
 - [x] Database Tables (create flow, field-type palette incl. connection fields, record create/edit, Configurações de database — screenshots: `screenshots/inspect/database-grid.jpg`, `screenshots/inspect/database-record-detail.jpg`)
 - [ ] Reports/dashboards
-- [ ] Automation rule builder (separate from field conditionals — pipe-level Automações tab)
+- [x] Automation rule builder (separate from field conditionals — pipe-level Automações tab; 10 triggers × 12 actions, tested end-to-end incl. Logs — screenshot: `screenshots/inspect/automations-builder.jpg`; see §13 and prd feature-010)
 - [ ] Interfaces / Portal builder (new feature, not in prd.json yet)
 - [ ] AI Agents creation flow
 - [ ] Search
@@ -442,3 +442,57 @@ concrete UI behind feature-005's `public` boolean and more:
 
 Screenshots: `screenshots/inspect/database-grid.jpg`,
 `screenshots/inspect/database-record-detail.jpg`.
+
+## 13. Automations Engine (Iteration 5, live UI test)
+
+Full detail in `prd.json` feature-010. Pipe-scoped trigger→action rule
+builder at Gerenciar > Automações (`/pipes/:id/automations`), structurally
+separate from the per-phase Field Conditionals (§10) — conditionals only
+show/hide fields on a form; Automations perform side effects (move cards,
+write field values, call HTTP endpoints, distribute assignees, etc.) and
+have their own run history.
+
+**List view**: search, Filtros, sort, per-row enable/disable toggle, kebab
+(Editar/Duplicar/Excluir), empty state = two-icon diagram + "Nova
+automação" CTA.
+
+**Builder** is a two-column "Sempre que... / Faça isso..." picker:
+- **10 trigger types**: card enters a phase, field updated, card created,
+  recurring activity, alert triggered, card exits a phase, email received,
+  all connected cards moved to a phase, HTTP-request-automation response
+  received, Interfaces button clicked.
+- **12 action types**: ask AI, send a task, move a card, update a field on
+  the card/registro, create a connected card/registro, create a
+  card/registro, move the parent card, distribute assignees, apply a
+  formula, make an HTTP request, apply SLA rules, send an email template
+  (this last one rendered greyed-out/disabled in the trial org — likely
+  plan-gated, not confirmed).
+- Each trigger/action opens its own inline config card. The "update a
+  field" action's value input has a **token/variable picker** (a "+"
+  button opening a searchable, categorized dropdown: Atributos de evento,
+  Atributos gerais [Criado em, Fase atual, Data de vencimento, Finalizado
+  em, ID, A última fase em que o card estava, Título], then one group per
+  phase name listing that phase's own fields). Inserted tokens render as
+  removable pills in the value field — this is the templating mechanism
+  the clone's action-value strings need to support (`{{token}}`-style
+  interpolation resolved against the triggering card at run time).
+
+**Confirmed end-to-end** (built and fired a real rule): trigger = card
+enters "Fazendo"; action = update the "Caixa de entrada" phase's "Nome do
+solicitante" field with a token pointing at the start form's own "Nome do
+solicitante" field. Saved (prompts for a rule name in a small modal), then
+dragged a real card into "Fazendo" — Logs showed a new row (automation
+name, card name, card id, status "Sucesso", timestamp) within seconds, and
+opening the card confirmed the target field's value was actually written.
+
+**Build-critical finding**: the action's target field is **not** scoped to
+the trigger's destination phase. "Fazendo" has zero fields of its own, yet
+the rule successfully wrote to a field belonging to a completely different
+phase ("Caixa de entrada"). The clone must model automation actions as
+free references to any field id in the pipe (start form or any phase), not
+as "the fields available on the phase this trigger fires for."
+
+Not yet tested this pass: the other 9 triggers and 11 actions (in
+particular the HTTP-request round trip, recurring activities, and formula
+action) — only the phase-enter → update-field pair was exercised.
+Screenshot: `screenshots/inspect/automations-builder.jpg`.

@@ -81,13 +81,13 @@ Empty state: "Vamos criar seu primeiro agente!" — agents "seguem instruções,
 com documentos, e executam tarefas". Per project rules, modeled as data + simple rule
 evaluator only, no real multi-LLM orchestration.
 
-Automations sub-tabs (`/pipes/:id/automations`): Automações, Logs. Trigger→action rule
-builder, matches prd feature-007's webhook/automation model.
+Automations sub-tabs (`/pipes/:id/automations`): Automações, Logs. **Inspected iteration 5**
+— full trigger→action rule builder (10 triggers × 12 actions), built and fired a real rule,
+confirmed via Logs and the card detail view. See prd feature-010 and spec-build.md §13.
 
 ## Not yet inspected (next iterations)
 - Relatórios / Painéis actually building a chart
 - Emails compose flow
-- Automations rule builder (create one rule)
 - AI Agents agent creation flow
 - Pessoas / Configurações do pipe / Atividades / Ferramentas / Lixeira
 - `/my-tasks` (org-level "my work" list) — confirm relation to Tarefas e Solicitações

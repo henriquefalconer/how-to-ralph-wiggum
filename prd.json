@@ -346,8 +346,8 @@
     "category": "data",
     "description": "Webhook registration and outbound event delivery for pipe/table events",
     "page": "N/A (backend/API layer)",
-    "ui_details": "TBD — not yet observed in UI (likely a settings-adjacent page, in scope since webhooks are core integration functionality, not auth/billing).",
-    "behavior": "Org/pipe/table-scoped webhook URLs receive an HTTP POST when relevant events occur (card created/moved/updated, table record created/updated). Mirrors organization-webhooks.md and pipe-table-webhooks.md event shapes.",
+    "ui_details": "TBD — not yet observed as a standalone webhook-management UI. Confirmed (iteration 5): outbound HTTP is exposed to end users as an Automations action ('Faça uma requisição HTTP') and a matching trigger ('Uma resposta for recebida da automação de requisição HTTP') — see feature-010. Pipefy does not appear to have a separate generic webhook-registration settings page distinct from the Automations builder; model outbound events as the Automations HTTP action/trigger pair, not a separate subscription list.",
+    "behavior": "Org/pipe/table-scoped webhook URLs receive an HTTP POST when relevant events occur (card created/moved/updated, table record created/updated). Mirrors organization-webhooks.md and pipe-table-webhooks.md event shapes. In the live product this is implemented via the Automations engine's 'Faça uma requisição HTTP' action (any trigger → outbound POST) and its paired 'response received' trigger (an HTTP call-and-continue pattern, letting a follow-up automation act on the response body) rather than a persistent webhook-subscription CRUD screen.",
     "data_model": "webhooks: id, scope_type (org|pipe|table), scope_id (fk), url, events (jsonb array of event names), created_at",
     "priority": 8,
     "core": false,
@@ -369,6 +369,72 @@
             "Register a webhook pointing at an invalid/unreachable URL, then trigger its event"
           ],
           "expected": "Delivery failure is logged but does not block or roll back the triggering action"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-010",
+    "category": "data",
+    "description": "Automations engine: pipe-scoped trigger→action rules (10 trigger types × 12 action types), with a token/variable picker for dynamic values",
+    "page": "Gerenciar (pipe top nav) > Automações — /pipes/:id/automations (list), /pipes/:id/automations/new (builder), /pipes/:id/automations/logs (run history)",
+    "ui_details": "Confirmed (iteration 5, live test, created + fired a real rule): list view has search, Filtros, 'Ordenar por', a per-row on/off toggle, and a kebab (Editar/Duplicar/Excluir); empty state shows a two-icon diagram + 'Nova automação' CTA. The builder is a two-column 'Sempre que... / Faça isso...' picker. Triggers: 'Um card entrar em uma fase', 'Um campo for atualizado', 'Um card for criado', 'Uma atividade for recorrente', 'Um alerta for acionado', 'Um card sair de uma fase', 'Um email for recebido', 'Todos os cards conectados forem movidos para uma fase', 'Uma resposta for recebida da automação de requisição HTTP', 'Um botão em Interfaces é clicado'. Actions: 'Peça à IA', 'Envie uma tarefa', 'Mova um card', 'Atualize um campo no card ou registro', 'Crie um card ou registro conectado', 'Crie um card ou registro', 'Mova o card pai', 'Distribua responsáveis', 'Aplique uma fórmula', 'Faça uma requisição HTTP', 'Aplique regras de SLA', and 'Envie um template de email' (rendered greyed-out/disabled in this trial org — likely plan-gated). Selecting a trigger opens an inline config card (e.g. 'Um card entrar em uma fase' → pipe selector locked to current pipe + 'Para a fase' dropdown + '+ Adicionar condição'). Selecting an action opens its own inline config card (e.g. 'Atualize um campo no card ou registro' → 'Onde está o campo' radio [Pipe atual / Pipe ou database conectado] → warning banner about validating required-field references → 'Selecione um campo' dropdown → a value input with a '+' token-picker button). The token picker is a searchable dropdown grouped into 'Atributos de evento' (e.g. Data e Hora do evento), 'Atributos gerais' (Criado em, Fase atual, Data de vencimento, Finalizado em, ID, A última fase em que o card estava, Título), then one group PER PHASE NAME (e.g. 'Start form', 'Caixa de entrada') each listing that phase's own fields — inserted tokens render as removable pills. Saving prompts for a rule name via a small modal, then the rule appears in the list with an enabled toggle. Screenshot: screenshots/inspect/automations-builder.jpg.",
+    "behavior": "CONFIRMED end-to-end: created a rule (trigger: card enters phase 'Fazendo' in this pipe; action: update the 'Caixa de entrada' phase's 'Nome do solicitante' field, value = a token for the start form's 'Nome do solicitante' field). Dragged a real card into 'Fazendo' — a toast confirmed the move, then Automações > Logs showed a new row (automation name, card name, card id, status 'Sucesso', start timestamp) within seconds, expandable to 'Automação executada com sucesso.' Opening the card's detail view and expanding its 'Caixa de entrada' Histórico entry confirmed the target field's value was actually written (previously blank, now 'João Silva'). KEY FINDING: the action's target field is NOT restricted to the trigger's destination phase — 'Fazendo' has zero fields configured, yet the rule successfully wrote to a field on a different phase entirely ('Caixa de entrada'). This means automation actions must be modeled as free field references across the whole pipe (any phase/start-form field, keyed by field id), not scoped to the triggering phase. The value-editor's token picker confirms the same 'fields grouped by owner phase, independent rows even when labels collide' modeling already required by feature-004's card fields. Not yet tested: the other 9 trigger types or 11 action types (email-received, recurring-activity, HTTP round-trip, formula, SLA-rule actions) — only the phase-enter → update-field pair was exercised this pass.",
+    "data_model": "automations: id, pipe_id (fk), name, enabled (bool), trigger_type (enum, 10 values), trigger_config (jsonb — e.g. {phaseId, conditions[]}), action_type (enum, 12 values), action_config (jsonb — e.g. {targetFieldId, targetFieldOwnerId, value: string with embedded {{token}} refs}), created_at, updated_at, updated_by_user_id. automation_runs: id, automation_id (fk), card_id (fk), card_title (denormalized for the log list), status (enum: success|error), message (text), started_at.",
+    "priority": 5,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "automation action targets a field by id, independent of the trigger's phase",
+          "description": "An 'update field' action can reference any field in the pipe (start form or any phase), not just the destination phase's own fields",
+          "input": "createAutomation({ trigger: {type:'card_entered_phase', phaseId:'fazendo'}, action: {type:'update_field', targetFieldId:'nome_do_solicitante_caixa_de_entrada', value:'{{start_form.nome_do_solicitante}}'} }); moveCardToPhase(cardId, anyPhaseId, 'fazendo')",
+          "expected_output": "The 'Caixa de entrada' phase's field value is updated even though the card is now in 'Fazendo' and 'Fazendo' has no fields of its own"
+        },
+        {
+          "name": "automation run is logged with success status",
+          "description": "A successfully executed automation writes an automation_runs row",
+          "input": "Trigger an enabled automation's condition",
+          "expected_output": "automation_runs row created with status='success', card_id set, started_at set"
+        },
+        {
+          "name": "disabling an automation prevents execution",
+          "description": "The list view's enabled toggle gates whether the trigger fires the action",
+          "input": "updateAutomation(id, { enabled: false }); trigger the same event",
+          "expected_output": "No new automation_runs row is created"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "create a phase-enter automation that updates a field, then verify it fires",
+          "steps": [
+            "Navigate to a pipe's Automações tab, click 'Nova automação'",
+            "Click 'Um card entrar em uma fase', select a target phase",
+            "Click 'Atualize um campo no card ou registro', select a field, insert a token value via the '+' picker",
+            "Click 'Criar automação', name it, click 'Salvar'",
+            "Drag a card into the configured phase on the Kanban board",
+            "Open Automações > Logs"
+          ],
+          "expected": "A log row appears with status 'Sucesso' for that card; opening the card shows the targeted field's value updated"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "automation targets a field on a deleted phase",
+          "steps": [
+            "Create an automation whose action targets field X",
+            "Delete the phase owning field X",
+            "Trigger the automation"
+          ],
+          "expected": "Run logged with status 'error' and a descriptive message — verify exact message against real UI in a follow-up pass"
+        },
+        {
+          "name": "empty automations list",
+          "steps": [
+            "Navigate to a pipe with zero automations configured"
+          ],
+          "expected": "Empty state with diagram + 'Nova automação' CTA, no error"
         }
       ]
     }
