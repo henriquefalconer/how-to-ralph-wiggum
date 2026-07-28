@@ -1217,5 +1217,273 @@
         }
       ]
     }
+  },
+  {
+    "id": "feature-023",
+    "category": "ui",
+    "description": "Interfaces builder content elements: Texto (rich text with dynamic-content token picker), Link (external link card), Divisor (visual separator)",
+    "page": "Interfaces builder, 'Layout e conteúdo' palette group (/interfaces/:interfaceId/pages/:pageId/edit)",
+    "ui_details": "CONFIRMED live iteration 8. Texto has NO side config panel — the placed block is an inline, focused WYSIWYG editor; selecting/focusing it surfaces a floating toolbar with '+ Conteúdo dinâmico' (the dynamic-field token picker shared with Automations/Reports/Emails/AI Agents/PDF Generator — 7th confirmed reuse), a 'Texto normal' block-style dropdown, Bold/Italic/Underline/Strikethrough/text-color, bullet/numbered list, link insert, blockquote. Link opens a side panel with just 'Nome' + 'URL' text fields; the canvas block live-updates while typing, rendering as a card (link icon, entered name as title, fixed 'Site' subtitle, external-link icon once a URL is present). Divisor has zero configuration — dragging it onto the canvas immediately renders a full-width horizontal rule, no side panel opens at all. All 3 (like every element tested this iteration) insert at the top of the canvas regardless of drop coordinate, not at the literal drop position — see spec-build.md §21.",
+    "behavior": "CONFIRMED live iteration 8. Texto content persists as structured rich text (bold/lists/links survive), not a plain string. Link's canvas preview updates live, field-by-field, with no save button. Divisor is purely presentational with no data beyond its existence/order in the page.",
+    "data_model": "interface_page_elements (see feature-008) rows with type='text': config={content: richTextJSON} (richTextJSON supports bold/italic/underline/strike/color/lists/links/blockquote plus embedded dynamic-content tokens). type='link': config={name, url}. type='divider': config={} (no fields).",
+    "priority": 10,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "dynamic-content token inside a Texto element resolves against a given record",
+          "description": "A Texto element's rich content can embed a dynamic-field token (e.g. {{card.title}}); rendering it for a specific record must substitute the real value",
+          "input": "renderRichText(element.config.content, {card: {title: 'Purchase Request #42'}}) where content contains a {{card.title}} token",
+          "expected_output": "returned HTML/text has the token replaced with 'Purchase Request #42', all other formatting (bold/lists) preserved"
+        },
+        {
+          "name": "divider element is always considered a complete/valid page element",
+          "description": "Unlike data_table or form_link (which require a bound source), a divider has no required config and should never fail a page-completeness check",
+          "input": "isElementComplete({type: 'divider', config: {}})",
+          "expected_output": "returns true"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "add a Texto element, apply bold formatting, confirm it renders on the live page",
+          "steps": [
+            "In the Interfaces builder, drag 'Texto' onto the canvas",
+            "Type a sentence into the focused block",
+            "Select the typed text and click the Bold toolbar icon",
+            "Click 'Ver ao vivo'"
+          ],
+          "expected": "The live page shows the same sentence rendered in bold"
+        },
+        {
+          "name": "add a Link element and confirm it opens the URL on the live page",
+          "steps": [
+            "Drag 'Link' onto the canvas",
+            "Fill Nome='Docs' and URL='https://example.com'",
+            "Click 'Ver ao vivo'",
+            "Click the rendered link card"
+          ],
+          "expected": "A new browser tab opens to https://example.com"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Link element saved with an empty URL",
+          "steps": [
+            "Drag 'Link' onto the canvas",
+            "Fill only Nome, leave URL blank",
+            "Click 'Ver ao vivo'"
+          ],
+          "expected": "The live page does not render a broken/dead link — either the element is hidden or shows a clearly non-clickable placeholder state"
+        },
+        {
+          "name": "very long Texto content",
+          "steps": [
+            "Drag 'Texto' onto the canvas",
+            "Paste several paragraphs of text (500+ words) with a bulleted list"
+          ],
+          "expected": "The canvas block grows in height to fit all content with no truncation or internal scrollbar"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-024",
+    "category": "ui",
+    "description": "Interfaces builder media elements: Imagem (image with Unsplash/upload/URL sources), Vídeo (YouTube/Vimeo embed), Incorporar (generic iframe embed)",
+    "page": "Interfaces builder, 'Mídia' palette group (/interfaces/:interfaceId/pages/:pageId/edit)",
+    "ui_details": "CONFIRMED live iteration 8. Imagem's side panel opens a 3-tab picker on click: 'Imagens do Unsplash' (search-by-topic/color grid of real stock photos, paginated via 'Ver mais'), 'Carregar imagem' (direct upload), 'From URL' (paste an external image URL) — plus a 'Texto alternativo' (alt text) field and a 'Cantos arredondados' (rounded corners) toggle below the picker. Vídeo has a single URL field with hint text 'Somente vídeos do YouTube, Vimeo são suportados por enquanto' and a 'Mostrar Controles' toggle. Incorporar has a single URL field with warning text 'Alguns sites podem afetar o desempenho da sua interface' plus 'Mostrar controles de navegação' and 'Mostrar título/url' toggles (both default ON).",
+    "behavior": "CONFIRMED live iteration 8, all 3 render REAL external content, not placeholders. Imagem: picked a real Unsplash photo and clicked 'Aplicar' — it rendered full-width in the canvas immediately (real Unsplash search API integration). Vídeo: pasted a real public YouTube URL — it live-embedded the actual video thumbnail + player (real oEmbed-style integration). Incorporar: pasted a plain URL — it rendered a real live iframe of that page with a header bar (URL text + refresh icon + open-in-new-tab icon) above the embedded content.",
+    "data_model": "interface_page_elements (see feature-008) rows with type='image': config={source_type: unsplash|upload|url, source_ref (unsplash photo id, upload file_id, or raw URL), alt_text, rounded_corners: bool}. type='video': config={url, platform: youtube|vimeo (derived from url), show_controls: bool}. type='embed': config={url, show_nav_controls: bool, show_title_bar: bool}.",
+    "priority": 10,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "video URL validation only accepts YouTube/Vimeo hosts",
+          "description": "Per the element's own restriction copy, any non-YouTube/Vimeo URL should fail validation before being saved",
+          "input": "isValidVideoUrl('https://www.youtube.com/watch?v=abc123') and isValidVideoUrl('https://cdn.example.com/clip.mp4')",
+          "expected_output": "first call returns true, second returns false"
+        },
+        {
+          "name": "embed element extracts a display title/domain from an arbitrary URL",
+          "description": "The 'Mostrar título/url' toggle needs a display string derived from the raw embed URL",
+          "input": "extractEmbedTitle('https://example.com/some/deep/path?x=1')",
+          "expected_output": "returns 'example.com' (or the page's og:title if fetchable), not the full raw URL with query string"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "add an Imagem element via Unsplash search and confirm it renders live",
+          "steps": [
+            "Drag 'Imagem' onto the canvas",
+            "In the 'Imagens do Unsplash' tab, click any photo thumbnail",
+            "Click 'Aplicar'",
+            "Click 'Ver ao vivo'"
+          ],
+          "expected": "The live page shows the selected photo rendered full-width"
+        },
+        {
+          "name": "add a Vídeo element with a YouTube URL and confirm it embeds",
+          "steps": [
+            "Drag 'Vídeo' onto the canvas",
+            "Paste a valid YouTube watch URL into the URL field",
+            "Click 'Ver ao vivo'"
+          ],
+          "expected": "The live page shows an embedded, playable YouTube player (not a broken/blank box)"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "Incorporar with a URL that blocks iframing (X-Frame-Options: DENY)",
+          "steps": [
+            "Drag 'Incorporar' onto the canvas",
+            "Paste a URL known to disallow framing"
+          ],
+          "expected": "The embed area shows a graceful 'couldn't load this content' fallback message, not a blank/broken iframe"
+        },
+        {
+          "name": "Vídeo element given an unsupported host URL",
+          "steps": [
+            "Drag 'Vídeo' onto the canvas",
+            "Paste a non-YouTube/Vimeo URL (e.g. a direct .mp4 link)"
+          ],
+          "expected": "An inline validation error appears ('Somente vídeos do YouTube, Vimeo são suportados'); no broken embed is rendered"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-025",
+    "category": "ai",
+    "description": "Interfaces builder Documento element: uploads a PDF as a knowledge source for the page's AI Assistant (feature-020)",
+    "page": "Interfaces builder, 'Elementos principais' palette group (/interfaces/:interfaceId/pages/:pageId/edit)",
+    "ui_details": "CONFIRMED live iteration 8. Palette entry tagged 'Novo' with the same AI-assist sparkle badge as Formulários/Dados. Side panel shows a pink/purple banner ('O Assistente de IA aprende com este elemento para responder perguntas dos usuários' — identical copy/pattern to Dados/Formulários), an 'Adicionar documento' upload control restricted to PDF files ≤5MB ('Selecione o documento' button), a 'Título do documento' text field, and a 'Descrição' textarea.",
+    "behavior": "CONFIRMED live iteration 8: the 'Título do documento' and 'Descrição' fields are visually present and appear editable, but do NOT accept typed input until a real file has been selected via 'Selecione o documento' — metadata entry is gated behind the upload, unlike Link's freely-editable 'Nome' field (feature-023). Did not upload a real file (no disposable test PDF on hand), so post-upload behavior (does the title auto-populate from the filename? is a text preview generated?) is UNCONFIRMED — treat as TBD, default to leaving both fields blank/optional post-upload for the clone. This element is the same underlying 'knowledge source' concept as AI Agents' (feature-019) Documento knowledge-source type in its Conhecimento step (Nome + 'Quando usar' + RAG-trigger content) — model both as one shared document/RAG entity, referenced at the agent level (feature-019) and the interface-page level (feature-020's AI Assistant scope).",
+    "data_model": "interface_page_elements (see feature-008) rows with type='document': config={file_id (fk to an uploads table storing the PDF, ≤5MB, bytea per project storage convention), title, description}. The same uploads table/shape should back AI Agents' Documento knowledge-source type (feature-019) since both are the same underlying primitive.",
+    "priority": 10,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "Documento title/description fields are disabled until a file is attached",
+          "description": "Form-state check: before file_id is set, title/description inputs must be non-interactive; after upload, they become editable",
+          "input": "canEditDocumentMetadata({file_id: null}) and canEditDocumentMetadata({file_id: 'up_123'})",
+          "expected_output": "first call returns false, second returns true"
+        },
+        {
+          "name": "Documento element contributes to the page's AI Assistant scope",
+          "description": "getAssistantScope (feature-020) must include any document elements on the page alongside pipe/database sources",
+          "input": "getAssistantScope(pageId) where the page has one Dados element (pipeA) and one Documento element (docB)",
+          "expected_output": "returns [{type:'pipe', id: pipeA.id}, {type:'document', id: docB.id}]"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "add a Documento element, upload a PDF, fill metadata, confirm it appears live",
+          "steps": [
+            "Drag 'Documento' onto the canvas",
+            "Click 'Selecione o documento' and upload a PDF under 5MB",
+            "Fill 'Título do documento' and 'Descrição'",
+            "Click 'Ver ao vivo'"
+          ],
+          "expected": "The live page shows a document card with the entered title, downloadable/viewable"
+        },
+        {
+          "name": "title field stays disabled before any file is selected",
+          "steps": [
+            "Drag 'Documento' onto the canvas",
+            "Without uploading anything, click into 'Título do documento' and attempt to type"
+          ],
+          "expected": "No text appears in the field; it remains visually disabled/read-only"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "upload a file larger than 5MB",
+          "steps": [
+            "Drag 'Documento' onto the canvas",
+            "Attempt to upload a PDF larger than 5MB"
+          ],
+          "expected": "A clear file-too-large validation error is shown; the upload is rejected, not silently truncated"
+        },
+        {
+          "name": "upload a non-PDF file",
+          "steps": [
+            "Drag 'Documento' onto the canvas",
+            "Attempt to upload a .docx or .png file"
+          ],
+          "expected": "A clear file-type validation error is shown; the upload is rejected"
+        }
+      ]
+    }
+  },
+  {
+    "id": "feature-026",
+    "category": "settings",
+    "description": "Interfaces Compartilhar modal — Gerenciar pessoas tab: per-interface people/group access with a 2-tier role model",
+    "page": "Interfaces builder, Compartilhar modal, 'Gerenciar pessoas' tab (/interfaces/:interfaceId/pages/:pageId/edit)",
+    "ui_details": "CONFIRMED live iteration 8. Second tab of the Compartilhar modal (first tab 'Visibilidade' covered by feature-008). An 'Adicionar pessoas ou grupos' search input (matches by name/group/email) sits above a list of already-granted people/groups — this trial org's own admin user is pre-listed, tagged 'É você!'. Each row has a role dropdown with 3 options: 'Admin da Interface' (checked/current — 'Possui acesso total à Interface. Pode adicionar pipes e databases aos quais tiver acesso.'), 'Membro da Interface' (tagged 'Upgrade', gated in this trial org — 'Pode visualizar as páginas da Interface. Só pode atualizar campos editáveis.'), and 'Remover acesso' (red, destructive, at the bottom of the dropdown).",
+    "behavior": "CONFIRMED live iteration 8: this is a simpler 2-tier version of the same person-permission gating pattern already seen on Pipe > Pessoas' 4-tier role picker (feature-013), where non-default tiers are also Upgrade-gated in this trial org (the clone should not gate them). Did not test adding a real second person or changing a role — this trial org has only one seat, so the add-flow and role-change persistence are unconfirmed beyond the UI affordances shown.",
+    "data_model": "Extends feature-008's interface_shares: id, interface_id (fk), shared_with_type (enum: person | group), shared_with_id, role (enum: admin | member).",
+    "priority": 10,
+    "core": false,
+    "passes": false,
+    "tests": {
+      "unit": [
+        {
+          "name": "member role can update editable fields but cannot add/remove page elements",
+          "description": "Permission-check function gating builder actions by interface_shares.role",
+          "input": "canEditPageElements({role: 'member'}) and canEditPageElements({role: 'admin'})",
+          "expected_output": "first call returns false, second returns true"
+        },
+        {
+          "name": "member role can still submit values into editable widget fields on a live page",
+          "description": "Per the UI copy 'Só pode atualizar campos editáveis', a member should retain write access to end-user-facing editable fields even without builder access",
+          "input": "canUpdateEditableField({role: 'member'}, fieldIsEditable: true)",
+          "expected_output": "returns true"
+        }
+      ],
+      "e2e": [
+        {
+          "name": "add a person via the search box and confirm they appear with a default role",
+          "steps": [
+            "Open Compartilhar > Gerenciar pessoas",
+            "Type an org member's name into 'Adicionar pessoas ou grupos'",
+            "Select the matching suggestion"
+          ],
+          "expected": "The person appears in the list below with a default role assigned (e.g. Membro da Interface)"
+        },
+        {
+          "name": "change a granted person's role and confirm it persists",
+          "steps": [
+            "With at least one non-self person granted access, open their role dropdown",
+            "Select a different role",
+            "Close and reopen the Compartilhar modal"
+          ],
+          "expected": "The changed role is still shown, not reverted to the previous value"
+        }
+      ],
+      "edge_cases": [
+        {
+          "name": "search with no matching people or groups",
+          "steps": [
+            "Open Compartilhar > Gerenciar pessoas",
+            "Type a string that matches no org member or group name"
+          ],
+          "expected": "An empty/no-results state is shown, not an error or a frozen loading spinner"
+        },
+        {
+          "name": "attempt to remove the sole admin's own access",
+          "steps": [
+            "As the only 'Admin da Interface' on an interface, open your own row's role dropdown",
+            "Click 'Remover acesso'"
+          ],
+          "expected": "The action is blocked with an explanatory message (an interface must always retain at least one admin) rather than silently locking everyone out"
+        }
+      ]
+    }
   }
 ]

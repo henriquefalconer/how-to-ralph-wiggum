@@ -337,7 +337,7 @@ Provisional core-feature guess (to validate against the real UI next):
 - [x] Database Tables (create flow, field-type palette incl. connection fields, record create/edit, Configurações de database — screenshots: `screenshots/inspect/database-grid.jpg`, `screenshots/inspect/database-record-detail.jpg`)
 - [x] Reports/dashboards (Reports builder — filter/column picker, saved report tiles; Dashboards — chart builder with 8 viz types, live aggregation metrics — Iteration 6; screenshots: `screenshots/inspect/reports-list.jpg`, `screenshots/inspect/dashboard-number-chart.jpg`, `screenshots/inspect/dashboard-panel.jpg`)
 - [x] Automation rule builder (separate from field conditionals — pipe-level Automações tab; 10 triggers × 12 actions, tested end-to-end incl. Logs — screenshot: `screenshots/inspect/automations-builder.jpg`; see §13 and prd feature-010)
-- [x] Interfaces / Portal builder (drag-only element palette, Dados live-query table + viewer-scoped dynamic visibility conditions, Formularios launcher-card, per-page AI Assistant chat widget — Iteration 6 [this run's iteration 6]; see §19 and prd feature-008/feature-020; screenshots: `screenshots/inspect/interfaces-builder.jpg`, `screenshots/inspect/interfaces-live-view-ai-assistant.jpg`)
+- [x] Interfaces / Portal builder (drag-only element palette, Dados live-query table + viewer-scoped dynamic visibility conditions, Formularios launcher-card, per-page AI Assistant chat widget — Iteration 6; remaining content/media elements [Texto/Link/Divisor/Imagem/Vídeo/Incorporar/Documento] + Compartilhar > Gerenciar pessoas — Iteration 8; see §19/§21 and prd feature-008/feature-020/feature-023 through feature-026; screenshots: `screenshots/inspect/interfaces-builder.jpg`, `screenshots/inspect/interfaces-live-view-ai-assistant.jpg`, `screenshots/inspect/interfaces-elements-builder.jpg`)
 - [x] Pipe Settings — Pessoas / Configurações do pipe / Atividades / Ferramentas (Etiquetas + Gerador de PDF) / Lixeira (Iteration 2; see §15 and prd feature-013 through feature-017; screenshots: `screenshots/inspect/pipe-settings-pessoas.jpg`, `screenshots/inspect/pipe-settings-configuracoes.jpg`)
 - [x] Emails compose flow (card-scoped compose, per-thread generated alias vs. pipe inbound alias, email templates with shared 'Conteúdo dinâmico' token picker — Iteration 4; see §17 and prd feature-018; screenshots: `screenshots/inspect/emails-inbox.jpg`, `screenshots/inspect/emails-compose.jpg`)
 - [x] AI Agents creation flow (3-step builder, trigger/instructions/model/skills/effort, Logs/Templates/MCP sub-tabs — Iteration 5; see §18 and prd feature-019; screenshots: `screenshots/inspect/ai-agents-empty.jpg`, `screenshots/inspect/ai-agents-behaviors-builder.jpg`, `screenshots/inspect/ai-agents-templates.jpg`)
@@ -940,9 +940,9 @@ alterações` → `Última alteração em <timestamp>` → `Alterações salvas`
 **Element palette** (grouped): *Elementos principais* — Dados,
 Formulários (AI-assist badge), Documento (`Novo` badge + AI-assist
 badge). *Layout e conteúdo* — Texto, Link, Divisor. *Mídia* — Imagem,
-Vídeo, Incorporar. Only Dados and Formulários were deep-dived this
-iteration; Documento/Texto/Link/Divisor/Imagem/Vídeo/Incorporar remain
-TBD for a future pass.
+Vídeo, Incorporar. Dados and Formulários deep-dived iteration 6;
+Documento/Texto/Link/Divisor/Imagem/Vídeo/Incorporar deep-dived
+iteration 8 — see §21.
 
 **Dados widget (live-query data table):** binds via `Selecione um pipe ou
 database`, the SAME org-scoped catalog list used by Automations
@@ -999,9 +999,9 @@ rather than real LLM orchestration.
 
 **Sharing:** `Compartilhar` opens a 2-tab modal — `Visibilidade` (the
 same 3-tier privacy dropdown + a copyable public URL) and `Gerenciar
-pessoas` (not deep-dived — presumably the invite list for the
-`restricted_people` tier). `Ver ao vivo` opens the published page in the
-same tab, with the URL simply dropping the `/edit` suffix.
+pessoas` (deep-dived iteration 8, see §21). `Ver ao vivo` opens the
+published page in the same tab, with the URL simply dropping the `/edit`
+suffix.
 
 **Not triggered, by design:** submitting the Formulários launcher's start
 form (would create a real card) and sending a real AI Assistant prompt
@@ -1114,3 +1114,101 @@ Screenshots: `screenshots/inspect/ferramentas-panel.jpg`,
 `screenshots/inspect/gerador-pdf-list.jpg`,
 `screenshots/inspect/gerador-pdf-card-preview.jpg`,
 `screenshots/inspect/conexoes-card-tab-empty.jpg`.
+
+## 21. Interfaces — Remaining Content/Media Elements & Sharing Permissions (Iteration 8, live UI test)
+
+Closed out the Interfaces builder (§19, prd feature-008/feature-020) by
+live-testing the 7 element types left untested iteration 6, plus the
+`Compartilhar` modal's `Gerenciar pessoas` tab, in the same "Central de
+Testes" interface. Added prd feature-023 (content elements: Texto/Link/
+Divisor), feature-024 (media elements: Imagem/Vídeo/Incorporar),
+feature-025 (Documento knowledge-source element), feature-026 (sharing
+permissions).
+
+**Build-critical correction to §19:** every element type tested this
+iteration inserted at the **top of the canvas** regardless of the
+`left_click_drag` drop coordinate (tested dropping each new element near
+the bottom of a long page — it always landed above the previously-added
+elements instead). The builder likely has a single fixed insertion point
+(or inserts adjacent to whichever element is currently selected/focused)
+rather than a literal drop-position placement — the clone should not
+implement pixel-accurate drop-position insertion; a "insert above the
+current selection, else at the top" model matches what was observed.
+
+**Texto** — the only element with **no side config panel**: clicking the
+placed block turns it into an inline, focused WYSIWYG editor. Selecting
+any text (or focusing the empty block) surfaces a floating toolbar:
+`+ Conteúdo dinâmico` (the same grouped dynamic-field token picker seen in
+Automations/Reports/Emails/AI Agents/PDF Generator — **7th confirmed
+reuse**, build it once), a `Texto normal` block-style dropdown, Bold/
+Italic/Underline/Strikethrough/text-color, bullet/numbered list, link
+insert, and blockquote. Content must be stored as structured rich text
+(not a plain string) to round-trip this formatting.
+
+**Link** — side panel with `Nome` + `URL` fields only; the canvas block
+live-updates as you type, rendering as a card with a link icon, the
+entered name as its title, "Site" as a fixed subtitle, and an
+external-link icon once a URL is present.
+
+**Divisor** — zero configuration: dragging it onto the canvas immediately
+renders a full-width horizontal rule with no side panel opening at all.
+
+**Imagem** — side panel opens a 3-tab picker: `Imagens do Unsplash` (a
+search-by-topic/color grid of real stock photos, paginated via "Ver
+mais" — a real Unsplash API integration, not placeholder art),
+`Carregar imagem` (direct upload), and `From URL` (paste an external
+image URL). Plus `Texto alternativo` (alt text) and a `Cantos
+arredondados` (rounded corners) toggle. Confirmed picking an Unsplash
+photo and clicking `Aplicar` renders the real photo full-width in the
+canvas immediately.
+
+**Vídeo** — a single URL field, restricted per its own hint text to
+"Somente vídeos do YouTube, Vimeo são suportados por enquanto" (copy
+implies more platforms are planned) — a `Mostrar Controles` toggle.
+Pasting a real YouTube URL live-embeds the actual video thumbnail +
+player (tested with a public YouTube URL) — this is a real oEmbed-style
+integration, not a mocked player.
+
+**Incorporar** — a generic iframe-embed of **any** URL, with an explicit
+warning ("Alguns sites podem afetar o desempenho da sua interface") and
+two toggles (`Mostrar controles de navegação`, `Mostrar título/url`, both
+default ON). Tested with a plain URL — it rendered a real live iframe
+with a header bar (URL text + refresh + open-in-new-tab icons) above the
+embedded page content.
+
+**Documento** (`Novo` badge) — the same AI-assist banner copy as
+Formulários/Dados ("O Assistente de IA aprende com este elemento para
+responder perguntas dos usuários"), confirming it is a knowledge source
+for the page-scoped AI Assistant (feature-020), not just a file
+attachment widget. `Adicionar documento` accepts PDF only, ≤5MB.
+**Confirmed non-obvious behavior:** the `Título do documento` and
+`Descrição` fields are visually present and appear editable but **do not
+accept typed input until a real file has been selected** via `Selecione
+o documento` — metadata entry is gated behind the upload, unlike Link's
+`Nome` field which has no such prerequisite. Did not upload a real file
+(no disposable test PDF on hand), so post-upload behavior (does the
+title auto-populate from the filename? is a text extract/preview shown?)
+is **unconfirmed — TBD**. This element is conceptually the same
+"knowledge source" primitive as AI Agents' (feature-019) `Documento`
+knowledge-source type in its Conhecimento step (Nome + "Quando usar" +
+RAG-trigger content) — model both as the same underlying document/RAG
+entity, reused at the agent level (feature-019) and the page level
+(feature-020).
+
+**Compartilhar → Gerenciar pessoas:** an `Adicionar pessoas ou grupos`
+search box (name/group/email) above a list of already-granted people —
+this trial org's own admin user is pre-listed, tagged "É você!". Each
+row has a role dropdown: **Admin da Interface** (current/checked — "Possui
+acesso total à Interface. Pode adicionar pipes e databases aos quais
+tiver acesso.") / **Membro da Interface** (tagged `Upgrade`, gated in
+this trial org — "Pode visualizar as páginas da Interface. Só pode
+atualizar campos editáveis.") / **Remover acesso** (destructive, red).
+This is a simpler 2-tier version of the same person-permission pattern
+as Pipe → Pessoas' 4-tier role picker (feature-013). Did not test adding
+a second real person — this trial org has only one seat.
+
+**Not triggered, by design:** uploading a real PDF to the Documento
+element (no disposable test file), and inviting a second real person to
+`Gerenciar pessoas` (single-seat trial org).
+
+Screenshots: `screenshots/inspect/interfaces-elements-builder.jpg`.
