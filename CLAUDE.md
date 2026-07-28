@@ -140,8 +140,7 @@ There is no Linux Chrome inside WSL — the browser is the Windows host Chrome.
 - Drive that Chrome via **claude-in-chrome** — the loop scripts already pass `--chrome` to `claude -p`. Keep that flag.
 - Work in the existing authenticated window so the `proton.me` session is available to every phase (inspect, build, QA).
 - claude-in-chrome is the only browser driver in this project — for inspecting the target, for QA against the clone, and for anything needing the logged-in session. See `claude-in-chrome-reference.md` for the tool reference.
-- **Always close the tab when the task is done.** Whenever you used claude-in-chrome, close the tabs you opened (`tabs_close_mcp`) before ending your turn.
-- **Do not leave any Claude tab groups open in Chrome.** Closing the tabs is not enough on its own — the group they sat in must be gone too.
+- **Always close the tab when the task is done.** Whenever you used claude-in-chrome, close the tabs you opened (`tabs_close_mcp`) before ending your turn, and leave no Claude tab groups open in Chrome.
 
 ## Out of Scope — DO NOT build
 - **Docker — do NOT use it in this project.**
