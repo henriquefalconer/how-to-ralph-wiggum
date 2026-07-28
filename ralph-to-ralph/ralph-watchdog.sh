@@ -39,16 +39,37 @@ trap 'rm -f "$LOCKFILE"' EXIT
 
 # ─── Helpers ───
 
-count_passes() {
+# prd.json drives every decision below, so a corrupt file must not read as "0
+# features". It used to: json.load raised, `|| echo 0` swallowed it, and the
+# watchdog spent all 10 build restarts across all 5 cycles on an unusable file
+# before reporting COMPLETE. A *missing* file is still legitimately 0/0 — inspect
+# has not written it yet — but an unparseable one is fatal.
+read_prd() {   # prints "<passed> <total>"; non-zero exit if prd.json is corrupt
   python3 -c "
-import json; d=json.load(open('prd.json'))
-print(sum(1 for x in d if x.get('passes', False)))
-" 2>/dev/null || echo "0"
+import json, os, sys
+if not os.path.exists('prd.json'):
+    print(0, 0); sys.exit(0)
+try:
+    d = json.load(open('prd.json'))
+except Exception as e:
+    print('cannot parse prd.json: %s' % e, file=sys.stderr); sys.exit(1)
+if not isinstance(d, list):
+    print('prd.json is not a JSON list', file=sys.stderr); sys.exit(1)
+print(sum(1 for x in d if isinstance(x, dict) and x.get('passes', False)), len(d))
+"
 }
 
-total_tasks() {
-  python3 -c "import json; print(len(json.load(open('prd.json'))))" 2>/dev/null || echo "0"
+require_prd() {
+  local err
+  if ! err=$(read_prd 2>&1 >/dev/null); then
+    log "FATAL: $err"
+    log "Fix or delete prd.json and re-run — refusing to spend agent iterations on it."
+    exit 1
+  fi
 }
+
+count_passes() { local s; s=$(read_prd 2>/dev/null) || s="0 0"; echo "${s%% *}"; }
+total_tasks()  { local s; s=$(read_prd 2>/dev/null) || s="0 0"; echo "${s##* }"; }
 
 all_passed() {
   local total=$(total_tasks)
@@ -56,8 +77,13 @@ all_passed() {
   [ "$total" -gt 0 ] && [ "$passed" -ge "$total" ]
 }
 
+# The sentinel records the URL it was written for, because nothing ever clears
+# it. Keyed only by existence, a second run against a different product would
+# skip Phase 1 and build the previous target's prd.json; keyed by URL, the same
+# target still resumes without re-inspecting.
 inspect_done() {
-  [ -f "$STATE_DIR/inspect-complete" ]
+  [ -f "$STATE_DIR/inspect-complete" ] &&
+    [ "$(cat "$STATE_DIR/inspect-complete" 2>/dev/null)" = "$TARGET_URL" ]
 }
 
 cron_backup() {
@@ -108,6 +134,8 @@ for ((cycle=1; cycle<=MAX_CYCLES; cycle++)); do
   build_restarts=0
 
   while ! all_passed; do
+    require_prd   # a corrupt prd.json also reads as "not all passed" — catch it here
+
     if [ "$build_restarts" -ge "$MAX_BUILD_RESTARTS" ]; then
       log "Phase 2: Hit max restarts ($MAX_BUILD_RESTARTS). Moving to QA."
       break

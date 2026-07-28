@@ -133,14 +133,25 @@ Also run full `make test-e2e` to catch cross-feature regressions.
     }
     ```
 15. If bugs found: fix ALL bugs for this feature, then run `make check && make test` once. Commit together: `git commit -m "QA fix: <feature> — fixed N bugs: <brief list>"`
-16. Write your findings to the `PROGRESS_FILE` for this iteration. Keep it short and
+16. **Record the verdict in `prd.json` too.** `report-qa.json` is your report; `prd.json`
+    is the only file the watchdog reads. Set this feature's `passes` field to reflect what
+    you actually observed:
+    - Verified working (including after your own fixes) → leave `passes: true`.
+    - Still broken, or you could not fix it → set `passes: false`.
+
+    Setting it back to `false` is what sends the feature to the build loop for another
+    pass. Skip this and the pipeline reports "PASSED + QA VERIFIED" over a feature you
+    just watched fail.
+17. Write your findings to the `PROGRESS_FILE` for this iteration. Keep it short and
     self-contained — a later iteration may see this file without the ones around it.
     Never append to an earlier iteration's file.
-17. `git add -A`, detailed commit message, `git push`.
+18. `git add -A`, detailed commit message, `git push`.
 
 ## Rules
 - **HARD STOP: Test exactly ONE feature per invocation.** Commit, push, output promise, stop.
 - Be skeptical. Assume things are broken until proven otherwise.
+- **A feature you could not get working must end the iteration with `passes: false` in
+  `prd.json`.** Recording it in `report-qa.json` alone changes nothing downstream.
 - Fix bugs directly in the source, and re-test after every fix.
 - Run `make check && make test` after every code change.
 - Fix ALL bugs for the feature, then test once before committing.

@@ -27,16 +27,40 @@ echo ""
 
 mkdir -p "$PROGRESS_DIR" "$LOG_DIR"
 
-count_passes() {
-  python3 -c "import json; d=json.load(open('prd.json')); print(sum(1 for x in d if x.get('passes', False)))" 2>/dev/null || echo "0"
+# A corrupt prd.json must not read as "0 features" — that looks identical to an
+# empty PRD and burns every remaining iteration on a file no agent can use. The
+# agent rewrites prd.json each iteration, so this is re-checked every time round.
+read_prd() {   # prints "<passed> <total>"; non-zero exit if prd.json is corrupt
+  python3 -c "
+import json, os, sys
+if not os.path.exists('prd.json'):
+    print(0, 0); sys.exit(0)
+try:
+    d = json.load(open('prd.json'))
+except Exception as e:
+    print('cannot parse prd.json: %s' % e, file=sys.stderr); sys.exit(1)
+if not isinstance(d, list):
+    print('prd.json is not a JSON list', file=sys.stderr); sys.exit(1)
+print(sum(1 for x in d if isinstance(x, dict) and x.get('passes', False)), len(d))
+"
 }
-total_tasks() {
-  python3 -c "import json; print(len(json.load(open('prd.json'))))" 2>/dev/null || echo "0"
+
+require_prd() {
+  local err
+  if ! err=$(read_prd 2>&1 >/dev/null); then
+    echo "Error: $err"
+    echo "Fix or delete prd.json and re-run — refusing to spend iterations on it."
+    exit 1
+  fi
 }
+
+count_passes() { local s; s=$(read_prd 2>/dev/null) || s="0 0"; echo "${s%% *}"; }
+total_tasks()  { local s; s=$(read_prd 2>/dev/null) || s="0 0"; echo "${s##* }"; }
 
 consecutive_failures=0
 
 for ((i=1; i<=$ITERATIONS; i++)); do
+  require_prd
   PASSES=$(count_passes)
   TOTAL=$(total_tasks)
   echo "--- Build iteration $i/$ITERATIONS ($PASSES/$TOTAL passed) ---"

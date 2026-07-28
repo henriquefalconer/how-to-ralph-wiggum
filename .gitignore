@@ -14,5 +14,5 @@ dist/
 
 # Runtime files
 *.log
-.ralph-watchdog.lock
-.inspect-complete
+# Loop runtime state lives in ralph-to-ralph/.state/ — ignored by that
+# directory's own .gitignore.

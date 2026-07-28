@@ -63,7 +63,9 @@ Output <promise>INSPECT_COMPLETE</promise> only if ALL pages are inspected AND s
     echo "=== Inspection complete after $i iterations ==="
     echo "PRD: prd.json"
     echo "Build spec: spec-build.md"
-    touch ralph-to-ralph/.state/inspect-complete
+    # Record which target this was, so a later run against a different URL
+    # re-inspects instead of inheriting this run's prd.json.
+    printf '%s\n' "$TARGET_URL" > ralph-to-ralph/.state/inspect-complete
     exit 0
   fi
 

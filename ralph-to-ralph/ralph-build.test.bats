@@ -45,6 +45,22 @@ STUB
   [[ "$output" == *"prd.json not found"* ]]
 }
 
+@test "refuses to run on a corrupt prd.json instead of reading it as 0 features" {
+  echo '[{"id":"f1","passes":fals' > "$REPO/prd.json"
+  run "$REPO/ralph-to-ralph/ralph-build.sh" 5
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"cannot parse prd.json"* ]]
+  [ "$(cat "$STUB_CALLS")" -eq 0 ]
+}
+
+@test "refuses to run when prd.json is valid JSON but not a list" {
+  echo '{"id":"f1"}' > "$REPO/prd.json"
+  run "$REPO/ralph-to-ralph/ralph-build.sh" 5
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"not a JSON list"* ]]
+  [ "$(cat "$STUB_CALLS")" -eq 0 ]
+}
+
 @test "refuses to run without spec-build.md" {
   rm "$REPO/spec-build.md"
   run "$REPO/ralph-to-ralph/ralph-build.sh" 1

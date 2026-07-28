@@ -77,7 +77,8 @@ STUB
   export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
   run "$REPO/ralph-to-ralph/ralph-inspect.sh" https://example.com 3
   [ "$status" -eq 0 ]
-  [ -f "$REPO/ralph-to-ralph/.state/inspect-complete" ]
+  # keyed by target URL — the watchdog compares it before skipping Phase 1
+  [ "$(cat "$REPO/ralph-to-ralph/.state/inspect-complete")" = "https://example.com" ]
   [ "$(cat "$STUB_CALLS")" -eq 1 ]
 }
 

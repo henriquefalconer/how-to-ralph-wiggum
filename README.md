@@ -87,7 +87,8 @@ A strict watchdog wraps the entire pipeline, ensuring all Ralph loops stay stabl
 
 The watchdog takes it from there — inspect, build, QA — committing after
 every feature. Progress is visible in `prd.json` (`passes` flags),
-`progress-*.txt`, and `report-qa.json`.
+`ralph-to-ralph/.state/progress/<phase>/NNN.md` (one journal file per
+iteration), and `report-qa.json`.
 
 ### What a Completed Run Produces
 

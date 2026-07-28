@@ -16,10 +16,11 @@ setup() {
   export STATE="$REPO/ralph-to-ralph/.state"
 
   # Inspect: records args; writes the completion sentinel unless told not to.
+  # The sentinel holds the target URL it was written for, as the real script does.
   cat > "$REPO/ralph-to-ralph/ralph-inspect.sh" <<'STUB'
 #!/bin/bash
 printf '%s\n' "$@" >> "$INSPECT_ARGS"
-[ "${INSPECT_NEVER_COMPLETES:-0}" = "1" ] || touch "$STATE/inspect-complete"
+[ "${INSPECT_NEVER_COMPLETES:-0}" = "1" ] || printf '%s\n' "$1" > "$STATE/inspect-complete"
 exit 0
 STUB
 
@@ -112,12 +113,68 @@ STUB
   [ "$(sed -n 1p "$QA_ARGS")" = "https://example.com" ]
 }
 
-@test "skips inspect entirely when the sentinel already exists" {
-  touch "$STATE/inspect-complete"
+@test "skips inspect when the sentinel names this same target" {
+  echo "https://example.com" > "$STATE/inspect-complete"
   run "$REPO/ralph-to-ralph/ralph-watchdog.sh" https://example.com
   [ "$status" -eq 0 ]
   [ ! -f "$INSPECT_ARGS" ]
   [ -f "$BUILD_ARGS" ]
+}
+
+@test "re-inspects when the sentinel is left over from a different target" {
+  echo "https://previous-target.com" > "$STATE/inspect-complete"
+  run "$REPO/ralph-to-ralph/ralph-watchdog.sh" https://example.com
+  [ "$status" -eq 0 ]
+  [ "$(sed -n 1p "$INSPECT_ARGS")" = "https://example.com" ]
+  [ "$(cat "$STATE/inspect-complete")" = "https://example.com" ]
+}
+
+@test "aborts instead of looping when prd.json is corrupt" {
+  echo '[{"id":"f1","passes":fals' > "$REPO/prd.json"
+  run "$REPO/ralph-to-ralph/ralph-watchdog.sh" https://example.com
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"cannot parse prd.json"* ]]
+  # the whole point: not one agent iteration spent on an unusable file
+  [ ! -f "$BUILD_ARGS" ]
+  [ ! -f "$QA_ARGS" ]
+  [[ "$output" != *"RALPH-TO-RALPH COMPLETE"* ]]
+}
+
+@test "aborts when prd.json is valid JSON but not a list" {
+  echo '{"id":"f1"}' > "$REPO/prd.json"
+  run "$REPO/ralph-to-ralph/ralph-watchdog.sh" https://example.com
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"not a JSON list"* ]]
+}
+
+@test "a missing prd.json is still 0/0 rather than a corruption abort" {
+  rm -f "$REPO/prd.json"
+  run "$REPO/ralph-to-ralph/ralph-watchdog.sh" https://example.com
+  [[ "$output" != *"cannot parse"* ]]
+  [ -f "$BUILD_ARGS" ]
+}
+
+@test "QA demoting a feature to passes:false sends it back to build" {
+  # What the QA prompt now requires: a feature that fails QA is flipped back to
+  # passes:false. Without it the watchdog reports success over a failing feature.
+  cat > "$REPO/ralph-to-ralph/ralph-qa.sh" <<'STUB'
+#!/bin/bash
+printf '%s\n' "$@" >> "$QA_ARGS"
+# fail QA the first time only, so the run still terminates
+[ -f "$QA_ARGS.done" ] && exit 0
+touch "$QA_ARGS.done"
+python3 -c "import json;d=json.load(open('prd.json'));d[0]['passes']=False;json.dump(d,open('prd.json','w'))"
+exit 0
+STUB
+  chmod +x "$REPO/ralph-to-ralph/ralph-qa.sh"
+
+  run "$REPO/ralph-to-ralph/ralph-watchdog.sh" https://example.com
+  [ "$status" -eq 0 ]
+  # cycle 1 built + QA'd, QA demoted it, cycle 2 rebuilt it
+  [ "$(grep -c "https://example.com" "$QA_ARGS")" -eq 2 ]
+  [ "$(wc -l < "$BUILD_ARGS")" -eq 2 ]
+  [[ "$output" == *"restarting build"* ]]
+  [[ "$output" == *"PASSED + QA VERIFIED"* ]]
 }
 
 @test "gives up after five inspect attempts that never complete" {
