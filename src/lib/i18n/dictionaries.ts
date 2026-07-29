@@ -645,6 +645,19 @@ export interface Dictionary {
       openForm: string;
       submitSuccess: string;
     };
+    aiAssistant: {
+      title: string;
+      betaBadge: string;
+      headline: string;
+      cannedPrompt1: string;
+      cannedPrompt2: string;
+      cannedPrompt3: string;
+      cannedPrompt4: string;
+      inputPlaceholder: string;
+      send: string;
+      disclaimer: string;
+      feedbackLink: string;
+    };
   };
 }
 
@@ -1322,6 +1335,19 @@ export const dictionaries: Record<Locale, Dictionary> = {
         nameOverrideLabel: "Name",
         openForm: "Open form",
         submitSuccess: "Card created successfully",
+      },
+      aiAssistant: {
+        title: "AI Assistant",
+        betaBadge: "Beta",
+        headline: "Find answers and move forward with your requests",
+        cannedPrompt1: "See my requests",
+        cannedPrompt2: "Start a request",
+        cannedPrompt3: "Summarize policies and information",
+        cannedPrompt4: "Show me what I can do here",
+        inputPlaceholder: "Ask something...",
+        send: "Send",
+        disclaimer: "AI can make mistakes. Review important information.",
+        feedbackLink: "Send feedback",
       },
     },
   },
@@ -2007,6 +2033,20 @@ export const dictionaries: Record<Locale, Dictionary> = {
         openForm: "Abrir formulário",
         submitSuccess: "Card criado com sucesso",
       },
+      aiAssistant: {
+        title: "Assistente de IA",
+        betaBadge: "Beta",
+        headline: "Encontre respostas e avance com suas solicitações",
+        cannedPrompt1: "Ver minhas solicitações",
+        cannedPrompt2: "Iniciar solicitação",
+        cannedPrompt3: "Resumir políticas e informações",
+        cannedPrompt4: "Mostrar o que posso fazer aqui",
+        inputPlaceholder: "Perguntar algo...",
+        send: "Enviar",
+        disclaimer:
+          "A IA pode cometer erros. Revise as informações importantes.",
+        feedbackLink: "Enviar feedback",
+      },
     },
   },
   es: {
@@ -2691,6 +2731,20 @@ export const dictionaries: Record<Locale, Dictionary> = {
         openForm: "Abrir formulario",
         submitSuccess: "Tarjeta creada con éxito",
       },
+      aiAssistant: {
+        title: "Asistente de IA",
+        betaBadge: "Beta",
+        headline: "Encuentra respuestas y avanza con tus solicitudes",
+        cannedPrompt1: "Ver mis solicitudes",
+        cannedPrompt2: "Iniciar solicitud",
+        cannedPrompt3: "Resumir políticas e información",
+        cannedPrompt4: "Mostrar qué puedo hacer aquí",
+        inputPlaceholder: "Pregunta algo...",
+        send: "Enviar",
+        disclaimer:
+          "La IA puede cometer errores. Revisa la información importante.",
+        feedbackLink: "Enviar comentario",
+      },
     },
   },
   zh: {
@@ -3344,6 +3398,19 @@ export const dictionaries: Record<Locale, Dictionary> = {
         nameOverrideLabel: "名称",
         openForm: "打开表单",
         submitSuccess: "卡片创建成功",
+      },
+      aiAssistant: {
+        title: "AI 助手",
+        betaBadge: "Beta",
+        headline: "查找答案并推进您的请求",
+        cannedPrompt1: "查看我的请求",
+        cannedPrompt2: "启动请求",
+        cannedPrompt3: "总结策略和信息",
+        cannedPrompt4: "向我展示我可以在这里做什么",
+        inputPlaceholder: "问一些东西...",
+        send: "发送",
+        disclaimer: "AI 可能会犯错。请检查重要信息。",
+        feedbackLink: "发送反馈",
       },
     },
   },
@@ -4039,6 +4106,20 @@ export const dictionaries: Record<Locale, Dictionary> = {
         openForm: "Formular öffnen",
         submitSuccess: "Karte erfolgreich erstellt",
       },
+      aiAssistant: {
+        title: "KI-Assistent",
+        betaBadge: "Beta",
+        headline: "Finden Sie Antworten und treiben Sie Ihre Anfragen voran",
+        cannedPrompt1: "Meine Anfragen anzeigen",
+        cannedPrompt2: "Anfrage starten",
+        cannedPrompt3: "Richtlinien und Informationen zusammenfassen",
+        cannedPrompt4: "Zeige mir, was ich hier tun kann",
+        inputPlaceholder: "Fragen Sie etwas...",
+        send: "Senden",
+        disclaimer:
+          "Die KI kann Fehler machen. Überprüfen Sie wichtige Informationen.",
+        feedbackLink: "Feedback geben",
+      },
     },
   },
   fr: {
@@ -4731,6 +4812,20 @@ export const dictionaries: Record<Locale, Dictionary> = {
         openForm: "Ouvrir le formulaire",
         submitSuccess: "Carte créée avec succès",
       },
+      aiAssistant: {
+        title: "Assistant IA",
+        betaBadge: "Bêta",
+        headline: "Trouvez des réponses et avancez avec vos demandes",
+        cannedPrompt1: "Voir mes demandes",
+        cannedPrompt2: "Démarrer une demande",
+        cannedPrompt3: "Résumer les politiques et les informations",
+        cannedPrompt4: "Montrez-moi ce que je peux faire ici",
+        inputPlaceholder: "Demandez quelque chose...",
+        send: "Envoyer",
+        disclaimer:
+          "L'IA peut commettre des erreurs. Vérifiez les informations importantes.",
+        feedbackLink: "Envoyer des commentaires",
+      },
     },
   },
   ja: {
@@ -5411,6 +5506,20 @@ export const dictionaries: Record<Locale, Dictionary> = {
         openForm: "フォームを開く",
         submitSuccess: "カードが正常に作成されました",
       },
+      aiAssistant: {
+        title: "AI アシスタント",
+        betaBadge: "ベータ版",
+        headline: "回答を見つけてリクエストを進める",
+        cannedPrompt1: "自分のリクエストを表示",
+        cannedPrompt2: "リクエストを開始",
+        cannedPrompt3: "ポリシーと情報を要約",
+        cannedPrompt4: "ここで何ができるか見せて",
+        inputPlaceholder: "何か質問してください...",
+        send: "送信",
+        disclaimer:
+          "AI はエラーを犯す可能性があります。重要な情報を確認してください。",
+        feedbackLink: "フィードバックを送信",
+      },
     },
   },
   hi: {
@@ -6084,6 +6193,19 @@ export const dictionaries: Record<Locale, Dictionary> = {
         openForm: "फ़ॉर्म खोलें",
         submitSuccess: "कार्ड सफलतापूर्वक बनाया गया",
       },
+      aiAssistant: {
+        title: "AI सहायक",
+        betaBadge: "बीटा",
+        headline: "उत्तर खोजें और अपने अनुरोधों में आगे बढ़ें",
+        cannedPrompt1: "मेने अनुरोध देखें",
+        cannedPrompt2: "अनुरोध शुरू करें",
+        cannedPrompt3: "नीतियां और जानकारी सारांशित करें",
+        cannedPrompt4: "मुझे दिखाएं कि मैं यहां क्या कर सकता हूं",
+        inputPlaceholder: "कुछ पूछें...",
+        send: "भेजें",
+        disclaimer: "एआई गलतियां कर सकता है। महत्वपूर्ण जानकारी की जांच करें।",
+        feedbackLink: "प्रतिक्रिया भेजें",
+      },
     },
   },
   ar: {
@@ -6755,6 +6877,19 @@ export const dictionaries: Record<Locale, Dictionary> = {
         nameOverrideLabel: "الاسم",
         openForm: "فتح النموذج",
         submitSuccess: "تم إنشاء البطاقة بنجاح",
+      },
+      aiAssistant: {
+        title: "مساعد ذكي",
+        betaBadge: "بيتا",
+        headline: "ابحث عن الإجابات وتقدم مع طلباتك",
+        cannedPrompt1: "اعرض طلباتي",
+        cannedPrompt2: "بدء طلب",
+        cannedPrompt3: "تلخيص السياسات والمعلومات",
+        cannedPrompt4: "أخبرني بما يمكنني فعله هنا",
+        inputPlaceholder: "اسأل شيئًا...",
+        send: "إرسال",
+        disclaimer: "قد تخطئ الذكاء الاصطناعي. تحقق من المعلومات المهمة.",
+        feedbackLink: "إرسال التعليقات",
       },
     },
   },
@@ -7435,6 +7570,19 @@ export const dictionaries: Record<Locale, Dictionary> = {
         nameOverrideLabel: "Название",
         openForm: "Открыть форму",
         submitSuccess: "Карточка успешно создана",
+      },
+      aiAssistant: {
+        title: "AI ассистент",
+        betaBadge: "Бета",
+        headline: "Найдите ответы и продвигайте свои запросы",
+        cannedPrompt1: "Показать мои запросы",
+        cannedPrompt2: "Начать запрос",
+        cannedPrompt3: "Резюмировать политики и информацию",
+        cannedPrompt4: "Покажи, что я могу здесь делать",
+        inputPlaceholder: "Спросите что-то...",
+        send: "Отправить",
+        disclaimer: "ИИ может ошибаться. Проверьте важную информацию.",
+        feedbackLink: "Отправить отзыв",
       },
     },
   },

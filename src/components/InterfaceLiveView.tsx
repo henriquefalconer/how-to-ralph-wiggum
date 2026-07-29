@@ -1,5 +1,6 @@
 "use client";
 
+import { getAssistantScope } from "@/lib/ai-assistant";
 import type { Dictionary } from "@/lib/i18n";
 import type {
   DataTableConfig,
@@ -10,6 +11,7 @@ import type {
 import * as Dialog from "@radix-ui/react-dialog";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { AIAssistantWidget } from "./AIAssistantWidget";
 import { CreateCardPopover } from "./CreateCardPopover";
 
 const VIEWER_ID = "anonymous";
@@ -267,32 +269,51 @@ export function InterfaceLiveView({
   elements: InterfacePageElement[];
   dictionary: Dictionary;
 }) {
+  const [scope, setScope] = useState<
+    Array<{ type: "pipe" | "database"; id: string }>
+  >([]);
+
+  useEffect(() => {
+    const loadScope = async () => {
+      const assistantScope = await getAssistantScope(pageId);
+      setScope(assistantScope);
+    };
+    loadScope();
+  }, [pageId]);
+
   return (
-    <div
-      data-testid="interface-live-view"
-      className="mx-auto max-w-2xl space-y-3 p-6"
-    >
-      {elements.map((element) => (
-        <div key={element.id}>
-          {element.type === "data_table" ? (
-            <LiveDataTable
-              interfaceId={interfaceId}
-              pageId={pageId}
-              element={element}
-              dictionary={dictionary}
-            />
-          ) : element.type === "form_link" ? (
-            <LiveFormLink
-              interfaceId={interfaceId}
-              pageId={pageId}
-              element={element}
-              dictionary={dictionary}
-            />
-          ) : (
-            <LiveGenericElement element={element} />
-          )}
-        </div>
-      ))}
-    </div>
+    <>
+      <div
+        data-testid="interface-live-view"
+        className="mx-auto max-w-2xl space-y-3 p-6"
+      >
+        {elements.map((element) => (
+          <div key={element.id}>
+            {element.type === "data_table" ? (
+              <LiveDataTable
+                interfaceId={interfaceId}
+                pageId={pageId}
+                element={element}
+                dictionary={dictionary}
+              />
+            ) : element.type === "form_link" ? (
+              <LiveFormLink
+                interfaceId={interfaceId}
+                pageId={pageId}
+                element={element}
+                dictionary={dictionary}
+              />
+            ) : (
+              <LiveGenericElement element={element} />
+            )}
+          </div>
+        ))}
+      </div>
+      <AIAssistantWidget
+        pageId={pageId}
+        scope={scope}
+        dictionary={dictionary}
+      />
+    </>
   );
 }

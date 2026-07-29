@@ -1099,7 +1099,7 @@
     "data_model": "No new persisted entity -- reads interface_page_elements for the current page (see feature-008's data model) to determine its answer scope. Optionally: interface_ai_conversations: id, page_id (fk), viewer_id, messages (jsonb array of {role, content, ts}) if conversation history needs to persist across visits (unconfirmed whether the real product persists this).",
     "priority": 10,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {
