@@ -30,15 +30,21 @@ DEV_PORT=3015
 mkdir -p "$STATE_DIR"
 rm -f "$QA_SENTINEL"
 
-if [ ! -f "prd.json" ]; then
-  echo "Error: prd.json not found. Run ralph-build.sh first."
-  exit 1
-fi
-
 # The session runner: usage accounting, resume-on-missing-promise, and the
-# single run-wide progress file every agent appends to.
+# single run-wide progress file every agent appends to. Sourced BEFORE the
+# guards below so they can fail through fail_phase and be seen in the progress
+# file; sourcing it costs nothing but the run namespace it would create anyway.
 # shellcheck source=ralph-lib.sh
 . "$(dirname "$0")/ralph-lib.sh"
+
+# The gate framework: preconditions that are repaired by an agent rather than
+# being fatal. Sourced after ralph-lib.sh, which provides run_iteration.
+# shellcheck source=ralph-gates.sh
+. "$(dirname "$0")/ralph-gates.sh"
+
+if [ ! -f "prd.json" ]; then
+  fail_phase "prd.json not found — run ralph-build.sh first."
+fi
 
 echo "=== Phase 3 (QA with Claude) ==="
 echo "Target: ${TARGET_URL:-none}"
@@ -68,34 +74,77 @@ stop_dev() {
   pkill -f "next dev --port $DEV_PORT" 2>/dev/null || true
 }
 
-pkill -f "next dev --port $DEV_PORT" 2>/dev/null || true
-
 DEV_LOG="$RUN_DIR/dev-server.log"
-setsid npm run dev > "$DEV_LOG" 2>&1 &
-DEV_PID=$!
+DEV_PID=""
+
+start_dev() {
+  pkill -f "next dev --port $DEV_PORT" 2>/dev/null || true
+  setsid npm run dev > "$DEV_LOG" 2>&1 &
+  DEV_PID=$!
+}
+
 # `|| true` inside stop_dev because under `set -e` a failed kill (dev server
 # already gone) would abort the trap and make the phase exit non-zero even on a
 # successful QA_COMPLETE.
 trap 'stop_dev; reap_sessions; exit 130' INT
 trap 'stop_dev; reap_sessions; exit 143' TERM
 trap 'stop_dev; reap_sessions' EXIT
-echo "Dev server starting (PID: $DEV_PID, log: $DEV_LOG)"
 
-# Poll for readiness instead of sleeping a fixed 5s and hoping. A server that
-# never comes up has to fail loudly here — the old code carried on regardless,
-# so the failure surfaced later as inexplicable QA results.
-dev_ready=""
-for _ in $(seq 60); do
-  if curl -sf -o /dev/null "http://localhost:$DEV_PORT/" 2>/dev/null; then
-    dev_ready=1
-    break
-  fi
-  sleep 1
-done
-if [ -z "$dev_ready" ]; then
-  echo "Error: dev server never became ready on port $DEV_PORT (60s). Last output:"
-  tail -20 "$DEV_LOG" 2>/dev/null || true
-  exit 1
+# ─── The dev-server gate ───
+#
+# Readiness used to be a 60s poll ending in `exit 1`. That spent one of the
+# watchdog's three QA attempts on a condition an agent could fix, and said
+# nothing in the progress file on the way out. It is a gate now: the check is
+# unchanged, but a failure is handed to a repair agent and re-checked, and only
+# an unrepairable one stops the phase.
+#
+# reset restarts the server: whatever the repair agent changed — a cache, a
+# migration, a source file — has to be picked up by a process started after it,
+# and a server left 500ing from before the fix would fail the re-check for a
+# reason that no longer exists.
+gate_dev_server_desc="\`npm run dev\` serves HTTP 200 at http://localhost:$DEV_PORT/ (it is the clone under test)"
+
+gate_dev_server_reset() {
+  stop_dev
+  start_dev
+  echo "Dev server starting (PID: $DEV_PID, log: $DEV_LOG)" >&2
+}
+
+gate_dev_server_check() {
+  local _
+  for _ in $(seq 60); do
+    curl -sf -o /dev/null "http://localhost:$DEV_PORT/" 2>/dev/null && return 0
+    sleep 1
+  done
+  return 1
+}
+
+# The HTTP body matters as much as the log: Next.js serves its compile errors as
+# the page, so the reason for a 500 is often only in the response.
+gate_dev_server_diag() {
+  echo "--- last 80 lines of $DEV_LOG ---"
+  tail -80 "$DEV_LOG" 2>/dev/null || echo "(no dev server log)"
+  echo
+  echo "--- HTTP status and body of / ---"
+  curl -s -o /tmp/ralph-gate-body.$$ -w 'status: %{http_code}\n' \
+    "http://localhost:$DEV_PORT/" 2>/dev/null || echo "(no response at all)"
+  head -c 3000 /tmp/ralph-gate-body.$$ 2>/dev/null; rm -f /tmp/ralph-gate-body.$$
+  echo
+  echo "--- listeners on $DEV_PORT ---"
+  { ss -ltnp 2>/dev/null || netstat -ltnp 2>/dev/null; } | grep "$DEV_PORT" || echo "(nothing listening)"
+  echo
+  echo "--- next dev processes ---"
+  ps aux 2>/dev/null | grep "[n]ext dev" || echo "(none)"
+  echo
+  echo "--- recent commits ---"
+  git log --oneline -5 2>/dev/null
+  echo
+  echo "--- working tree ---"
+  git status --short 2>/dev/null | head -30
+}
+
+if ! run_gates qa dev_server; then
+  fail_phase "the dev server never became usable on port $DEV_PORT and could not be repaired — QA cannot test a clone that does not serve."
 fi
 echo "Dev server ready on port $DEV_PORT"
 
