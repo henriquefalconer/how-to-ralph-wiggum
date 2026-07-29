@@ -697,3 +697,106 @@ export const emailTemplates = pgTable("email_templates", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const aiAgentStatuses = ["draft", "active", "inactive"] as const;
+export const aiAgentTriggerTypes = [
+  "card_entered_phase",
+  "field_updated",
+  "card_created",
+  "alert_triggered",
+  "card_exited_phase",
+  "email_received",
+  "connected_cards_moved_to_phase",
+  "http_response_received",
+  "interface_button_clicked",
+] as const;
+export const aiAgentModelTiers = [
+  "org_default",
+  "classic",
+  "lite",
+  "pro",
+  "standard",
+] as const;
+export const aiAgentEffortLevels = ["standard", "maximum"] as const;
+export const aiAgentRunStatuses = ["success", "error", "running"] as const;
+export const aiKnowledgeSourceTypes = [
+  "pipe_database",
+  "document",
+  "plain_text",
+] as const;
+
+export const aiAgents = pgTable("ai_agents", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  pipeId: uuid("pipe_id")
+    .notNull()
+    .references(() => pipes.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description").notNull().default(""),
+  status: text("status", { enum: aiAgentStatuses }).notNull().default("draft"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const aiAgentBehaviors = pgTable("ai_agent_behaviors", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  agentId: uuid("agent_id")
+    .notNull()
+    .references(() => aiAgents.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  enabled: boolean("enabled").notNull().default(true),
+  triggerType: text("trigger_type", { enum: aiAgentTriggerTypes }).notNull(),
+  triggerConfig: jsonb("trigger_config")
+    .$type<Record<string, unknown>>()
+    .notNull()
+    .default({}),
+  instructions: text("instructions").notNull().default(""),
+  modelTier: text("model_tier", { enum: aiAgentModelTiers })
+    .notNull()
+    .default("org_default"),
+  skills: jsonb("skills")
+    .$type<{
+      documentAnalysis?: boolean;
+      webSearch?: boolean;
+      codeExecution?: boolean;
+    }>()
+    .notNull()
+    .default({}),
+  effort: text("effort", { enum: aiAgentEffortLevels })
+    .notNull()
+    .default("standard"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const aiAgentKnowledgeSources = pgTable("ai_agent_knowledge_sources", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  agentId: uuid("agent_id")
+    .notNull()
+    .references(() => aiAgents.id, { onDelete: "cascade" }),
+  type: text("type", { enum: aiKnowledgeSourceTypes }).notNull(),
+  name: text("name").notNull(),
+  usageDescription: text("usage_description").notNull().default(""),
+  content: text("content"),
+  fileRef: text("file_ref"),
+  sourcePipeId: uuid("source_pipe_id").references(() => pipes.id, {
+    onDelete: "set null",
+  }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const aiAgentRuns = pgTable("ai_agent_runs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  agentId: uuid("agent_id")
+    .notNull()
+    .references(() => aiAgents.id, { onDelete: "cascade" }),
+  behaviorId: uuid("behavior_id")
+    .notNull()
+    .references(() => aiAgentBehaviors.id, { onDelete: "cascade" }),
+  cardId: uuid("card_id")
+    .notNull()
+    .references(() => cards.id, { onDelete: "cascade" }),
+  status: text("status", { enum: aiAgentRunStatuses }).notNull(),
+  message: text("message").notNull().default(""),
+  startedAt: timestamp("started_at").defaultNow().notNull(),
+  finishedAt: timestamp("finished_at"),
+});

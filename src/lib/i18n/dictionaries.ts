@@ -702,6 +702,16 @@ export interface Dictionary {
       emptyState: string;
       noneFound: string;
     };
+    aiAgents: {
+      tab: string;
+      createNewAgent: string;
+      agentName: string;
+      draftBadge: string;
+      deleteAgent: string;
+      logsTab: string;
+      noAgents: string;
+      noLogs: string;
+    };
   };
 }
 
