@@ -701,7 +701,7 @@
     "data_model": "pipe_members: id, pipe_id (fk), user_id (fk), role (enum: pipe_member|pipe_admin|read_only|restricted_view), invited_at, joined_at (nullable)",
     "priority": 11,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {

@@ -21,6 +21,41 @@ export const organizations = pgTable("organizations", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const users = pgTable("users", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  orgId: uuid("org_id")
+    .notNull()
+    .references(() => organizations.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  // The single implicit "logged-in" identity for this org (auth is out of
+  // scope per project rules — see CLAUDE.md's Out of Scope section).
+  isSelf: boolean("is_self").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const pipeMemberRoles = [
+  "pipe_member",
+  "pipe_admin",
+  "read_only",
+  "restricted_view",
+] as const;
+
+export const pipeMembers = pgTable("pipe_members", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  pipeId: uuid("pipe_id")
+    .notNull()
+    .references(() => pipes.id, { onDelete: "cascade" }),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  role: text("role", { enum: pipeMemberRoles })
+    .notNull()
+    .default("pipe_member"),
+  invitedAt: timestamp("invited_at").defaultNow().notNull(),
+  joinedAt: timestamp("joined_at"),
+});
+
 export const pipes = pgTable("pipes", {
   id: uuid("id").primaryKey().defaultRandom(),
   orgId: uuid("org_id")

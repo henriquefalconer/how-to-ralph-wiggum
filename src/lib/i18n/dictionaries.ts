@@ -186,6 +186,33 @@ export interface Dictionary {
     automations: string;
     reports: string;
     dashboards: string;
+    members: string;
+  };
+  members: {
+    heading: string;
+    inviteButton: string;
+    searchPlaceholder: string;
+    columnName: string;
+    columnRole: string;
+    selfTag: string;
+    removeTooltip: string;
+    removeConfirm: string;
+    lastAdminError: string;
+    emptyState: string;
+    inviteModalTitle: string;
+    nameLabel: string;
+    namePlaceholder: string;
+    emailLabel: string;
+    emailPlaceholder: string;
+    roleLabel: string;
+    submit: string;
+    cancel: string;
+    roles: {
+      pipe_member: { label: string; description: string };
+      pipe_admin: { label: string; description: string };
+      read_only: { label: string; description: string };
+      restricted_view: { label: string; description: string };
+    };
   };
   automations: {
     heading: string;
@@ -704,6 +731,47 @@ export const dictionaries: Record<Locale, Dictionary> = {
       automations: "Automations",
       reports: "Reports",
       dashboards: "Dashboards",
+      members: "People",
+    },
+    members: {
+      heading: "{count} people in {pipeName}",
+      inviteButton: "Invite people",
+      searchPlaceholder: "Search by name",
+      columnName: "Name",
+      columnRole: "Role",
+      selfTag: "This is you!",
+      removeTooltip: "Remove",
+      removeConfirm: "Remove this person from the pipe?",
+      lastAdminError: "A pipe must always have at least one admin",
+      emptyState: "No people found",
+      inviteModalTitle: "Invite people",
+      nameLabel: "Name",
+      namePlaceholder: "Full name",
+      emailLabel: "Email",
+      emailPlaceholder: "name@company.com",
+      roleLabel: "Role",
+      submit: "Invite",
+      cancel: "Cancel",
+      roles: {
+        pipe_member: {
+          label: "Pipe member",
+          description:
+            "Can create cards and access every card in the pipe to edit or move them",
+        },
+        pipe_admin: {
+          label: "Pipe admin",
+          description: "Can also access the pipe's settings",
+        },
+        read_only: {
+          label: "Read only",
+          description: "Can only view and comment on cards",
+        },
+        restricted_view: {
+          label: "Restricted view",
+          description:
+            "Can create and edit cards they created or were assigned to. Cannot delete cards",
+        },
+      },
     },
     automations: {
       heading: "Automations",
@@ -1234,6 +1302,47 @@ export const dictionaries: Record<Locale, Dictionary> = {
       automations: "Automações",
       reports: "Relatórios",
       dashboards: "Painéis",
+      members: "Pessoas",
+    },
+    members: {
+      heading: "{count} pessoa(s) em {pipeName}",
+      inviteButton: "Convidar pessoas",
+      searchPlaceholder: "Pesquisar por nome",
+      columnName: "Nome",
+      columnRole: "Função",
+      selfTag: "Esse é você!",
+      removeTooltip: "Remover",
+      removeConfirm: "Remover esta pessoa do pipe?",
+      lastAdminError: "Um pipe deve sempre ter pelo menos um admin",
+      emptyState: "Nenhuma pessoa encontrada",
+      inviteModalTitle: "Convidar pessoas",
+      nameLabel: "Nome",
+      namePlaceholder: "Nome completo",
+      emailLabel: "Email",
+      emailPlaceholder: "nome@empresa.com",
+      roleLabel: "Função",
+      submit: "Convidar",
+      cancel: "Cancelar",
+      roles: {
+        pipe_member: {
+          label: "Membro do pipe",
+          description:
+            "Pode criar cards e acessar todos os cards existentes no pipe para editá-los/movê-los",
+        },
+        pipe_admin: {
+          label: "Admin do Pipe",
+          description: "Também pode acessar as configurações do pipe",
+        },
+        read_only: {
+          label: "Somente leitura",
+          description: "Só pode ver e comentar nos cards",
+        },
+        restricted_view: {
+          label: "Visão restrita",
+          description:
+            "Pode criar e editar cards que criou ou que foram atribuídos a ela. Não pode deletar cards",
+        },
+      },
     },
     automations: {
       heading: "Automações",
@@ -1765,6 +1874,47 @@ export const dictionaries: Record<Locale, Dictionary> = {
       automations: "Automatizaciones",
       reports: "Informes",
       dashboards: "Paneles",
+      members: "Personas",
+    },
+    members: {
+      heading: "{count} persona(s) en {pipeName}",
+      inviteButton: "Invitar personas",
+      searchPlaceholder: "Buscar por nombre",
+      columnName: "Nombre",
+      columnRole: "Función",
+      selfTag: "¡Eres tú!",
+      removeTooltip: "Eliminar",
+      removeConfirm: "¿Eliminar a esta persona del pipe?",
+      lastAdminError: "Un pipe siempre debe tener al menos un admin",
+      emptyState: "No se encontraron personas",
+      inviteModalTitle: "Invitar personas",
+      nameLabel: "Nombre",
+      namePlaceholder: "Nombre completo",
+      emailLabel: "Correo electrónico",
+      emailPlaceholder: "nombre@empresa.com",
+      roleLabel: "Función",
+      submit: "Invitar",
+      cancel: "Cancelar",
+      roles: {
+        pipe_member: {
+          label: "Miembro del pipe",
+          description:
+            "Puede crear cards y acceder a todos los cards del pipe para editarlos/moverlos",
+        },
+        pipe_admin: {
+          label: "Admin del Pipe",
+          description: "También puede acceder a la configuración del pipe",
+        },
+        read_only: {
+          label: "Solo lectura",
+          description: "Solo puede ver y comentar los cards",
+        },
+        restricted_view: {
+          label: "Vista restringida",
+          description:
+            "Puede crear y editar cards que creó o que le fueron asignados. No puede eliminar cards",
+        },
+      },
     },
     automations: {
       heading: "Automatizaciones",
@@ -2287,6 +2437,42 @@ export const dictionaries: Record<Locale, Dictionary> = {
       automations: "自动化",
       reports: "报表",
       dashboards: "仪表盘",
+      members: "成员",
+    },
+    members: {
+      heading: "{pipeName} 中有 {count} 位成员",
+      inviteButton: "邀请成员",
+      searchPlaceholder: "按姓名搜索",
+      columnName: "姓名",
+      columnRole: "角色",
+      selfTag: "这是你！",
+      removeTooltip: "移除",
+      removeConfirm: "从该流程中移除此成员？",
+      lastAdminError: "流程必须至少保留一位管理员",
+      emptyState: "未找到成员",
+      inviteModalTitle: "邀请成员",
+      nameLabel: "姓名",
+      namePlaceholder: "全名",
+      emailLabel: "邮箱",
+      emailPlaceholder: "name@company.com",
+      roleLabel: "角色",
+      submit: "邀请",
+      cancel: "取消",
+      roles: {
+        pipe_member: {
+          label: "流程成员",
+          description: "可以创建卡片并访问流程中的所有卡片以编辑或移动它们",
+        },
+        pipe_admin: {
+          label: "流程管理员",
+          description: "还可以访问流程的设置",
+        },
+        read_only: { label: "只读", description: "只能查看和评论卡片" },
+        restricted_view: {
+          label: "受限视图",
+          description: "可以创建和编辑自己创建或被分配的卡片，不能删除卡片",
+        },
+      },
     },
     automations: {
       heading: "自动化",
@@ -2812,6 +2998,47 @@ export const dictionaries: Record<Locale, Dictionary> = {
       automations: "Automatisierungen",
       reports: "Berichte",
       dashboards: "Dashboards",
+      members: "Personen",
+    },
+    members: {
+      heading: "{count} Person(en) in {pipeName}",
+      inviteButton: "Personen einladen",
+      searchPlaceholder: "Nach Namen suchen",
+      columnName: "Name",
+      columnRole: "Rolle",
+      selfTag: "Das bist du!",
+      removeTooltip: "Entfernen",
+      removeConfirm: "Diese Person aus dem Pipe entfernen?",
+      lastAdminError: "Ein Pipe muss immer mindestens einen Admin haben",
+      emptyState: "Keine Personen gefunden",
+      inviteModalTitle: "Personen einladen",
+      nameLabel: "Name",
+      namePlaceholder: "Vollständiger Name",
+      emailLabel: "E-Mail",
+      emailPlaceholder: "name@firma.com",
+      roleLabel: "Rolle",
+      submit: "Einladen",
+      cancel: "Abbrechen",
+      roles: {
+        pipe_member: {
+          label: "Pipe-Mitglied",
+          description:
+            "Kann Cards erstellen und auf alle Cards im Pipe zugreifen, um sie zu bearbeiten/verschieben",
+        },
+        pipe_admin: {
+          label: "Pipe-Admin",
+          description: "Kann auch auf die Pipe-Einstellungen zugreifen",
+        },
+        read_only: {
+          label: "Nur Lesen",
+          description: "Kann Cards nur ansehen und kommentieren",
+        },
+        restricted_view: {
+          label: "Eingeschränkte Ansicht",
+          description:
+            "Kann Cards erstellen und bearbeiten, die sie erstellt hat oder ihr zugewiesen wurden. Kann keine Cards löschen",
+        },
+      },
     },
     automations: {
       heading: "Automatisierungen",
@@ -3348,6 +3575,47 @@ export const dictionaries: Record<Locale, Dictionary> = {
       automations: "Automatisations",
       reports: "Rapports",
       dashboards: "Tableaux de bord",
+      members: "Personnes",
+    },
+    members: {
+      heading: "{count} personne(s) dans {pipeName}",
+      inviteButton: "Inviter des personnes",
+      searchPlaceholder: "Rechercher par nom",
+      columnName: "Nom",
+      columnRole: "Rôle",
+      selfTag: "C'est vous !",
+      removeTooltip: "Retirer",
+      removeConfirm: "Retirer cette personne du pipe ?",
+      lastAdminError: "Un pipe doit toujours avoir au moins un admin",
+      emptyState: "Aucune personne trouvée",
+      inviteModalTitle: "Inviter des personnes",
+      nameLabel: "Nom",
+      namePlaceholder: "Nom complet",
+      emailLabel: "E-mail",
+      emailPlaceholder: "nom@entreprise.com",
+      roleLabel: "Rôle",
+      submit: "Inviter",
+      cancel: "Annuler",
+      roles: {
+        pipe_member: {
+          label: "Membre du pipe",
+          description:
+            "Peut créer des cards et accéder à toutes les cards du pipe pour les modifier/déplacer",
+        },
+        pipe_admin: {
+          label: "Admin du pipe",
+          description: "Peut aussi accéder aux paramètres du pipe",
+        },
+        read_only: {
+          label: "Lecture seule",
+          description: "Peut seulement voir et commenter les cards",
+        },
+        restricted_view: {
+          label: "Vue restreinte",
+          description:
+            "Peut créer et modifier les cards qu'elle a créées ou qui lui sont assignées. Ne peut pas supprimer de cards",
+        },
+      },
     },
     automations: {
       heading: "Automatisations",
@@ -3880,6 +4148,47 @@ export const dictionaries: Record<Locale, Dictionary> = {
       automations: "オートメーション",
       reports: "レポート",
       dashboards: "ダッシュボード",
+      members: "メンバー",
+    },
+    members: {
+      heading: "{pipeName} には {count} 人のメンバーがいます",
+      inviteButton: "メンバーを招待",
+      searchPlaceholder: "名前で検索",
+      columnName: "名前",
+      columnRole: "役割",
+      selfTag: "あなたです！",
+      removeTooltip: "削除",
+      removeConfirm: "このメンバーをパイプから削除しますか？",
+      lastAdminError: "パイプには常に1人以上の管理者が必要です",
+      emptyState: "メンバーが見つかりません",
+      inviteModalTitle: "メンバーを招待",
+      nameLabel: "名前",
+      namePlaceholder: "フルネーム",
+      emailLabel: "メール",
+      emailPlaceholder: "name@company.com",
+      roleLabel: "役割",
+      submit: "招待",
+      cancel: "キャンセル",
+      roles: {
+        pipe_member: {
+          label: "パイプメンバー",
+          description:
+            "カードを作成し、パイプ内のすべてのカードにアクセスして編集・移動できます",
+        },
+        pipe_admin: {
+          label: "パイプ管理者",
+          description: "パイプの設定にもアクセスできます",
+        },
+        read_only: {
+          label: "閲覧のみ",
+          description: "カードの閲覧とコメントのみ可能です",
+        },
+        restricted_view: {
+          label: "制限付き表示",
+          description:
+            "自分が作成したか割り当てられたカードのみ作成・編集できます。カードを削除できません",
+        },
+      },
     },
     automations: {
       heading: "オートメーション",
@@ -4406,6 +4715,47 @@ export const dictionaries: Record<Locale, Dictionary> = {
       automations: "ऑटोमेशन",
       reports: "रिपोर्ट",
       dashboards: "डैशबोर्ड",
+      members: "सदस्य",
+    },
+    members: {
+      heading: "{pipeName} में {count} सदस्य",
+      inviteButton: "सदस्यों को आमंत्रित करें",
+      searchPlaceholder: "नाम से खोजें",
+      columnName: "नाम",
+      columnRole: "भूमिका",
+      selfTag: "यह आप हैं!",
+      removeTooltip: "हटाएं",
+      removeConfirm: "इस सदस्य को पाइप से हटाएं?",
+      lastAdminError: "एक पाइप में हमेशा कम से कम एक एडमिन होना चाहिए",
+      emptyState: "कोई सदस्य नहीं मिला",
+      inviteModalTitle: "सदस्यों को आमंत्रित करें",
+      nameLabel: "नाम",
+      namePlaceholder: "पूरा नाम",
+      emailLabel: "ईमेल",
+      emailPlaceholder: "name@company.com",
+      roleLabel: "भूमिका",
+      submit: "आमंत्रित करें",
+      cancel: "रद्द करें",
+      roles: {
+        pipe_member: {
+          label: "पाइप सदस्य",
+          description:
+            "कार्ड बना सकते हैं और पाइप के सभी कार्ड्स को संपादित/स्थानांतरित करने के लिए एक्सेस कर सकते हैं",
+        },
+        pipe_admin: {
+          label: "पाइप एडमिन",
+          description: "पाइप की सेटिंग्स तक भी पहुंच सकते हैं",
+        },
+        read_only: {
+          label: "केवल पढ़ने के लिए",
+          description: "केवल कार्ड देख और टिप्पणी कर सकते हैं",
+        },
+        restricted_view: {
+          label: "प्रतिबंधित दृश्य",
+          description:
+            "केवल वही कार्ड बना/संपादित कर सकते हैं जो उन्होंने बनाए या जिन्हें सौंपे गए। कार्ड हटा नहीं सकते",
+        },
+      },
     },
     automations: {
       heading: "ऑटोमेशन",
@@ -4929,6 +5279,47 @@ export const dictionaries: Record<Locale, Dictionary> = {
       automations: "الأتمتة",
       reports: "التقارير",
       dashboards: "لوحات المعلومات",
+      members: "الأشخاص",
+    },
+    members: {
+      heading: "{count} شخص في {pipeName}",
+      inviteButton: "دعوة أشخاص",
+      searchPlaceholder: "البحث بالاسم",
+      columnName: "الاسم",
+      columnRole: "الدور",
+      selfTag: "هذا أنت!",
+      removeTooltip: "إزالة",
+      removeConfirm: "إزالة هذا الشخص من الـ pipe؟",
+      lastAdminError: "يجب أن يحتوي الـ pipe دائمًا على مسؤول واحد على الأقل",
+      emptyState: "لم يتم العثور على أشخاص",
+      inviteModalTitle: "دعوة أشخاص",
+      nameLabel: "الاسم",
+      namePlaceholder: "الاسم الكامل",
+      emailLabel: "البريد الإلكتروني",
+      emailPlaceholder: "name@company.com",
+      roleLabel: "الدور",
+      submit: "دعوة",
+      cancel: "إلغاء",
+      roles: {
+        pipe_member: {
+          label: "عضو الـ pipe",
+          description:
+            "يمكنه إنشاء البطاقات والوصول إلى جميع البطاقات في الـ pipe لتعديلها/نقلها",
+        },
+        pipe_admin: {
+          label: "مسؤول الـ pipe",
+          description: "يمكنه أيضًا الوصول إلى إعدادات الـ pipe",
+        },
+        read_only: {
+          label: "قراءة فقط",
+          description: "يمكنه فقط عرض البطاقات والتعليق عليها",
+        },
+        restricted_view: {
+          label: "عرض مقيد",
+          description:
+            "يمكنه إنشاء وتعديل البطاقات التي أنشأها أو المسندة إليه فقط. لا يمكنه حذف البطاقات",
+        },
+      },
     },
     automations: {
       heading: "الأتمتة",
@@ -5454,6 +5845,48 @@ export const dictionaries: Record<Locale, Dictionary> = {
       automations: "Автоматизации",
       reports: "Отчёты",
       dashboards: "Панели",
+      members: "Участники",
+    },
+    members: {
+      heading: "{count} участник(ов) в {pipeName}",
+      inviteButton: "Пригласить участников",
+      searchPlaceholder: "Поиск по имени",
+      columnName: "Имя",
+      columnRole: "Роль",
+      selfTag: "Это вы!",
+      removeTooltip: "Удалить",
+      removeConfirm: "Удалить этого участника из пайпа?",
+      lastAdminError: "В пайпе всегда должен быть хотя бы один админ",
+      emptyState: "Участники не найдены",
+      inviteModalTitle: "Пригласить участников",
+      nameLabel: "Имя",
+      namePlaceholder: "Полное имя",
+      emailLabel: "Эл. почта",
+      emailPlaceholder: "name@company.com",
+      roleLabel: "Роль",
+      submit: "Пригласить",
+      cancel: "Отмена",
+      roles: {
+        pipe_member: {
+          label: "Участник пайпа",
+          description:
+            "Может создавать карточки и получать доступ ко всем карточкам пайпа для их редактирования/перемещения",
+        },
+        pipe_admin: {
+          label: "Админ пайпа",
+          description: "Также имеет доступ к настройкам пайпа",
+        },
+        read_only: {
+          label: "Только чтение",
+          description:
+            "Может только просматривать карточки и комментировать их",
+        },
+        restricted_view: {
+          label: "Ограниченный просмотр",
+          description:
+            "Может создавать и редактировать карточки, которые создал или которые назначены ему. Не может удалять карточки",
+        },
+      },
     },
     automations: {
       heading: "Автоматизации",

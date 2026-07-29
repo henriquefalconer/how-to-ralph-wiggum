@@ -12,6 +12,11 @@ import {
   listFieldConditionals,
 } from "@/lib/field-conditionals";
 import { listFields } from "@/lib/fields";
+import {
+  assertCanDeleteCard,
+  assertCanEditFieldValues,
+  getMemberRole,
+} from "@/lib/pipe-members";
 import { triggerWebhookEvent } from "@/lib/webhooks";
 import { and, asc, desc, eq } from "drizzle-orm";
 
@@ -278,5 +283,41 @@ export async function setPhaseFieldValue(
     cardId,
     fieldId,
     value,
+  });
+}
+
+export async function updateCardFieldValue(
+  cardId: string,
+  fieldId: string,
+  value: string,
+  actingUserId: string,
+): Promise<void> {
+  const [card] = await db.select().from(cards).where(eq(cards.id, cardId));
+  if (!card) {
+    throw new Error("Card not found");
+  }
+
+  const role = await getMemberRole(card.pipeId, actingUserId);
+  assertCanEditFieldValues(role);
+
+  return setPhaseFieldValue(cardId, fieldId, value);
+}
+
+export async function deleteCard(
+  cardId: string,
+  actingUserId: string,
+): Promise<void> {
+  const [card] = await db.select().from(cards).where(eq(cards.id, cardId));
+  if (!card) {
+    throw new Error("Card not found");
+  }
+
+  const role = await getMemberRole(card.pipeId, actingUserId);
+  assertCanDeleteCard(role);
+
+  await db.delete(cards).where(eq(cards.id, cardId));
+
+  await triggerWebhookEvent("pipe", card.pipeId, "card.deleted", {
+    cardId,
   });
 }

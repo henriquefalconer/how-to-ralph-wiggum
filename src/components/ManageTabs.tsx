@@ -7,11 +7,11 @@ export function ManageTabs({
   dictionary,
 }: {
   pipeId: string;
-  active: "phases" | "automations" | "reports" | "dashboards";
+  active: "phases" | "automations" | "reports" | "dashboards" | "members";
   dictionary: Dictionary;
 }) {
   const tabs: {
-    key: "phases" | "automations" | "reports" | "dashboards";
+    key: "phases" | "automations" | "reports" | "dashboards" | "members";
     href: string;
     label: string;
   }[] = [
@@ -19,6 +19,11 @@ export function ManageTabs({
       key: "phases",
       href: `/pipes/${pipeId}/settings/phases`,
       label: dictionary.manageTabs.phases,
+    },
+    {
+      key: "members",
+      href: `/pipes/${pipeId}/settings/members`,
+      label: dictionary.manageTabs.members,
     },
     {
       key: "automations",

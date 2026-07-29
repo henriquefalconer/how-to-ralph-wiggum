@@ -16,6 +16,7 @@ export const WEBHOOK_EVENTS = [
   "card.created",
   "card.moved",
   "card.updated",
+  "card.deleted",
   "table.record.created",
   "table.record.updated",
 ] as const;
