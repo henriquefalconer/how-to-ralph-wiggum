@@ -1,7 +1,11 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { randomUUID } from "crypto";
 import * as aiAgentsLib from "@/lib/ai-agents";
 import * as pipesLib from "@/lib/pipes";
+import { db } from "@/lib/db";
+import { organizations } from "@/lib/db/schema";
+import { dictionaries } from "@/lib/i18n/dictionaries";
+import { eq } from "drizzle-orm";
 
 const uuid = randomUUID;
 
@@ -10,12 +14,17 @@ describe("AI Agents", () => {
   let pipeId: string;
 
   beforeEach(async () => {
-    orgId = uuid();
-    const pipe = await pipesLib.createPipe({
-      orgId,
-      name: "Test Pipe",
-    });
+    const [org] = await db
+      .insert(organizations)
+      .values({ name: "Test Org AI Agents " + uuid() })
+      .returning();
+    orgId = org.id;
+    const pipe = await pipesLib.createPipe(orgId, "Test Pipe", dictionaries.en.defaultPhase);
     pipeId = pipe.id;
+  });
+
+  afterEach(async () => {
+    await db.delete(organizations).where(eq(organizations.id, orgId));
   });
 
   it("creates an agent with draft status by default", async () => {

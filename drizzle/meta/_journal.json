@@ -15,6 +15,13 @@
       "when": 1785298034046,
       "tag": "0001_salty_puff_adder",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1785300292128,
+      "tag": "0002_condemned_karma",
+      "breakpoints": true
     }
   ]
 }

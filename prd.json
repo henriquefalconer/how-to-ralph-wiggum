@@ -1026,7 +1026,7 @@
     "data_model": "ai_agents: id, pipe_id (fk), name, description, status (enum: draft|active|inactive), created_at, updated_at. ai_agent_knowledge_sources: id, agent_id (fk), type (enum: pipe_database|document|plain_text), name, usage_description (text, for plain_text \u2014 the 'Quando usar este conhecimento' trigger hint), content (text, for plain_text) | file_ref (for document) | source_pipe_id (for pipe_database). ai_agent_behaviors: id, agent_id (fk), title, enabled (bool), trigger_type (enum, 9 values \u2014 same enum as automations.trigger_type minus 'recurring_activity'), trigger_config (jsonb \u2014 e.g. {phaseId, conditions[]}), instructions (text, with embedded slash-inserted action/field tokens), model_tier (enum: org_default|classic|lite|pro|standard), skills (jsonb \u2014 {documentAnalysis: bool, webSearch: bool, codeExecution: bool}), effort (enum: standard|maximum), created_at, updated_at. ai_agent_runs: id, agent_id (fk), behavior_id (fk), card_id (fk), status (enum: success|error|running), started_at, finished_at, message (text) \u2014 same shape as automation_runs (feature-010), surfaced in the Logs tab.",
     "priority": 6,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {
