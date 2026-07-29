@@ -60,6 +60,18 @@ export const pipeMembers = pgTable("pipe_members", {
 export const pipeDefaultViews = ["kanban", "list"] as const;
 export const pipeExpirationAlertUnits = ["minutes", "hours", "days"] as const;
 export const pipeVisibilities = ["org_open", "invite_only"] as const;
+export const pipeBrandColors = [
+  "blue",
+  "green",
+  "red",
+  "yellow",
+  "purple",
+  "pink",
+  "teal",
+  "orange",
+  "gray",
+  "indigo",
+] as const;
 
 export const pipes = pgTable("pipes", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -114,6 +126,22 @@ export const pipes = pgTable("pipes", {
     .notNull()
     .default(false),
   inboundEmailAlias: text("inbound_email_alias"),
+  // Start form (Formulário inicial) branding
+  startFormInternalTitle: text("start_form_internal_title"),
+  startFormPublicTitle: text("start_form_public_title"),
+  startFormPublicDescription: text("start_form_public_description"),
+  startFormPublicLogoFileId: text("start_form_public_logo_file_id"),
+  startFormPublicSubmitButtonText: text("start_form_public_submit_button_text")
+    .notNull()
+    .default("Enviar"),
+  startFormInternalCreateButtonText: text(
+    "start_form_internal_create_button_text",
+  )
+    .notNull()
+    .default("Criar novo card"),
+  startFormPublicBrandColor: text("start_form_public_brand_color", {
+    enum: pipeBrandColors,
+  }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

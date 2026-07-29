@@ -50,6 +50,13 @@
       "when": 1785304161748,
       "tag": "0006_silly_warpath",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1785305004034,
+      "tag": "0007_slippery_micromacro",
+      "breakpoints": true
     }
   ]
 }

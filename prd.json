@@ -1649,7 +1649,7 @@
     "data_model": "StartForm is not a separate entity — it is Phase id=0 (or a phase-like row flagged is_start_form=True) of the Pipe's ordered Phase list (feature-002), sharing the Field entity/type system (feature-003) and Field Conditionals (feature-009). Additional start-form-only attributes beyond the base Phase model: public_title (string, shown to anonymous visitors, defaults to pipe name), public_description (text, nullable), public_logo (nullable file ref, JPG/GIF/PNG ≤2MB), public_submit_button_text (string, default 'Enviar'), public_background (color hex or image ref), public_brand_color (enum from the shared 10-color pipe palette), internal_title (string, shown on the pipe's internal nav, defaults to pipe name — distinct from public_title), internal_create_button_text (string, default 'Criar novo card'), title_field_id (fk to a Field on this phase, drives card.title — same mechanism as feature-014).",
     "priority": 6,
     "core": true,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {
