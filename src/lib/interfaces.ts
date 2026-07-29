@@ -55,6 +55,12 @@ export interface FormLinkConfig {
   descriptionOverride?: string;
 }
 
+export interface DocumentConfig {
+  fileId?: string;
+  title?: string;
+  description?: string;
+}
+
 // ---------- Interfaces ----------
 
 export interface InterfaceInput {
@@ -654,4 +660,8 @@ export function extractEmbedTitle(url: string | undefined): string {
   } catch {
     return "";
   }
+}
+
+export function canEditDocumentMetadata(config: DocumentConfig): boolean {
+  return !!config.fileId;
 }

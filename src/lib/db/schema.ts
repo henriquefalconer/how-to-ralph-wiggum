@@ -5,6 +5,7 @@ import type {
 import type { ReportFilterGroup } from "@/lib/report-types";
 import {
   boolean,
+  customType,
   doublePrecision,
   integer,
   jsonb,
@@ -495,6 +496,18 @@ export const interfaceShares = pgTable(
     }),
   ],
 );
+
+export const files = pgTable("files", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  orgId: uuid("org_id")
+    .notNull()
+    .references(() => organizations.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  contentType: text("content_type").notNull(),
+  size: integer("size").notNull(),
+  data: customType<{ data: Buffer }>({ dataType: () => "bytea" })("data").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
 
 export const reports = pgTable("reports", {
   id: uuid("id").primaryKey().defaultRandom(),

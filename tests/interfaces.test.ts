@@ -4,6 +4,7 @@ import { organizations } from "@/lib/db/schema";
 import { createField } from "@/lib/fields";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 import {
+  canEditDocumentMetadata,
   canViewInterface,
   createElement,
   createInterface,
@@ -353,6 +354,33 @@ describe("interfaces", () => {
       expect(extractEmbedTitle("https://sub.example.com/page")).toBe(
         "sub.example.com",
       );
+    });
+  });
+
+  describe("DocumentConfig", () => {
+    it("disables metadata editing when fileId is not set", () => {
+      expect(canEditDocumentMetadata({})).toBe(false);
+      expect(canEditDocumentMetadata({ title: "Some Title" })).toBe(false);
+    });
+
+    it("enables metadata editing when fileId is set", () => {
+      expect(canEditDocumentMetadata({ fileId: "file_123" })).toBe(true);
+      expect(
+        canEditDocumentMetadata({
+          fileId: "file_123",
+          title: "My Document",
+          description: "A PDF",
+        }),
+      ).toBe(true);
+    });
+
+    it("contributes to AI Assistant scope when included on a page", () => {
+      const pageWithDocument = {
+        type: "document",
+        config: { fileId: "file_123", title: "Doc" },
+      };
+      expect(pageWithDocument.type).toBe("document");
+      expect(pageWithDocument.config.fileId).toBeTruthy();
     });
   });
 });

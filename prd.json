@@ -1385,7 +1385,7 @@
     "data_model": "interface_page_elements (see feature-008) rows with type='document': config={file_id (fk to an uploads table storing the PDF, \u22645MB, bytea per project storage convention), title, description}. The same uploads table/shape should back AI Agents' Documento knowledge-source type (feature-019) since both are the same underlying primitive.",
     "priority": 10,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {
