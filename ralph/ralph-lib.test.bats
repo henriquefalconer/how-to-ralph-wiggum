@@ -273,6 +273,31 @@ JSON
   [ "$output" = "abc-123" ]
 }
 
+@test "session_errored tells a session that died from one that ran" {
+  printf '{"session_id":"s","is_error":false,"result":"done"}' > "$TMP/ok.json"
+  run session_errored "$TMP/ok.json"
+  [ "$status" -eq 1 ]                 # ran to completion
+
+  printf '{"session_id":"s","is_error":true,"result":"API Error: 529 Overloaded."}' > "$TMP/529.json"
+  run session_errored "$TMP/529.json"
+  [ "$status" -eq 0 ]                 # died
+
+  # A truncated JSON means the session died before writing its own result.
+  printf '{"session_id":' > "$TMP/trunc.json"
+  run session_errored "$TMP/trunc.json"
+  [ "$status" -eq 0 ]
+
+  run session_errored "$TMP/missing.json"
+  [ "$status" -eq 0 ]
+}
+
+@test "session_errored falls back to the last session when given no argument" {
+  printf '{"session_id":"s","is_error":true,"result":"API Error: 529 Overloaded."}' > "$TMP/last.json"
+  LAST_JSON="$TMP/last.json"
+  run session_errored
+  [ "$status" -eq 0 ]
+}
+
 @test "resumable_session_id refuses an errored, missing or truncated session JSON" {
   printf '{"is_error":true,"session_id":"abc-123"}' > "$TMP/err.json"
   run resumable_session_id "$TMP/err.json"

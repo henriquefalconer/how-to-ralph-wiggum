@@ -37,9 +37,18 @@ setup() {
     printf '%s\n' "$1" >> "$SESSIONS"
     cp "$2" "$TMP/last-prompt.txt"
     ITER_PROMISE="${FAKE_PROMISE:-FIXED}"
+    # A real run_session leaves the session JSON in $LAST_JSON; session_errored
+    # reads it to tell a session that died from one that ran.
+    LAST_JSON="$TMP/session-$(wc -l < "$SESSIONS" | tr -d ' ').json"
+    if [ -n "${FAKE_DIE_UNTIL:-}" ] &&
+       [ "$(wc -l < "$SESSIONS" | tr -d ' ')" -le "$FAKE_DIE_UNTIL" ]; then
+      printf '{"session_id":"s","is_error":true,"result":"API Error: 529 Overloaded."}' > "$LAST_JSON"
+      return 0                       # the session died: no repair was attempted
+    fi
+    printf '{"session_id":"s","is_error":false,"result":"done"}' > "$LAST_JSON"
     # The repair the fake agent performs, if the test asked for one.
     [ -n "${FAKE_FIX_AFTER:-}" ] &&
-      [ "$(wc -l < "$SESSIONS")" -ge "$FAKE_FIX_AFTER" ] && : > "$TMP/fixed"
+      [ "$(wc -l < "$SESSIONS" | tr -d ' ')" -ge "$FAKE_FIX_AFTER" ] && : > "$TMP/fixed"
     return 0
   }
 
@@ -135,6 +144,65 @@ sessions_run() { wc -l < "$SESSIONS" | tr -d ' '; }
   [ "$(sessions_run)" -eq 2 ]   # gate b is never reached
 }
 
+# ── a session that DIED is not a failed attempt ──────────────────────────────
+#
+# Measured in a real run: two consecutive `API Error: 529 Overloaded` sessions
+# exhausted a gate's whole repair budget while the agent had actually diagnosed
+# the problem and was part-way through the fix.
+
+@test "a session that dies on a transient error does not consume an attempt" {
+  GATE_ERROR_BACKOFF=0
+  FAKE_DIE_UNTIL=2          # first two sessions die...
+  FAKE_FIX_AFTER=3          # ...the third runs and fixes it
+  GATE_MAX_REPAIRS=2        # ...which is only reachable if deaths are free
+  run_gates qa probe
+  [ "$?" -eq 0 ]
+  [ "$(sessions_run)" -eq 3 ]
+  grep -q "died before finishing" "$PROGRESS"
+  grep -q "not counting it as an attempt" "$PROGRESS"
+  grep -q "repaired after 1 attempt" "$PROGRESS"
+}
+
+@test "an unbroken run of dead sessions is called an outage, not a repair failure" {
+  GATE_ERROR_BACKOFF=0
+  FAKE_DIE_UNTIL=99         # every session dies
+  GATE_MAX_ERRORS=3
+  run run_gates qa probe
+  [ "$status" -eq 1 ]
+  [ "$(sessions_run)" -eq 3 ]          # GATE_MAX_ERRORS, not unbounded
+  grep -q "treating this as an outage, not a repair failure" "$PROGRESS"
+}
+
+@test "dead sessions still count against the phase spend ceiling" {
+  GATE_ERROR_BACKOFF=0
+  FAKE_DIE_UNTIL=99
+  GATE_MAX_ERRORS=9         # deaths alone would not stop it...
+  GATE_MAX_TOTAL=2          # ...but the spend ceiling must, since each costs money
+  run run_gates qa probe
+  [ "$status" -eq 1 ]
+  [ "$(sessions_run)" -eq 2 ]
+  grep -q "repair budget for this phase is spent" "$PROGRESS"
+}
+
+@test "a died session's diagnostics are not overwritten by the retry" {
+  GATE_ERROR_BACKOFF=0
+  FAKE_DIE_UNTIL=1
+  FAKE_FIX_AFTER=2
+  run_gates qa probe
+  [ -f "$RUN_DIR/diag-probe-1.txt" ]   # the death
+  [ -f "$RUN_DIR/diag-probe-2.txt" ]   # the retry that replaced it
+}
+
+@test "an agent that ran and failed still consumes an attempt" {
+  GATE_ERROR_BACKOFF=0
+  unset FAKE_DIE_UNTIL      # sessions run fine, they just do not fix anything
+  GATE_MAX_REPAIRS=2
+  run run_gates qa probe
+  [ "$status" -eq 1 ]
+  [ "$(sessions_run)" -eq 2 ]
+  ! grep -q "died before finishing" "$PROGRESS"
+}
+
 # ── required vs optional ─────────────────────────────────────────────────────
 
 @test "a required gate that cannot be repaired stops the phase" {
@@ -198,6 +266,25 @@ sessions_run() { wc -l < "$SESSIONS" | tr -d ' '; }
   run_gates qa probe || true
   grep -q "prd.json" "$TMP/last-prompt.txt"
   grep -qi "not trusted" "$TMP/last-prompt.txt"
+}
+
+@test "the repair agent is given the mandatory progress-logging protocol" {
+  # Not cosmetic: watchdog() SIGTERMs any session that does not append to
+  # $PROGRESS within RALPH_WATCHDOG_SECS, so a repair agent with no narration
+  # instructions gets killed part-way through a long but healthy fix.
+  grep -q "Progress Logging — Mandatory" "$BATS_TEST_DIRNAME/prompt-repair.md"
+  grep -q 'printf .\\n%s\\n.' "$BATS_TEST_DIRNAME/prompt-repair.md"
+  grep -q "liveness signal" "$BATS_TEST_DIRNAME/prompt-repair.md"
+  run_gates qa probe || true
+  grep -q "PROGRESS:" "$TMP/last-prompt.txt"
+}
+
+@test "every agent that appends to the run progress file is given the protocol" {
+  # One file for the whole run means every phase has to write it the same way.
+  for p in prompt-build.md prompt-qa.md prompt-repair.md; do
+    grep -q "Progress Logging — Mandatory" "$BATS_TEST_DIRNAME/$p" || {
+      echo "$p is missing the mandatory progress section"; return 1; }
+  done
 }
 
 # ── hooks are optional ───────────────────────────────────────────────────────

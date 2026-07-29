@@ -421,6 +421,28 @@ PY
 # conversation headlessly (verified: same session_id, full recall of what it had run),
 # so it can re-run the one command in the foreground instead of redoing the iteration
 # from nothing. That matters: the sessions lost this way had already spent $4-7 each.
+# session_errored [<session-json>] — did the session DIE rather than finish?
+#
+# A session that ends on a server or transport error (`API Error: 529
+# Overloaded`, a dropped connection, a budget cutoff) never got to do its job.
+# That is categorically different from an agent that ran and could not solve the
+# problem, and any caller that retries has to tell the two apart: counting a 529
+# as an attempt spends a budget meant for real attempts on an outage instead.
+#
+# Measured: two consecutive 529s burned a gate's entire repair budget without
+# either session finishing, while the repair agent had in fact diagnosed the
+# problem correctly and was part-way through writing the fix.
+#
+# A truncated or unreadable JSON counts as an abnormal end too — the session
+# died before it could write its own result.
+session_errored() { # [<session-json>] -> 0 when the session ended abnormally
+  local j="${1:-$LAST_JSON}"
+  [ -n "$j" ] && [ -f "$j" ] || return 0
+  [ "$(jsonfield "$j" is_error 2>/dev/null)" = "True" ] && return 0
+  jsonfield "$j" result >/dev/null 2>&1 || return 0
+  return 1
+}
+
 resumable_session_id() { # <session-json> -> session id, if the run looks resumable
   local j="${1:-}" sid
   [ -f "$j" ] || return 1

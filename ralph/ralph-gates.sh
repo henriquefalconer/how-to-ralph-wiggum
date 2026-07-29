@@ -37,9 +37,16 @@
 #     prd.json, report-qa.json and the sentinels, because "repair" must never
 #     become a route to marking features as passing.
 
-GATE_MAX_REPAIRS="${RALPH_GATE_MAX_REPAIRS:-2}"    # attempts per gate
-GATE_MAX_TOTAL="${RALPH_GATE_MAX_TOTAL:-6}"        # repair sessions per phase
+GATE_MAX_REPAIRS="${RALPH_GATE_MAX_REPAIRS:-2}"    # real attempts per gate
+GATE_MAX_TOTAL="${RALPH_GATE_MAX_TOTAL:-6}"        # sessions spawned per phase
 GATE_REPAIRS_USED=0
+
+# A session that dies on a transient error (API 529, a dropped connection) never
+# attempted the repair, so it must not consume one of GATE_MAX_REPAIRS — but it
+# does cost money and it could recur forever, so the retries are bounded and
+# backed off rather than unlimited.
+GATE_MAX_ERRORS="${RALPH_GATE_MAX_ERRORS:-3}"      # died sessions tolerated per gate
+GATE_ERROR_BACKOFF="${RALPH_GATE_ERROR_BACKOFF:-30}"   # seconds, multiplied by the error count
 
 # Gates listed here may fail without stopping the phase. Everything else is
 # required: unrepairable means the phase aborts rather than reporting a result
@@ -124,21 +131,43 @@ run_gates() { # <phase> <gate...>
     note "[ralph gate] $gate FAILED — $(gate_desc "$gate")"
 
     ok=0
-    for ((attempt = 1; attempt <= GATE_MAX_REPAIRS; attempt++)); do
+    attempt=0
+    errors=0
+    while [ "$attempt" -lt "$GATE_MAX_REPAIRS" ]; do
       # A per-phase ceiling as well as a per-gate one: several gates each
-      # failing twice is a broken tree, not something to keep spending on.
+      # failing twice is a broken tree, not something to keep spending on. Every
+      # session spawned counts here, including one that died, because a died
+      # session still costs money.
       if [ "$GATE_REPAIRS_USED" -ge "$GATE_MAX_TOTAL" ]; then
         note "[ralph gate] repair budget for this phase is spent ($GATE_MAX_TOTAL sessions) — not attempting $gate again."
         break
       fi
       GATE_REPAIRS_USED=$((GATE_REPAIRS_USED + 1))
 
-      diag="$RUN_DIR/diag-$gate-$attempt.txt"
+      # Numbered by session spawned, not by attempt, so a died session's
+      # diagnostics are never overwritten by the retry that replaces it.
+      diag="$RUN_DIR/diag-$gate-$((attempt + errors + 1)).txt"
       { printf '$ gate_%s_diag\n' "$gate"; gate_hook "$gate" diag; } > "$diag" 2>&1
 
-      note "[ralph gate] repairing $gate (attempt $attempt/$GATE_MAX_REPAIRS) — diagnostics in $diag"
-      pf="$(repair_prompt "$gate" "$attempt" "$diag")"
-      run_iteration "repair-$gate-$attempt" "$pf" 'FIXED|UNFIXABLE'
+      note "[ralph gate] repairing $gate (attempt $((attempt + 1))/$GATE_MAX_REPAIRS) — diagnostics in $diag"
+      pf="$(repair_prompt "$gate" "$((attempt + 1))" "$diag")"
+      run_iteration "repair-$gate-$((attempt + errors + 1))" "$pf" 'FIXED|UNFIXABLE'
+
+      # A session that never finished did not attempt the repair. Retry it
+      # without spending an attempt: charging an outage against the repair
+      # budget is how a fixable gate gets abandoned.
+      if session_errored; then
+        errors=$((errors + 1))
+        note "[ralph gate] the repair session for $gate died before finishing (see $LAST_JSON) — not counting it as an attempt ($errors/$GATE_MAX_ERRORS)."
+        if [ "$errors" -ge "$GATE_MAX_ERRORS" ]; then
+          note "[ralph gate] $errors repair sessions for $gate died in a row — treating this as an outage, not a repair failure."
+          break
+        fi
+        sleep $((GATE_ERROR_BACKOFF * errors))
+        continue
+      fi
+
+      attempt=$((attempt + 1))
 
       # $ITER_PROMISE is advisory only. The check decides, so a session that
       # claimed FIXED without fixing anything fails here exactly like one that
