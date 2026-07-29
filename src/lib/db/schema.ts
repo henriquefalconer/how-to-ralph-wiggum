@@ -869,3 +869,19 @@ export const connectedRecords = pgTable("connected_records", {
   }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const notificationTypes = ["card_overdue"] as const;
+
+export const notifications = pgTable("notifications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  cardId: uuid("card_id")
+    .notNull()
+    .references(() => cards.id, { onDelete: "cascade" }),
+  type: text("type", { enum: notificationTypes }).notNull(),
+  message: text("message").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  readAt: timestamp("read_at"),
+});
