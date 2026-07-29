@@ -734,6 +734,24 @@ export interface Dictionary {
       single: string;
       multiple: string;
     };
+    shareModal: {
+      modalTitle: string;
+      visibilityTab: string;
+      managePeopleTab: string;
+      addPeopleOrGroups: string;
+      roleAdmin: string;
+      roleAdminDescription: string;
+      roleMember: string;
+      roleMemberDescription: string;
+      roleMemberUpgrade: string;
+      removeAccess: string;
+      youBadge: string;
+      noResults: string;
+      copyLink: string;
+      linkCopied: string;
+      saveChanges: string;
+      needsAtLeastOneAdmin: string;
+    };
   };
 }
 
@@ -1493,6 +1511,24 @@ export const dictionaries: Record<Locale, Dictionary> = {
         single: "Single",
         multiple: "Multiple",
       },
+      shareModal: {
+        modalTitle: "Share",
+        visibilityTab: "Visibility",
+        managePeopleTab: "Manage people",
+        addPeopleOrGroups: "Add people or groups",
+        roleAdmin: "Interface Admin",
+        roleAdminDescription: "Has full access to the interface. Can add pipes and databases they have access to.",
+        roleMember: "Interface Member",
+        roleMemberDescription: "Can view the interface pages. Can only update editable fields.",
+        roleMemberUpgrade: "Upgrade",
+        removeAccess: "Remove access",
+        youBadge: "That's you!",
+        noResults: "No people or groups found",
+        copyLink: "Copy link",
+        linkCopied: "Link copied to clipboard",
+        saveChanges: "Save changes",
+        needsAtLeastOneAdmin: "An interface must have at least one admin",
+      },
     },
   },
   pt: {
@@ -2190,6 +2226,24 @@ export const dictionaries: Record<Locale, Dictionary> = {
         disclaimer:
           "A IA pode cometer erros. Revise as informações importantes.",
         feedbackLink: "Enviar feedback",
+      },
+      shareModal: {
+        modalTitle: "Compartilhar",
+        visibilityTab: "Visibilidade",
+        managePeopleTab: "Gerenciar pessoas",
+        addPeopleOrGroups: "Adicionar pessoas ou grupos",
+        roleAdmin: "Admin da Interface",
+        roleAdminDescription: "Possui acesso total à Interface. Pode adicionar pipes e databases aos quais tiver acesso.",
+        roleMember: "Membro da Interface",
+        roleMemberDescription: "Pode visualizar as páginas da Interface. Só pode atualizar campos editáveis.",
+        roleMemberUpgrade: "Upgrade",
+        removeAccess: "Remover acesso",
+        youBadge: "Você!",
+        noResults: "Nenhuma pessoa ou grupo encontrado",
+        copyLink: "Copiar link",
+        linkCopied: "Link copiado",
+        saveChanges: "Salvar alterações",
+        needsAtLeastOneAdmin: "Uma interface deve sempre ter pelo menos um admin",
       },
       emails: {
         tab: "Emails",
@@ -2935,6 +2989,24 @@ export const dictionaries: Record<Locale, Dictionary> = {
           "La IA puede cometer errores. Revisa la información importante.",
         feedbackLink: "Enviar comentario",
       },
+      shareModal: {
+        modalTitle: "Compartir",
+        visibilityTab: "Visibilidad",
+        managePeopleTab: "Gestionar personas",
+        addPeopleOrGroups: "Añadir personas o grupos",
+        roleAdmin: "Admin de la Interface",
+        roleAdminDescription: "Tiene acceso total",
+        roleMember: "Miembro de la Interface",
+        roleMemberDescription: "Puede ver las páginas",
+        roleMemberUpgrade: "Actualizar",
+        removeAccess: "Remover acceso",
+        youBadge: "¡Eres tú!",
+        noResults: "No se encontraron",
+        copyLink: "Copiar enlace",
+        linkCopied: "Enlace copiado",
+        saveChanges: "Guardar cambios",
+        needsAtLeastOneAdmin: "Al menos un admin requerido",
+      },
       emails: {
         tab: "Emails",
         composeButton: "Compose email",
@@ -3647,6 +3719,24 @@ export const dictionaries: Record<Locale, Dictionary> = {
         send: "发送",
         disclaimer: "AI 可能会犯错。请检查重要信息。",
         feedbackLink: "发送反馈",
+      },
+      shareModal: {
+        modalTitle: "Share",
+        visibilityTab: "Visibility",
+        managePeopleTab: "Manage people",
+        addPeopleOrGroups: "Add people or groups",
+        roleAdmin: "Interface Admin",
+        roleAdminDescription: "Admin description",
+        roleMember: "Interface Member",
+        roleMemberDescription: "Member description",
+        roleMemberUpgrade: "Upgrade",
+        removeAccess: "Remove access",
+        youBadge: "That's you!",
+        noResults: "No results",
+        copyLink: "Copy link",
+        linkCopied: "Link copied",
+        saveChanges: "Save changes",
+        needsAtLeastOneAdmin: "At least one admin required",
       },
       emails: {
         tab: "Emails",
@@ -4402,6 +4492,24 @@ export const dictionaries: Record<Locale, Dictionary> = {
           "Die KI kann Fehler machen. Überprüfen Sie wichtige Informationen.",
         feedbackLink: "Feedback geben",
       },
+      shareModal: {
+        modalTitle: "Share",
+        visibilityTab: "Visibility",
+        managePeopleTab: "Manage people",
+        addPeopleOrGroups: "Add people or groups",
+        roleAdmin: "Interface Admin",
+        roleAdminDescription: "Admin description",
+        roleMember: "Interface Member",
+        roleMemberDescription: "Member description",
+        roleMemberUpgrade: "Upgrade",
+        removeAccess: "Remove access",
+        youBadge: "That's you!",
+        noResults: "No results",
+        copyLink: "Copy link",
+        linkCopied: "Link copied",
+        saveChanges: "Save changes",
+        needsAtLeastOneAdmin: "At least one admin required",
+      },
       emails: {
         tab: "Emails",
         composeButton: "Compose email",
@@ -5154,6 +5262,24 @@ export const dictionaries: Record<Locale, Dictionary> = {
           "L'IA peut commettre des erreurs. Vérifiez les informations importantes.",
         feedbackLink: "Envoyer des commentaires",
       },
+      shareModal: {
+        modalTitle: "Share",
+        visibilityTab: "Visibility",
+        managePeopleTab: "Manage people",
+        addPeopleOrGroups: "Add people or groups",
+        roleAdmin: "Interface Admin",
+        roleAdminDescription: "Admin description",
+        roleMember: "Interface Member",
+        roleMemberDescription: "Member description",
+        roleMemberUpgrade: "Upgrade",
+        removeAccess: "Remove access",
+        youBadge: "That's you!",
+        noResults: "No results",
+        copyLink: "Copy link",
+        linkCopied: "Link copied",
+        saveChanges: "Save changes",
+        needsAtLeastOneAdmin: "At least one admin required",
+      },
       emails: {
         tab: "Emails",
         composeButton: "Compose email",
@@ -5894,6 +6020,24 @@ export const dictionaries: Record<Locale, Dictionary> = {
           "AI はエラーを犯す可能性があります。重要な情報を確認してください。",
         feedbackLink: "フィードバックを送信",
       },
+      shareModal: {
+        modalTitle: "Share",
+        visibilityTab: "Visibility",
+        managePeopleTab: "Manage people",
+        addPeopleOrGroups: "Add people or groups",
+        roleAdmin: "Interface Admin",
+        roleAdminDescription: "Admin description",
+        roleMember: "Interface Member",
+        roleMemberDescription: "Member description",
+        roleMemberUpgrade: "Upgrade",
+        removeAccess: "Remove access",
+        youBadge: "That's you!",
+        noResults: "No results",
+        copyLink: "Copy link",
+        linkCopied: "Link copied",
+        saveChanges: "Save changes",
+        needsAtLeastOneAdmin: "At least one admin required",
+      },
       emails: {
         tab: "Emails",
         composeButton: "Compose email",
@@ -6626,6 +6770,24 @@ export const dictionaries: Record<Locale, Dictionary> = {
         disclaimer: "एआई गलतियां कर सकता है। महत्वपूर्ण जानकारी की जांच करें।",
         feedbackLink: "प्रतिक्रिया भेजें",
       },
+      shareModal: {
+        modalTitle: "Share",
+        visibilityTab: "Visibility",
+        managePeopleTab: "Manage people",
+        addPeopleOrGroups: "Add people or groups",
+        roleAdmin: "Interface Admin",
+        roleAdminDescription: "Admin description",
+        roleMember: "Interface Member",
+        roleMemberDescription: "Member description",
+        roleMemberUpgrade: "Upgrade",
+        removeAccess: "Remove access",
+        youBadge: "That's you!",
+        noResults: "No results",
+        copyLink: "Copy link",
+        linkCopied: "Link copied",
+        saveChanges: "Save changes",
+        needsAtLeastOneAdmin: "At least one admin required",
+      },
       emails: {
         tab: "Emails",
         composeButton: "Compose email",
@@ -7356,6 +7518,24 @@ export const dictionaries: Record<Locale, Dictionary> = {
         send: "إرسال",
         disclaimer: "قد تخطئ الذكاء الاصطناعي. تحقق من المعلومات المهمة.",
         feedbackLink: "إرسال التعليقات",
+      },
+      shareModal: {
+        modalTitle: "Share",
+        visibilityTab: "Visibility",
+        managePeopleTab: "Manage people",
+        addPeopleOrGroups: "Add people or groups",
+        roleAdmin: "Interface Admin",
+        roleAdminDescription: "Admin description",
+        roleMember: "Interface Member",
+        roleMemberDescription: "Member description",
+        roleMemberUpgrade: "Upgrade",
+        removeAccess: "Remove access",
+        youBadge: "That's you!",
+        noResults: "No results",
+        copyLink: "Copy link",
+        linkCopied: "Link copied",
+        saveChanges: "Save changes",
+        needsAtLeastOneAdmin: "At least one admin required",
       },
       emails: {
         tab: "Emails",
@@ -8095,6 +8275,24 @@ export const dictionaries: Record<Locale, Dictionary> = {
         send: "Отправить",
         disclaimer: "ИИ может ошибаться. Проверьте важную информацию.",
         feedbackLink: "Отправить отзыв",
+      },
+      shareModal: {
+        modalTitle: "Share",
+        visibilityTab: "Visibility",
+        managePeopleTab: "Manage people",
+        addPeopleOrGroups: "Add people or groups",
+        roleAdmin: "Interface Admin",
+        roleAdminDescription: "Admin description",
+        roleMember: "Interface Member",
+        roleMemberDescription: "Member description",
+        roleMemberUpgrade: "Upgrade",
+        removeAccess: "Remove access",
+        youBadge: "That's you!",
+        noResults: "No results",
+        copyLink: "Copy link",
+        linkCopied: "Link copied",
+        saveChanges: "Save changes",
+        needsAtLeastOneAdmin: "At least one admin required",
       },
       emails: {
         tab: "Emails",

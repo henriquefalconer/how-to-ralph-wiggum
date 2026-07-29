@@ -1,0 +1,1 @@
+ALTER TABLE "interface_shares" ADD COLUMN "role" text DEFAULT 'member' NOT NULL;

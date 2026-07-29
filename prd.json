@@ -1451,7 +1451,7 @@
     "data_model": "Extends feature-008's interface_shares: id, interface_id (fk), shared_with_type (enum: person | group), shared_with_id, role (enum: admin | member).",
     "priority": 10,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {

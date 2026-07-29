@@ -478,6 +478,7 @@ export const interfacePageElements = pgTable("interface_page_elements", {
 });
 
 export const interfaceSharedWithTypes = ["person", "group"] as const;
+export const interfaceShareRoles = ["admin", "member"] as const;
 
 export const interfaceShares = pgTable(
   "interface_shares",
@@ -489,6 +490,9 @@ export const interfaceShares = pgTable(
       enum: interfaceSharedWithTypes,
     }).notNull(),
     sharedWithId: text("shared_with_id").notNull(),
+    role: text("role", { enum: interfaceShareRoles })
+      .notNull()
+      .default("member"),
   },
   (table) => [
     primaryKey({
