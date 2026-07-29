@@ -28,8 +28,7 @@ The diagnostics are a starting point, not the whole story. Read the repository.
 4. **Verify.** Re-run the check. It must actually pass, not look like it should.
 5. **Commit** your fix with a message saying what was broken and why the fix
    addresses it, and push. Keep it to the repair — do not bundle unrelated work.
-6. **Narrate** as you go into the file named by `PROGRESS`. A session that goes
-   quiet for too long is terminated mid-work.
+6. **Narrate** as you go, following "Progress Logging — Mandatory" below.
 
 ## Boundaries
 
@@ -47,6 +46,58 @@ touch there would corrupt the record of what has actually been proven to work.
   another agent does that, and it must not inherit claims you invented.
 - **Never mark a feature as passing.** That is not your judgement to make.
 - Stay inside this repository and its own infrastructure.
+
+## Progress Logging — Mandatory
+
+The run's progress file (its path is given as `PROGRESS:` in this iteration's prompt) has two jobs: (a) the orchestrator's only liveness signal — go too long without an append and the iteration is SIGTERM'd mid-work — and (b) the user's live view of what you are doing, tailed in their terminal. It is ONE file for the whole run: every phase (inspect, build, QA) and every repair session appends to it, and the orchestrator appends each session's cost/context/subagent ledger to it too. Append with `printf '\n%s\n' "<one-liner>" >> "$PROGRESS"` so each entry sits on its own blank-led line. Read its tail to catch up; never read it whole.
+
+Most importantly, the first thing you should do is append (using the gate name and attempt number from this prompt):
+```
+═══════════════════════════════════════════════════════
+  Ralph Repair — gate <GATE>, attempt <N>
+═══════════════════════════════════════════════════════
+
+Brief explanation of what you will do (starting with a verb like "Reproducing the failing check...", ending in ...)
+
+```
+The first line appended should be "═══════════════════════════════════════════════════════". If the file is empty, make sure the first line is exactly "═══════════════════════════════════════════════════════".
+
+After working out what is actually broken, append:
+```
+
+Cause is X, because Y.
+```
+The first line appended should be an empty line.
+
+Whenever something meaningful happens, append a short note. Lean toward narrating more rather than less; silence looks like a stall — and a repair that goes quiet long enough is killed mid-fix, losing work that was nearly done.
+```
+
+Found/did/finished X. Now doing/investigating Y...
+```
+The first line appended should be an empty line.
+
+After an important finding, append:
+```
+
+Brief explanation of what was done/found. [Then "Continuing task..." or something like that]
+```
+The first line appended should be an empty line.
+
+After the check passes, append the block BELOW to the progress file FIRST, THEN run `git add -A` and `git commit` so the block is part of the same commit:
+```
+
+## $(date -u +%Y-%m-%dT%H:%M:%S) UTC - Gate <GATE> repaired.
+- What was broken, and the evidence that said so
+- What was changed to fix it
+- Files changed
+- How the check was verified to pass
+---
+```
+The first line appended should be an empty line.
+
+If you end on UNFIXABLE, append the same block with `Gate <GATE> NOT repaired.` and say what you ruled out and why — the next attempt starts from a clean context and has only this file to learn from.
+
+Long commands: split them into one Bash call per step, each with `timeout` (max 600000 ms), and append a progress note before each (silent sessions get terminated) — never chain with `&&`, and never background a command whose result you need: a backgrounded command is killed when the session ends. To wait for something, poll inside ONE call (`until <check>; do sleep 5; done`) or use `Monitor`, whose events come back as new turns.
 
 ## Reporting
 
