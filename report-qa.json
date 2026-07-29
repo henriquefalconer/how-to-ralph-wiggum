@@ -73,5 +73,20 @@
       "Confirmed 'Criar registro' (Create record) button is present"
     ],
     "bugs_found": []
+  },
+  {
+    "feature_id": "feature-006",
+    "status": "pass",
+    "tested_steps": [
+      "Verified SDK source code exports PipefyCloneClient class with typed methods",
+      "Confirmed SDK exports error types: PipefyCloneApiError and PipefyCloneValidationError",
+      "Tested SDK methods map to correct REST endpoints: GET /api/pipes, POST /api/pipes, POST /api/cards, etc.",
+      "Verified client-side validation: requireNonEmpty() checks all required parameters",
+      "Tested error handling: API errors (400+ status) parsed and thrown as PipefyCloneApiError with status and message",
+      "Confirmed API responses have structured error format (error field) that SDK can parse",
+      "Verified SDK method signatures match spec: pipes.list/get/create, cards.list/get/create/moveToPhase/setFieldValue, tables.list/get/create, tables.records.list/get/create/delete",
+      "Built SDK successfully (TypeScript compiles, exports to dist with type definitions)"
+    ],
+    "bugs_found": []
   }
 ]
