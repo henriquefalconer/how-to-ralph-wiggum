@@ -115,5 +115,18 @@
       "E2E tests: 1/3 pass (empty state rendering works; modal interaction timeouts are Playwright infrastructure issue, not feature issue)"
     ],
     "bugs_found": []
+  },
+  {
+    "feature_id": "feature-009",
+    "status": "pass",
+    "tested_steps": [
+      "Ran field conditionals unit tests: npx vitest run tests/field-conditionals.test.ts",
+      "All 7 tests passed",
+      "Verified conditional CRUD operations (create, list ordered by position, update, delete)",
+      "Confirmed validation: rejects conditionals with no name",
+      "Confirmed validation: rejects conditionals with no condition groups",
+      "Verified ordering by position (later position wins on conflict per spec)"
+    ],
+    "bugs_found": []
   }
 ]
