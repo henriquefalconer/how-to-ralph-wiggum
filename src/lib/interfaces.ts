@@ -601,3 +601,57 @@ export function isLinkConfigComplete(config: LinkElementConfig): boolean {
 export function isDividerComplete(): boolean {
   return true;
 }
+
+// ---------- Media elements (Imagem, Vídeo, Incorporar) ----------
+
+export interface ImageElementConfig {
+  sourceType?: "unsplash" | "upload" | "url"; // unsplash photo id, upload file_id, or raw URL
+  sourceRef?: string; // unsplash photo id, upload file_id, or raw URL
+  altText?: string; // Texto alternativo
+  roundedCorners?: boolean; // Cantos arredondados toggle
+}
+
+export interface VideoElementConfig {
+  url?: string; // Must be YouTube or Vimeo
+  platform?: "youtube" | "vimeo"; // Derived from url
+  showControls?: boolean; // Mostrar Controles toggle
+}
+
+export interface EmbedElementConfig {
+  url?: string; // Arbitrary iframe URL
+  showNavControls?: boolean; // Mostrar controles de navegação (default true)
+  showTitleBar?: boolean; // Mostrar título/url (default true)
+}
+
+/**
+ * Validates that a video URL is from an acceptable platform (YouTube or Vimeo).
+ * Per the target product's restriction: "Somente vídeos do YouTube, Vimeo são suportados por enquanto"
+ */
+export function isValidVideoUrl(url: string | undefined): boolean {
+  if (!url) return false;
+  const lower = url.toLowerCase();
+  return (
+    lower.includes("youtube.com") ||
+    lower.includes("youtu.be") ||
+    lower.includes("vimeo.com")
+  );
+}
+
+/**
+ * Extracts a display title/domain from an arbitrary embed URL.
+ * Returns the domain name (without www prefix), or empty string for invalid URLs.
+ * In real usage, could fetch og:title; this default approach uses domain only.
+ */
+export function extractEmbedTitle(url: string | undefined): string {
+  if (!url) return "";
+  try {
+    const urlObj = new URL(url);
+    let host = urlObj.hostname || "";
+    if (host.startsWith("www.")) {
+      host = host.slice(4);
+    }
+    return host;
+  } catch {
+    return "";
+  }
+}

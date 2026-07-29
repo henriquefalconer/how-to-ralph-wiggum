@@ -1318,7 +1318,7 @@
     "data_model": "interface_page_elements (see feature-008) rows with type='image': config={source_type: unsplash|upload|url, source_ref (unsplash photo id, upload file_id, or raw URL), alt_text, rounded_corners: bool}. type='video': config={url, platform: youtube|vimeo (derived from url), show_controls: bool}. type='embed': config={url, show_nav_controls: bool, show_title_bar: bool}.",
     "priority": 10,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {

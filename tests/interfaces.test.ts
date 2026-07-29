@@ -7,10 +7,12 @@ import {
   canViewInterface,
   createElement,
   createInterface,
+  extractEmbedTitle,
   filterRowsByVisibilityConditions,
   getDataTableRows,
   isDividerComplete,
   isLinkConfigComplete,
+  isValidVideoUrl,
   listElements,
   renderTextContent,
   reorderElements,
@@ -299,6 +301,58 @@ describe("interfaces", () => {
   describe("isDividerComplete", () => {
     it("always returns true for dividers (no config needed)", () => {
       expect(isDividerComplete()).toBe(true);
+    });
+  });
+
+  describe("isValidVideoUrl", () => {
+    it("accepts valid YouTube URLs", () => {
+      expect(isValidVideoUrl("https://www.youtube.com/watch?v=abc123")).toBe(true);
+      expect(isValidVideoUrl("https://youtube.com/watch?v=dEf456")).toBe(true);
+      expect(isValidVideoUrl("https://youtu.be/xyz789")).toBe(true);
+    });
+
+    it("accepts valid Vimeo URLs", () => {
+      expect(isValidVideoUrl("https://www.vimeo.com/123456789")).toBe(true);
+      expect(isValidVideoUrl("https://vimeo.com/987654321")).toBe(true);
+    });
+
+    it("rejects non-video platform URLs", () => {
+      expect(isValidVideoUrl("https://cdn.example.com/clip.mp4")).toBe(false);
+      expect(isValidVideoUrl("https://example.com/video")).toBe(false);
+      expect(isValidVideoUrl("https://dailymotion.com/video/abc")).toBe(false);
+    });
+
+    it("rejects invalid URLs", () => {
+      expect(isValidVideoUrl("not a url")).toBe(false);
+      expect(isValidVideoUrl("")).toBe(false);
+    });
+  });
+
+  describe("extractEmbedTitle", () => {
+    it("extracts domain from a URL", () => {
+      expect(extractEmbedTitle("https://example.com/some/deep/path?x=1")).toBe(
+        "example.com",
+      );
+      expect(extractEmbedTitle("https://www.example.com/page")).toBe(
+        "example.com",
+      );
+    });
+
+    it("handles URLs with query strings and fragments", () => {
+      expect(
+        extractEmbedTitle("https://example.com/path?key=value&other=123#anchor"),
+      ).toBe("example.com");
+    });
+
+    it("returns empty string for invalid URLs", () => {
+      expect(extractEmbedTitle("not a url")).toBe("");
+      expect(extractEmbedTitle("")).toBe("");
+    });
+
+    it("handles URLs without www prefix", () => {
+      expect(extractEmbedTitle("https://sub.example.com/page")).toBe(
+        "sub.example.com",
+      );
     });
   });
 });
