@@ -189,6 +189,7 @@ export interface Dictionary {
     dashboards: string;
     members: string;
     general: string;
+    activities: string;
   };
   members: {
     heading: string;
@@ -214,6 +215,45 @@ export interface Dictionary {
       pipe_admin: { label: string; description: string };
       read_only: { label: string; description: string };
       restricted_view: { label: string; description: string };
+    };
+  };
+  auditLog: {
+    heading: string;
+    subtitle: string;
+    tabCardActivity: string;
+    tabConfigChange: string;
+    sendFeedback: string;
+    exportLogs: string;
+    searchPlaceholder: string;
+    columnDateTime: string;
+    columnActor: string;
+    columnResourceType: string;
+    columnDetails: string;
+    emptyState: string;
+    close: string;
+    emptyValue: string;
+    valueOn: string;
+    valueOff: string;
+    resourceTypes: {
+      card: string;
+      automation: string;
+      pipe: string;
+      field: string;
+      phase: string;
+      table: string;
+    };
+    messages: {
+      cardCreated: string;
+      cardMoved: string;
+      cardDeleted: string;
+      cardFieldUpdated: string;
+      pipeCreated: string;
+      pipeSettingUpdated: string;
+      automationCreated: string;
+      automationUpdated: string;
+      automationDeleted: string;
+      fieldCreated: string;
+      phaseCreated: string;
     };
   };
   generalSettings: {
@@ -780,6 +820,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       dashboards: "Dashboards",
       members: "People",
       general: "Settings",
+      activities: "Activities",
     },
     members: {
       heading: "{count} people in {pipeName}",
@@ -819,6 +860,48 @@ export const dictionaries: Record<Locale, Dictionary> = {
           description:
             "Can create and edit cards they created or were assigned to. Cannot delete cards",
         },
+      },
+    },
+    auditLog: {
+      heading: "Activities",
+      subtitle:
+        "Track this pipe's actions and who performed them. Access it via API or learn more.",
+      tabCardActivity: "Card activity",
+      tabConfigChange: "Configuration changes",
+      sendFeedback: "Send feedback",
+      exportLogs: "Export logs",
+      searchPlaceholder: "Search by author",
+      columnDateTime: "Date and time",
+      columnActor: "Performed by",
+      columnResourceType: "Resource type",
+      columnDetails: "Details",
+      emptyState: "No activity recorded yet",
+      close: "Close",
+      emptyValue: "—",
+      valueOn: "on",
+      valueOff: "off",
+      resourceTypes: {
+        card: "Card",
+        automation: "Automation",
+        pipe: "Pipe",
+        field: "Field",
+        phase: "Phase",
+        table: "Table",
+      },
+      messages: {
+        cardCreated: 'Created the card "{card}"',
+        cardMoved: 'Moved the card "{card}" from "{from}" to "{to}"',
+        cardDeleted: 'Deleted the card "{card}"',
+        cardFieldUpdated: 'Updated the field "{field}" on the card "{card}"',
+        pipeCreated: "Created this pipe",
+        pipeSettingUpdated:
+          'Updated the {setting} configuration from "{from}" to "{to}"',
+        automationCreated:
+          'Created the automation "{automation}" with the trigger "{trigger}" and the action "{action}"',
+        automationUpdated: 'Updated the automation "{automation}"',
+        automationDeleted: 'Deleted the automation "{automation}"',
+        fieldCreated: 'Created the field "{field}" on "{owner}"',
+        phaseCreated: 'Created the phase "{phase}"',
       },
     },
     generalSettings: {
@@ -1400,6 +1483,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       dashboards: "Painéis",
       members: "Pessoas",
       general: "Configurações",
+      activities: "Atividades",
     },
     members: {
       heading: "{count} pessoa(s) em {pipeName}",
@@ -1439,6 +1523,48 @@ export const dictionaries: Record<Locale, Dictionary> = {
           description:
             "Pode criar e editar cards que criou ou que foram atribuídos a ela. Não pode deletar cards",
         },
+      },
+    },
+    auditLog: {
+      heading: "Atividades",
+      subtitle:
+        "Rastreie as ações deste pipe e seus responsáveis. Acesse via API ou saiba mais.",
+      tabCardActivity: "Atividade de cards",
+      tabConfigChange: "Alterações de configuração",
+      sendFeedback: "Enviar feedback",
+      exportLogs: "Exportar logs",
+      searchPlaceholder: "Buscar por autor",
+      columnDateTime: "Data e hora",
+      columnActor: "Executado por",
+      columnResourceType: "Tipo de recurso",
+      columnDetails: "Detalhes",
+      emptyState: "Nenhuma atividade registrada ainda",
+      close: "Fechar",
+      emptyValue: "—",
+      valueOn: "ativado",
+      valueOff: "desativado",
+      resourceTypes: {
+        card: "Card",
+        automation: "Automação",
+        pipe: "Pipe",
+        field: "Campo",
+        phase: "Fase",
+        table: "Tabela",
+      },
+      messages: {
+        cardCreated: 'Criou o card "{card}"',
+        cardMoved: 'Moveu o card "{card}" de "{from}" para "{to}"',
+        cardDeleted: 'Excluiu o card "{card}"',
+        cardFieldUpdated: 'Atualizou o campo "{field}" no card "{card}"',
+        pipeCreated: "Criou este pipe",
+        pipeSettingUpdated:
+          'Atualizou a configuração {setting} de "{from}" para "{to}"',
+        automationCreated:
+          'Criou a automação "{automation}" com o gatilho "{trigger}" e a ação "{action}"',
+        automationUpdated: 'Atualizou a automação "{automation}"',
+        automationDeleted: 'Excluiu a automação "{automation}"',
+        fieldCreated: 'Criou o campo "{field}" em "{owner}"',
+        phaseCreated: 'Criou a fase "{phase}"',
       },
     },
     generalSettings: {
@@ -2024,6 +2150,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       dashboards: "Paneles",
       members: "Personas",
       general: "Configuración",
+      activities: "Actividades",
     },
     members: {
       heading: "{count} persona(s) en {pipeName}",
@@ -2063,6 +2190,48 @@ export const dictionaries: Record<Locale, Dictionary> = {
           description:
             "Puede crear y editar cards que creó o que le fueron asignados. No puede eliminar cards",
         },
+      },
+    },
+    auditLog: {
+      heading: "Actividades",
+      subtitle:
+        "Rastrea las acciones de este pipe y sus responsables. Accede vía API o conoce más.",
+      tabCardActivity: "Actividad de tarjetas",
+      tabConfigChange: "Cambios de configuración",
+      sendFeedback: "Enviar comentarios",
+      exportLogs: "Exportar registros",
+      searchPlaceholder: "Buscar por autor",
+      columnDateTime: "Fecha y hora",
+      columnActor: "Ejecutado por",
+      columnResourceType: "Tipo de recurso",
+      columnDetails: "Detalles",
+      emptyState: "Aún no hay actividad registrada",
+      close: "Cerrar",
+      emptyValue: "—",
+      valueOn: "activado",
+      valueOff: "desactivado",
+      resourceTypes: {
+        card: "Tarjeta",
+        automation: "Automatización",
+        pipe: "Pipe",
+        field: "Campo",
+        phase: "Fase",
+        table: "Tabla",
+      },
+      messages: {
+        cardCreated: 'Creó la tarjeta "{card}"',
+        cardMoved: 'Movió la tarjeta "{card}" de "{from}" a "{to}"',
+        cardDeleted: 'Eliminó la tarjeta "{card}"',
+        cardFieldUpdated: 'Actualizó el campo "{field}" en la tarjeta "{card}"',
+        pipeCreated: "Creó este pipe",
+        pipeSettingUpdated:
+          'Actualizó la configuración {setting} de "{from}" a "{to}"',
+        automationCreated:
+          'Creó la automatización "{automation}" con el disparador "{trigger}" y la acción "{action}"',
+        automationUpdated: 'Actualizó la automatización "{automation}"',
+        automationDeleted: 'Eliminó la automatización "{automation}"',
+        fieldCreated: 'Creó el campo "{field}" en "{owner}"',
+        phaseCreated: 'Creó la fase "{phase}"',
       },
     },
     generalSettings: {
@@ -2638,6 +2807,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       dashboards: "仪表盘",
       members: "成员",
       general: "设置",
+      activities: "活动",
     },
     members: {
       heading: "{pipeName} 中有 {count} 位成员",
@@ -2672,6 +2842,46 @@ export const dictionaries: Record<Locale, Dictionary> = {
           label: "受限视图",
           description: "可以创建和编辑自己创建或被分配的卡片，不能删除卡片",
         },
+      },
+    },
+    auditLog: {
+      heading: "活动",
+      subtitle: "追踪此流程的操作及其执行者。可通过 API 访问或了解更多。",
+      tabCardActivity: "卡片活动",
+      tabConfigChange: "配置变更",
+      sendFeedback: "发送反馈",
+      exportLogs: "导出日志",
+      searchPlaceholder: "按执行者搜索",
+      columnDateTime: "日期和时间",
+      columnActor: "执行者",
+      columnResourceType: "资源类型",
+      columnDetails: "详情",
+      emptyState: "尚无活动记录",
+      close: "关闭",
+      emptyValue: "—",
+      valueOn: "开启",
+      valueOff: "关闭",
+      resourceTypes: {
+        card: "卡片",
+        automation: "自动化",
+        pipe: "流程",
+        field: "字段",
+        phase: "阶段",
+        table: "数据表",
+      },
+      messages: {
+        cardCreated: "创建了卡片“{card}”",
+        cardMoved: "将卡片“{card}”从“{from}”移动到“{to}”",
+        cardDeleted: "删除了卡片“{card}”",
+        cardFieldUpdated: "更新了卡片“{card}”上的字段“{field}”",
+        pipeCreated: "创建了此流程",
+        pipeSettingUpdated: "将{setting}配置从“{from}”更新为“{to}”",
+        automationCreated:
+          "创建了自动化“{automation}”，触发条件为“{trigger}”，动作为“{action}”",
+        automationUpdated: "更新了自动化“{automation}”",
+        automationDeleted: "删除了自动化“{automation}”",
+        fieldCreated: "在“{owner}”上创建了字段“{field}”",
+        phaseCreated: "创建了阶段“{phase}”",
       },
     },
     generalSettings: {
@@ -3245,6 +3455,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       dashboards: "Dashboards",
       members: "Personen",
       general: "Einstellungen",
+      activities: "Aktivitäten",
     },
     members: {
       heading: "{count} Person(en) in {pipeName}",
@@ -3284,6 +3495,50 @@ export const dictionaries: Record<Locale, Dictionary> = {
           description:
             "Kann Cards erstellen und bearbeiten, die sie erstellt hat oder ihr zugewiesen wurden. Kann keine Cards löschen",
         },
+      },
+    },
+    auditLog: {
+      heading: "Aktivitäten",
+      subtitle:
+        "Verfolgen Sie die Aktionen dieser Pipe und wer sie ausgeführt hat. Über die API abrufbar oder mehr erfahren.",
+      tabCardActivity: "Kartenaktivität",
+      tabConfigChange: "Konfigurationsänderungen",
+      sendFeedback: "Feedback senden",
+      exportLogs: "Protokolle exportieren",
+      searchPlaceholder: "Nach Urheber suchen",
+      columnDateTime: "Datum und Uhrzeit",
+      columnActor: "Ausgeführt von",
+      columnResourceType: "Ressourcentyp",
+      columnDetails: "Details",
+      emptyState: "Noch keine Aktivität aufgezeichnet",
+      close: "Schließen",
+      emptyValue: "—",
+      valueOn: "aktiviert",
+      valueOff: "deaktiviert",
+      resourceTypes: {
+        card: "Karte",
+        automation: "Automatisierung",
+        pipe: "Pipe",
+        field: "Feld",
+        phase: "Phase",
+        table: "Tabelle",
+      },
+      messages: {
+        cardCreated: 'Hat die Karte "{card}" erstellt',
+        cardMoved: 'Hat die Karte "{card}" von "{from}" nach "{to}" verschoben',
+        cardDeleted: 'Hat die Karte "{card}" gelöscht',
+        cardFieldUpdated:
+          'Hat das Feld "{field}" auf der Karte "{card}" aktualisiert',
+        pipeCreated: "Hat diese Pipe erstellt",
+        pipeSettingUpdated:
+          'Hat die Konfiguration {setting} von "{from}" auf "{to}" geändert',
+        automationCreated:
+          'Hat die Automatisierung "{automation}" mit dem Auslöser "{trigger}" und der Aktion "{action}" erstellt',
+        automationUpdated:
+          'Hat die Automatisierung "{automation}" aktualisiert',
+        automationDeleted: 'Hat die Automatisierung "{automation}" gelöscht',
+        fieldCreated: 'Hat das Feld "{field}" in "{owner}" erstellt',
+        phaseCreated: 'Hat die Phase "{phase}" erstellt',
       },
     },
     generalSettings: {
@@ -3875,6 +4130,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       dashboards: "Tableaux de bord",
       members: "Personnes",
       general: "Paramètres",
+      activities: "Activités",
     },
     members: {
       heading: "{count} personne(s) dans {pipeName}",
@@ -3914,6 +4170,49 @@ export const dictionaries: Record<Locale, Dictionary> = {
           description:
             "Peut créer et modifier les cards qu'elle a créées ou qui lui sont assignées. Ne peut pas supprimer de cards",
         },
+      },
+    },
+    auditLog: {
+      heading: "Activités",
+      subtitle:
+        "Suivez les actions de ce pipe et leurs auteurs. Accessible via l'API ou en savoir plus.",
+      tabCardActivity: "Activité des cartes",
+      tabConfigChange: "Modifications de configuration",
+      sendFeedback: "Envoyer un commentaire",
+      exportLogs: "Exporter les journaux",
+      searchPlaceholder: "Rechercher par auteur",
+      columnDateTime: "Date et heure",
+      columnActor: "Exécuté par",
+      columnResourceType: "Type de ressource",
+      columnDetails: "Détails",
+      emptyState: "Aucune activité enregistrée pour le moment",
+      close: "Fermer",
+      emptyValue: "—",
+      valueOn: "activé",
+      valueOff: "désactivé",
+      resourceTypes: {
+        card: "Carte",
+        automation: "Automatisation",
+        pipe: "Pipe",
+        field: "Champ",
+        phase: "Phase",
+        table: "Table",
+      },
+      messages: {
+        cardCreated: 'A créé la carte "{card}"',
+        cardMoved: 'A déplacé la carte "{card}" de "{from}" vers "{to}"',
+        cardDeleted: 'A supprimé la carte "{card}"',
+        cardFieldUpdated:
+          'A mis à jour le champ "{field}" sur la carte "{card}"',
+        pipeCreated: "A créé ce pipe",
+        pipeSettingUpdated:
+          'A mis à jour la configuration {setting} de "{from}" vers "{to}"',
+        automationCreated:
+          'A créé l\'automatisation "{automation}" avec le déclencheur "{trigger}" et l\'action "{action}"',
+        automationUpdated: 'A mis à jour l\'automatisation "{automation}"',
+        automationDeleted: 'A supprimé l\'automatisation "{automation}"',
+        fieldCreated: 'A créé le champ "{field}" dans "{owner}"',
+        phaseCreated: 'A créé la phase "{phase}"',
       },
     },
     generalSettings: {
@@ -4500,6 +4799,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       dashboards: "ダッシュボード",
       members: "メンバー",
       general: "設定",
+      activities: "アクティビティ",
     },
     members: {
       heading: "{pipeName} には {count} 人のメンバーがいます",
@@ -4539,6 +4839,49 @@ export const dictionaries: Record<Locale, Dictionary> = {
           description:
             "自分が作成したか割り当てられたカードのみ作成・編集できます。カードを削除できません",
         },
+      },
+    },
+    auditLog: {
+      heading: "アクティビティ",
+      subtitle:
+        "このパイプの操作と実行者を追跡します。API からアクセスするか、詳細をご覧ください。",
+      tabCardActivity: "カードのアクティビティ",
+      tabConfigChange: "設定の変更",
+      sendFeedback: "フィードバックを送信",
+      exportLogs: "ログをエクスポート",
+      searchPlaceholder: "実行者で検索",
+      columnDateTime: "日時",
+      columnActor: "実行者",
+      columnResourceType: "リソースの種類",
+      columnDetails: "詳細",
+      emptyState: "まだアクティビティはありません",
+      close: "閉じる",
+      emptyValue: "—",
+      valueOn: "オン",
+      valueOff: "オフ",
+      resourceTypes: {
+        card: "カード",
+        automation: "オートメーション",
+        pipe: "パイプ",
+        field: "フィールド",
+        phase: "フェーズ",
+        table: "テーブル",
+      },
+      messages: {
+        cardCreated: "カード「{card}」を作成しました",
+        cardMoved: "カード「{card}」を「{from}」から「{to}」に移動しました",
+        cardDeleted: "カード「{card}」を削除しました",
+        cardFieldUpdated:
+          "カード「{card}」のフィールド「{field}」を更新しました",
+        pipeCreated: "このパイプを作成しました",
+        pipeSettingUpdated:
+          "{setting}の設定を「{from}」から「{to}」に更新しました",
+        automationCreated:
+          "トリガー「{trigger}」とアクション「{action}」でオートメーション「{automation}」を作成しました",
+        automationUpdated: "オートメーション「{automation}」を更新しました",
+        automationDeleted: "オートメーション「{automation}」を削除しました",
+        fieldCreated: "「{owner}」にフィールド「{field}」を作成しました",
+        phaseCreated: "フェーズ「{phase}」を作成しました",
       },
     },
     generalSettings: {
@@ -5116,6 +5459,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       dashboards: "डैशबोर्ड",
       members: "सदस्य",
       general: "सेटिंग्स",
+      activities: "गतिविधियाँ",
     },
     members: {
       heading: "{pipeName} में {count} सदस्य",
@@ -5155,6 +5499,48 @@ export const dictionaries: Record<Locale, Dictionary> = {
           description:
             "केवल वही कार्ड बना/संपादित कर सकते हैं जो उन्होंने बनाए या जिन्हें सौंपे गए। कार्ड हटा नहीं सकते",
         },
+      },
+    },
+    auditLog: {
+      heading: "गतिविधियाँ",
+      subtitle:
+        "इस पाइप की कार्रवाइयों और उन्हें करने वालों को ट्रैक करें। API से एक्सेस करें या और जानें।",
+      tabCardActivity: "कार्ड गतिविधि",
+      tabConfigChange: "कॉन्फ़िगरेशन परिवर्तन",
+      sendFeedback: "फ़ीडबैक भेजें",
+      exportLogs: "लॉग निर्यात करें",
+      searchPlaceholder: "लेखक द्वारा खोजें",
+      columnDateTime: "दिनांक और समय",
+      columnActor: "किसने किया",
+      columnResourceType: "संसाधन प्रकार",
+      columnDetails: "विवरण",
+      emptyState: "अभी तक कोई गतिविधि दर्ज नहीं",
+      close: "बंद करें",
+      emptyValue: "—",
+      valueOn: "चालू",
+      valueOff: "बंद",
+      resourceTypes: {
+        card: "कार्ड",
+        automation: "ऑटोमेशन",
+        pipe: "पाइप",
+        field: "फ़ील्ड",
+        phase: "चरण",
+        table: "तालिका",
+      },
+      messages: {
+        cardCreated: 'कार्ड "{card}" बनाया',
+        cardMoved: 'कार्ड "{card}" को "{from}" से "{to}" में स्थानांतरित किया',
+        cardDeleted: 'कार्ड "{card}" हटाया',
+        cardFieldUpdated: 'कार्ड "{card}" पर फ़ील्ड "{field}" अपडेट किया',
+        pipeCreated: "यह पाइप बनाया",
+        pipeSettingUpdated:
+          '{setting} कॉन्फ़िगरेशन को "{from}" से "{to}" में अपडेट किया',
+        automationCreated:
+          'ट्रिगर "{trigger}" और क्रिया "{action}" के साथ ऑटोमेशन "{automation}" बनाया',
+        automationUpdated: 'ऑटोमेशन "{automation}" अपडेट किया',
+        automationDeleted: 'ऑटोमेशन "{automation}" हटाया',
+        fieldCreated: '"{owner}" पर फ़ील्ड "{field}" बनाया',
+        phaseCreated: 'चरण "{phase}" बनाया',
       },
     },
     generalSettings: {
@@ -5729,6 +6115,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       dashboards: "لوحات المعلومات",
       members: "الأشخاص",
       general: "الإعدادات",
+      activities: "الأنشطة",
     },
     members: {
       heading: "{count} شخص في {pipeName}",
@@ -5768,6 +6155,47 @@ export const dictionaries: Record<Locale, Dictionary> = {
           description:
             "يمكنه إنشاء وتعديل البطاقات التي أنشأها أو المسندة إليه فقط. لا يمكنه حذف البطاقات",
         },
+      },
+    },
+    auditLog: {
+      heading: "الأنشطة",
+      subtitle:
+        "تتبّع إجراءات هذا الـ pipe ومَن نفّذها. يمكن الوصول إليها عبر واجهة API أو معرفة المزيد.",
+      tabCardActivity: "نشاط البطاقات",
+      tabConfigChange: "تغييرات الإعدادات",
+      sendFeedback: "إرسال ملاحظات",
+      exportLogs: "تصدير السجلات",
+      searchPlaceholder: "البحث حسب المنفّذ",
+      columnDateTime: "التاريخ والوقت",
+      columnActor: "نُفّذ بواسطة",
+      columnResourceType: "نوع المورد",
+      columnDetails: "التفاصيل",
+      emptyState: "لا يوجد نشاط مسجّل بعد",
+      close: "إغلاق",
+      emptyValue: "—",
+      valueOn: "مُفعَّل",
+      valueOff: "معطَّل",
+      resourceTypes: {
+        card: "بطاقة",
+        automation: "أتمتة",
+        pipe: "Pipe",
+        field: "حقل",
+        phase: "مرحلة",
+        table: "جدول",
+      },
+      messages: {
+        cardCreated: 'أنشأ البطاقة "{card}"',
+        cardMoved: 'نقل البطاقة "{card}" من "{from}" إلى "{to}"',
+        cardDeleted: 'حذف البطاقة "{card}"',
+        cardFieldUpdated: 'حدّث الحقل "{field}" في البطاقة "{card}"',
+        pipeCreated: "أنشأ هذا الـ pipe",
+        pipeSettingUpdated: 'حدّث إعداد {setting} من "{from}" إلى "{to}"',
+        automationCreated:
+          'أنشأ الأتمتة "{automation}" بالمشغّل "{trigger}" والإجراء "{action}"',
+        automationUpdated: 'حدّث الأتمتة "{automation}"',
+        automationDeleted: 'حذف الأتمتة "{automation}"',
+        fieldCreated: 'أنشأ الحقل "{field}" في "{owner}"',
+        phaseCreated: 'أنشأ المرحلة "{phase}"',
       },
     },
     generalSettings: {
@@ -6344,6 +6772,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       dashboards: "Панели",
       members: "Участники",
       general: "Настройки",
+      activities: "Действия",
     },
     members: {
       heading: "{count} участник(ов) в {pipeName}",
@@ -6384,6 +6813,47 @@ export const dictionaries: Record<Locale, Dictionary> = {
           description:
             "Может создавать и редактировать карточки, которые создал или которые назначены ему. Не может удалять карточки",
         },
+      },
+    },
+    auditLog: {
+      heading: "Действия",
+      subtitle:
+        "Отслеживайте действия в этом пайпе и их авторов. Доступно через API или узнайте больше.",
+      tabCardActivity: "Действия с карточками",
+      tabConfigChange: "Изменения настроек",
+      sendFeedback: "Отправить отзыв",
+      exportLogs: "Экспорт журнала",
+      searchPlaceholder: "Поиск по автору",
+      columnDateTime: "Дата и время",
+      columnActor: "Выполнил",
+      columnResourceType: "Тип ресурса",
+      columnDetails: "Подробности",
+      emptyState: "Действий пока нет",
+      close: "Закрыть",
+      emptyValue: "—",
+      valueOn: "включено",
+      valueOff: "выключено",
+      resourceTypes: {
+        card: "Карточка",
+        automation: "Автоматизация",
+        pipe: "Пайп",
+        field: "Поле",
+        phase: "Фаза",
+        table: "Таблица",
+      },
+      messages: {
+        cardCreated: 'Создал карточку "{card}"',
+        cardMoved: 'Переместил карточку "{card}" из "{from}" в "{to}"',
+        cardDeleted: 'Удалил карточку "{card}"',
+        cardFieldUpdated: 'Обновил поле "{field}" в карточке "{card}"',
+        pipeCreated: "Создал этот пайп",
+        pipeSettingUpdated: 'Изменил настройку {setting} с "{from}" на "{to}"',
+        automationCreated:
+          'Создал автоматизацию "{automation}" с триггером "{trigger}" и действием "{action}"',
+        automationUpdated: 'Обновил автоматизацию "{automation}"',
+        automationDeleted: 'Удалил автоматизацию "{automation}"',
+        fieldCreated: 'Создал поле "{field}" в "{owner}"',
+        phaseCreated: 'Создал фазу "{phase}"',
       },
     },
     generalSettings: {

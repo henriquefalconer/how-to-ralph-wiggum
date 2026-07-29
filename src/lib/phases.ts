@@ -1,3 +1,4 @@
+import { logAuditEntry } from "@/lib/audit-log";
 import { db } from "@/lib/db";
 import { phases } from "@/lib/db/schema";
 import { asc, count, eq } from "drizzle-orm";
@@ -42,6 +43,14 @@ export async function createPhase(
     .insert(phases)
     .values({ pipeId, name: trimmed, position: existingCount })
     .returning();
+
+  await logAuditEntry({
+    pipeId,
+    category: "config_change",
+    resourceType: "phase",
+    messageKey: "phaseCreated",
+    params: { phase: phase.name },
+  });
 
   return phase;
 }

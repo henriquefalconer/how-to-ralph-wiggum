@@ -1,3 +1,4 @@
+import { logAuditEntry } from "@/lib/audit-log";
 import {
   AUTOMATION_ACTION_TYPES,
   AUTOMATION_TRIGGER_TYPES,
@@ -132,6 +133,18 @@ export async function createAutomation(
     })
     .returning();
 
+  await logAuditEntry({
+    pipeId,
+    category: "config_change",
+    resourceType: "automation",
+    messageKey: "automationCreated",
+    params: {
+      automation: automation.name,
+      trigger: automation.triggerType,
+      action: automation.actionType,
+    },
+  });
+
   return automation;
 }
 
@@ -175,18 +188,34 @@ export async function updateAutomation(
     .where(eq(automations.id, id))
     .returning();
 
+  await logAuditEntry({
+    pipeId: updated.pipeId,
+    category: "config_change",
+    resourceType: "automation",
+    messageKey: "automationUpdated",
+    params: { automation: updated.name },
+  });
+
   return updated;
 }
 
 export async function deleteAutomation(id: string): Promise<void> {
-  const remaining = await db
+  const [removed] = await db
     .delete(automations)
     .where(eq(automations.id, id))
-    .returning({ id: automations.id });
+    .returning();
 
-  if (remaining.length === 0) {
+  if (!removed) {
     throw new Error("Automation not found");
   }
+
+  await logAuditEntry({
+    pipeId: removed.pipeId,
+    category: "config_change",
+    resourceType: "automation",
+    messageKey: "automationDeleted",
+    params: { automation: removed.name },
+  });
 }
 
 export async function duplicateAutomation(id: string): Promise<Automation> {

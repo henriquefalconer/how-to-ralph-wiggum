@@ -1,5 +1,6 @@
+import { logAuditEntry } from "@/lib/audit-log";
 import { db } from "@/lib/db";
-import { fields } from "@/lib/db/schema";
+import { fields, phases, pipes } from "@/lib/db/schema";
 import {
   FIELD_TYPES,
   type FieldOwnerType,
@@ -110,7 +111,44 @@ export async function createField(
     })
     .returning();
 
+  await logFieldCreated(field);
+
   return field;
+}
+
+// Table fields live outside any pipe, so they have no pipe-scoped log to
+// appear in; phase and start-form fields are logged against their pipe.
+async function logFieldCreated(field: Field): Promise<void> {
+  let pipeId: string | null = null;
+  let owner = "";
+
+  if (field.ownerType === "phase") {
+    const [phase] = await db
+      .select({ pipeId: phases.pipeId, name: phases.name })
+      .from(phases)
+      .where(eq(phases.id, field.ownerId));
+    if (!phase) return;
+    pipeId = phase.pipeId;
+    owner = phase.name;
+  } else if (field.ownerType === "start_form") {
+    const [pipe] = await db
+      .select({ id: pipes.id, name: pipes.name })
+      .from(pipes)
+      .where(eq(pipes.id, field.ownerId));
+    if (!pipe) return;
+    pipeId = pipe.id;
+    owner = pipe.name;
+  }
+
+  if (!pipeId) return;
+
+  await logAuditEntry({
+    pipeId,
+    category: "config_change",
+    resourceType: "field",
+    messageKey: "fieldCreated",
+    params: { field: field.label, owner },
+  });
 }
 
 export async function updateField(

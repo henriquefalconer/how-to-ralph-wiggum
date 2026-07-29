@@ -508,6 +508,47 @@ export const reports = pgTable("reports", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const auditLogCategories = ["card_activity", "config_change"] as const;
+
+export const auditLogResourceTypes = [
+  "card",
+  "automation",
+  "pipe",
+  "field",
+  "phase",
+  "table",
+] as const;
+
+export const auditLogEntries = pgTable("audit_log_entries", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  pipeId: uuid("pipe_id")
+    .notNull()
+    .references(() => pipes.id, { onDelete: "cascade" }),
+  // Nullable so removing a member never erases the history of what they did.
+  actorUserId: uuid("actor_user_id").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  // Denormalised copy of the actor at write time — the log must still render
+  // (and stay searchable by author) after the user row is gone.
+  actorName: text("actor_name").notNull(),
+  actorEmail: text("actor_email").notNull(),
+  category: text("category", { enum: auditLogCategories }).notNull(),
+  resourceType: text("resource_type", {
+    enum: auditLogResourceTypes,
+  }).notNull(),
+  // The sentence is stored twice on purpose: `message` is the canonical
+  // server-rendered sentence the REST API and CSV export serve, while
+  // messageKey + messageParams let the dashboard re-render it in the reader's
+  // locale (every page is internationalised — see CLAUDE.md).
+  message: text("message").notNull(),
+  messageKey: text("message_key").notNull(),
+  messageParams: jsonb("message_params")
+    .$type<Record<string, string>>()
+    .notNull()
+    .default({}),
+  occurredAt: timestamp("occurred_at").defaultNow().notNull(),
+});
+
 export const dashboardChartMetrics = [
   "cards_total",
   "attachments_total",

@@ -12,9 +12,12 @@ export default defineConfig({
     // connection pool, and running files concurrently causes enough
     // serverless cold-start contention to blow past a short timeout —
     // run files one at a time and give queries generous headroom.
+    // Headroom grows with the product: each feature adds real writes (the
+    // audit log now records one row per mutation), and a test that seeds a
+    // pipe, fields and cards is dozens of sequential round trips.
     fileParallelism: false,
-    testTimeout: 30000,
-    hookTimeout: 30000,
+    testTimeout: 60000,
+    hookTimeout: 60000,
   },
   resolve: {
     alias: {

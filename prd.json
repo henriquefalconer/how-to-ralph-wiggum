@@ -798,7 +798,7 @@
     "data_model": "audit_log_entries: id, pipe_id (fk), actor_user_id (fk), category (enum: card_activity|config_change), resource_type (enum: card|automation|pipe|field|phase|table|...), message (text, server-rendered human-readable sentence), occurred_at",
     "priority": 9,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {

@@ -13,7 +13,8 @@ export function ManageTabs({
     | "reports"
     | "dashboards"
     | "members"
-    | "general";
+    | "general"
+    | "activities";
   dictionary: Dictionary;
 }) {
   const tabs: {
@@ -23,7 +24,8 @@ export function ManageTabs({
       | "reports"
       | "dashboards"
       | "members"
-      | "general";
+      | "general"
+      | "activities";
     href: string;
     label: string;
   }[] = [
@@ -56,6 +58,11 @@ export function ManageTabs({
       key: "general",
       href: `/pipes/${pipeId}/settings/general-settings`,
       label: dictionary.manageTabs.general,
+    },
+    {
+      key: "activities",
+      href: `/pipes/${pipeId}/settings/activities`,
+      label: dictionary.manageTabs.activities,
     },
   ];
 

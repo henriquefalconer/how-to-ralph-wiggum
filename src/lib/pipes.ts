@@ -1,3 +1,4 @@
+import { AUDITED_PIPE_SETTINGS, logAuditEntry } from "@/lib/audit-log";
 import { db } from "@/lib/db";
 import {
   cards,
@@ -9,7 +10,9 @@ import {
   type pipeVisibilities,
   pipes,
 } from "@/lib/db/schema";
-import type { Dictionary } from "@/lib/i18n";
+import { listFields } from "@/lib/fields";
+import { type Dictionary, getDictionary } from "@/lib/i18n";
+import { defaultLocale } from "@/lib/i18n/locales";
 import { and, asc, count, eq } from "drizzle-orm";
 
 const PIPE_COLOR_PALETTE = [
@@ -124,6 +127,13 @@ export async function createPipe(
     },
     { pipeId: pipe.id, name: defaultPhaseNames.done, done: true, position: 2 },
   ]);
+
+  await logAuditEntry({
+    pipeId: pipe.id,
+    category: "config_change",
+    resourceType: "pipe",
+    messageKey: "pipeCreated",
+  });
 
   return pipe;
 }
@@ -248,7 +258,63 @@ export async function updatePipeSettings(
     .where(eq(pipes.id, pipeId))
     .returning();
 
+  await logPipeSettingChanges(existing, updated);
+
   return updated;
+}
+
+// One audit entry per setting that actually changed, each carrying the old and
+// new value so the log can render "…from X to Y" in the reader's locale.
+async function logPipeSettingChanges(before: Pipe, after: Pipe): Promise<void> {
+  const changed = (Object.keys(AUDITED_PIPE_SETTINGS) as (keyof Pipe)[]).filter(
+    (key) => formatSettingValue(before[key]) !== formatSettingValue(after[key]),
+  );
+  if (changed.length === 0) return;
+
+  const emptyValue = getDictionary(defaultLocale).auditLog.emptyValue;
+
+  // Both lookups below only matter for specific settings, so they stay off the
+  // hot path of an ordinary toggle change.
+  const labelById = changed.includes("titleFieldId")
+    ? new Map(
+        (await listFields("start_form", after.id)).map((f) => [f.id, f.label]),
+      )
+    : new Map<string, string>();
+  const asLabel = (value: string) =>
+    value ? (labelById.get(value) ?? value) : emptyValue;
+
+  const [org] = changed.includes("visibility")
+    ? await db
+        .select({ name: organizations.name })
+        .from(organizations)
+        .where(eq(organizations.id, after.orgId))
+    : [];
+
+  for (const key of changed) {
+    const fieldValued = key === "titleFieldId";
+    const from = formatSettingValue(before[key]);
+    const to = formatSettingValue(after[key]);
+
+    await logAuditEntry({
+      pipeId: after.id,
+      category: "config_change",
+      resourceType: "pipe",
+      messageKey: "pipeSettingUpdated",
+      params: {
+        setting: key,
+        from: fieldValued ? asLabel(from) : from || emptyValue,
+        to: fieldValued ? asLabel(to) : to || emptyValue,
+        org: org?.name ?? "",
+      },
+    });
+  }
+}
+
+function formatSettingValue(value: Pipe[keyof Pipe]): string {
+  if (value === null || value === undefined) return "";
+  if (Array.isArray(value)) return value.join(", ");
+  if (value instanceof Date) return value.toISOString();
+  return String(value);
 }
 
 // A custom item_name substitutes for the localized "Cards" noun everywhere it

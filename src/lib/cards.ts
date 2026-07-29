@@ -1,3 +1,4 @@
+import { logAuditEntry } from "@/lib/audit-log";
 import { executeAutomationsForTrigger } from "@/lib/automations";
 import { db } from "@/lib/db";
 import {
@@ -98,6 +99,14 @@ export async function createCard(
     cardId: card.id,
     phaseId: card.phaseId,
     title: card.title,
+  });
+
+  await logAuditEntry({
+    pipeId,
+    category: "card_activity",
+    resourceType: "card",
+    messageKey: "cardCreated",
+    params: { card: card.title },
   });
 
   return card;
@@ -233,6 +242,23 @@ export async function moveCardToPhase(
     toPhaseId,
   });
 
+  const [fromPhase] = await db
+    .select({ name: phases.name })
+    .from(phases)
+    .where(eq(phases.id, fromPhaseId));
+
+  await logAuditEntry({
+    pipeId: card.pipeId,
+    category: "card_activity",
+    resourceType: "card",
+    messageKey: "cardMoved",
+    params: {
+      card: updated.title,
+      from: fromPhase?.name ?? "",
+      to: toPhase.name,
+    },
+  });
+
   await executeAutomationsForTrigger(card.pipeId, "card_entered_phase", {
     pipeId: card.pipeId,
     cardId,
@@ -284,6 +310,14 @@ export async function setPhaseFieldValue(
     fieldId,
     value,
   });
+
+  await logAuditEntry({
+    pipeId: card.pipeId,
+    category: "card_activity",
+    resourceType: "card",
+    messageKey: "cardFieldUpdated",
+    params: { card: card.title, field: field.label },
+  });
 }
 
 export async function updateCardFieldValue(
@@ -324,5 +358,14 @@ export async function deleteCard(
 
   await triggerWebhookEvent("pipe", card.pipeId, "card.deleted", {
     cardId,
+  });
+
+  await logAuditEntry({
+    pipeId: card.pipeId,
+    category: "card_activity",
+    resourceType: "card",
+    messageKey: "cardDeleted",
+    params: { card: card.title },
+    actorUserId: actingUserId,
   });
 }
