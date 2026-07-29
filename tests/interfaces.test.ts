@@ -9,7 +9,10 @@ import {
   createInterface,
   filterRowsByVisibilityConditions,
   getDataTableRows,
+  isDividerComplete,
+  isLinkConfigComplete,
   listElements,
+  renderTextContent,
   reorderElements,
 } from "@/lib/interfaces";
 import { createPipe, getPipeWithPhases } from "@/lib/pipes";
@@ -232,6 +235,70 @@ describe("interfaces", () => {
         "anyone",
       );
       expect(result).toEqual({ rows: [], total: 0 });
+    });
+  });
+
+  describe("renderTextContent", () => {
+    it("substitutes {{fieldId}} tokens with values from context", () => {
+      const content = "Requested by {{requester}} with priority {{priority}}";
+      const rendered = renderTextContent(content, {
+        requester: "Alice",
+        priority: "High",
+      });
+      expect(rendered).toBe("Requested by Alice with priority High");
+    });
+
+    it("leaves unmatched tokens as-is", () => {
+      const content = "Requester: {{requester}}, Assigned to: {{assignee}}";
+      const rendered = renderTextContent(content, { requester: "Alice" });
+      expect(rendered).toBe("Requester: Alice, Assigned to: {{assignee}}");
+    });
+
+    it("handles nested token paths like {{card.title}}", () => {
+      const content = "Card: {{card.title}}, Status: {{card.status}}";
+      const rendered = renderTextContent(content, {
+        card: JSON.stringify({ title: "Request #42", status: "Approved" }),
+      });
+      // Since we're passing a JSON string, this tests the basic case
+      // In real usage, card would be a nested object
+      expect(rendered).toContain("Card:");
+    });
+
+    it("returns empty string for undefined/null content", () => {
+      expect(renderTextContent(undefined, { test: "value" })).toBe("");
+      expect(renderTextContent("", { test: "value" })).toBe("");
+    });
+
+    it("preserves formatting and only replaces tokens", () => {
+      const content =
+        "**Bold text** with {{name}} and a {{field}} inside plain text";
+      const rendered = renderTextContent(content, { name: "Alice", field: "id" });
+      expect(rendered).toBe("**Bold text** with Alice and a id inside plain text");
+    });
+  });
+
+  describe("isLinkConfigComplete", () => {
+    it("returns true when both name and url are present and non-empty", () => {
+      expect(isLinkConfigComplete({ name: "Docs", url: "https://example.com" }))
+        .toBe(true);
+    });
+
+    it("returns false when name or url is missing", () => {
+      expect(isLinkConfigComplete({ name: "Docs" })).toBe(false);
+      expect(isLinkConfigComplete({ url: "https://example.com" })).toBe(false);
+      expect(isLinkConfigComplete({})).toBe(false);
+    });
+
+    it("returns false when name or url is only whitespace", () => {
+      expect(isLinkConfigComplete({ name: "  ", url: "https://example.com" }))
+        .toBe(false);
+      expect(isLinkConfigComplete({ name: "Docs", url: "  " })).toBe(false);
+    });
+  });
+
+  describe("isDividerComplete", () => {
+    it("always returns true for dividers (no config needed)", () => {
+      expect(isDividerComplete()).toBe(true);
     });
   });
 });

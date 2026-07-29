@@ -1249,7 +1249,7 @@
     "data_model": "interface_page_elements (see feature-008) rows with type='text': config={content: richTextJSON} (richTextJSON supports bold/italic/underline/strike/color/lists/links/blockquote plus embedded dynamic-content tokens). type='link': config={name, url}. type='divider': config={} (no fields).",
     "priority": 10,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {

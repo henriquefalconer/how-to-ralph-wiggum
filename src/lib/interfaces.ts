@@ -539,3 +539,65 @@ export async function getFormLinkTarget(
     fields: startFormFields,
   };
 }
+
+// ---------- Content elements (Texto, Link, Divisor) ----------
+
+export interface TextElementConfig {
+  content?: string; // Rich text with optional {{token}} refs
+}
+
+export interface LinkElementConfig {
+  name?: string;
+  url?: string;
+}
+
+export interface DividerElementConfig {
+  // Divider has no config
+}
+
+/**
+ * Renders rich text content with dynamic-field token substitution.
+ * Tokens are in the form {{fieldId}} or {{card.title}}.
+ * @param content Plain or rich text with embedded {{token}} refs
+ * @param context Object with field values (fieldId -> value mapping)
+ * @returns Rendered text with tokens substituted
+ */
+export function renderTextContent(
+  content: string | undefined,
+  context: Record<string, string>,
+): string {
+  if (!content) return "";
+
+  return content.replace(
+    /\{\{([a-z_]+(?:\.[a-z_]+)*)\}\}/gi,
+    (match, token) => {
+      // Simple token resolution: {{card.title}} or {{fieldId}}
+      const parts = token.split(".");
+      let value: unknown = context;
+      for (const part of parts) {
+        if (typeof value === "object" && value !== null) {
+          value = (value as Record<string, unknown>)[part];
+        } else {
+          return match; // Token not found, leave as-is
+        }
+      }
+      return String(value ?? match);
+    },
+  );
+}
+
+/**
+ * Validates a Link element's config (name and url).
+ * A link with no URL should not be considered broken — it's just unconfigured.
+ * @returns true if the link has both name and url, false otherwise
+ */
+export function isLinkConfigComplete(config: LinkElementConfig): boolean {
+  return Boolean(config.name?.trim() && config.url?.trim());
+}
+
+/**
+ * A Divisor element is always complete — it has no required fields.
+ */
+export function isDividerComplete(): boolean {
+  return true;
+}
