@@ -57,5 +57,21 @@
       "This confirms the requirement that cards require start form fields"
     ],
     "bugs_found": []
+  },
+  {
+    "feature_id": "feature-005",
+    "status": "pass",
+    "tested_steps": [
+      "Navigated to Databases tab on home page",
+      "Clicked 'Create database' tile",
+      "Database creation modal opened with name-only input",
+      "Entered database name: 'Test Database'",
+      "Clicked 'Create database' button",
+      "Verified redirect to database grid view",
+      "Confirmed database title: 'Test Database'",
+      "Verified empty state: '0 records' with 'No records yet' message",
+      "Confirmed 'Criar registro' (Create record) button is present"
+    ],
+    "bugs_found": []
   }
 ]
