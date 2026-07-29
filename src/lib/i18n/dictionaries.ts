@@ -712,6 +712,28 @@ export interface Dictionary {
       noAgents: string;
       noLogs: string;
     };
+    connections: {
+      tab: string;
+      createButton: string;
+      manageConnections: string;
+      connectionName: string;
+      selectTarget: string;
+      permissions: string;
+      cardinality: string;
+      advancedOptions: string;
+      requireForNextPhase: string;
+      blockUntilTargetDone: string;
+      autofillFromTarget: string;
+      save: string;
+      cancel: string;
+      delete: string;
+      emptyState: string;
+      searchOnly: string;
+      createOnly: string;
+      both: string;
+      single: string;
+      multiple: string;
+    };
   };
 }
 
@@ -1448,6 +1470,28 @@ export const dictionaries: Record<Locale, Dictionary> = {
         emptyState:
           "Centralize communication by gathering your emails in one place.",
         noneFound: "No emails found in this selection.",
+      },
+      connections: {
+        tab: "Connections",
+        createButton: "Create connection",
+        manageConnections: "Manage connections",
+        connectionName: "Connection name",
+        selectTarget: "Select a pipe or database to connect",
+        permissions: "Permissions",
+        cardinality: "Cardinality",
+        advancedOptions: "Advanced options",
+        requireForNextPhase: "Require to advance to next phase",
+        blockUntilTargetDone: "Block phase advance until connected record is done",
+        autofillFromTarget: "Autofill card fields from connected record",
+        save: "Save",
+        cancel: "Cancel",
+        delete: "Delete",
+        emptyState: "No connections yet",
+        searchOnly: "Search only",
+        createOnly: "Create only",
+        both: "Search and create",
+        single: "Single",
+        multiple: "Multiple",
       },
     },
   },

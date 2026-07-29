@@ -1149,7 +1149,7 @@
     "data_model": "Connection: id, pipe_id (fk), name, target_type ('pipe'|'database'), target_id, permission ('search'|'create'|'both'), cardinality ('single'|'multiple'), require_for_next_phase (bool), require_for_final_phase (bool), block_next_phase_until_target_done (bool), block_final_phase_until_target_done (bool), autofill_from_target (bool). ConnectedRecord: id, connection_id (fk), source_card_id (fk), target_card_id/target_record_id (fk), created_at.",
     "priority": 9,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {

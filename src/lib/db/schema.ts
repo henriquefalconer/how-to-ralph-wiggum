@@ -800,3 +800,55 @@ export const aiAgentRuns = pgTable("ai_agent_runs", {
   startedAt: timestamp("started_at").defaultNow().notNull(),
   finishedAt: timestamp("finished_at"),
 });
+
+export const connectionPermissions = ["search", "create", "both"] as const;
+export const connectionCardinalities = ["single", "multiple"] as const;
+export const connectionTargetTypes = ["pipe", "database"] as const;
+
+export const connections = pgTable("connections", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  pipeId: uuid("pipe_id")
+    .notNull()
+    .references(() => pipes.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  targetType: text("target_type", { enum: connectionTargetTypes }).notNull(),
+  targetId: uuid("target_id").notNull(),
+  permission: text("permission", { enum: connectionPermissions })
+    .notNull()
+    .default("both"),
+  cardinality: text("cardinality", { enum: connectionCardinalities })
+    .notNull()
+    .default("multiple"),
+  requireForNextPhase: boolean("require_for_next_phase")
+    .notNull()
+    .default(false),
+  requireForFinalPhase: boolean("require_for_final_phase")
+    .notNull()
+    .default(false),
+  blockNextPhaseUntilTargetDone: boolean("block_next_phase_until_target_done")
+    .notNull()
+    .default(false),
+  blockFinalPhaseUntilTargetDone: boolean("block_final_phase_until_target_done")
+    .notNull()
+    .default(false),
+  autofillFromTarget: boolean("autofill_from_target").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const connectedRecords = pgTable("connected_records", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  connectionId: uuid("connection_id")
+    .notNull()
+    .references(() => connections.id, { onDelete: "cascade" }),
+  sourceCardId: uuid("source_card_id")
+    .notNull()
+    .references(() => cards.id, { onDelete: "cascade" }),
+  targetCardId: uuid("target_card_id").references(() => cards.id, {
+    onDelete: "cascade",
+  }),
+  targetRecordId: uuid("target_record_id").references(() => tableRecords.id, {
+    onDelete: "cascade",
+  }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
