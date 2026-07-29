@@ -137,6 +137,25 @@ test.describe("smoke", () => {
     await expect(page.getByTestId("dashboards-empty-state")).toBeVisible();
   });
 
+  test("the Manage tabs navigate from Fases to Configurações", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.getByTestId("create-pipe-tile").click();
+    await page.getByTestId("create-from-scratch").click();
+    await page
+      .getByTestId("pipe-name-input")
+      .fill(`Smoke General Settings ${Date.now()}`);
+    await page.getByTestId("submit-create-pipe").click();
+    await page.waitForURL(/\/pipes\/.+/);
+
+    await page.getByTestId("manage-pipe-link").click();
+    await page.waitForURL(/\/settings\/phases\/.+/);
+    await page.getByTestId("manage-tab-general").click();
+    await page.waitForURL(/\/settings\/general-settings$/);
+    await expect(page.getByTestId("general-settings-heading")).toBeVisible();
+  });
+
   test("the Databases tab creates a database and loads its grid page", async ({
     page,
   }) => {

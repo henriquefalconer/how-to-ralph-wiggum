@@ -312,8 +312,13 @@ export async function deleteCard(
     throw new Error("Card not found");
   }
 
+  const [pipe] = await db
+    .select({ restrictDeleteToAdmin: pipes.restrictDeleteToAdmin })
+    .from(pipes)
+    .where(eq(pipes.id, card.pipeId));
+
   const role = await getMemberRole(card.pipeId, actingUserId);
-  assertCanDeleteCard(role);
+  assertCanDeleteCard(role, pipe?.restrictDeleteToAdmin ?? false);
 
   await db.delete(cards).where(eq(cards.id, cardId));
 

@@ -3,7 +3,11 @@ import type { Dictionary } from "./dictionaries";
 export function formatCardsCount(
   dictionary: Dictionary,
   count: number,
+  itemName?: string | null,
 ): string {
+  if (itemName?.trim()) {
+    return `${count} ${itemName.trim()}`;
+  }
   const template =
     count === 1
       ? dictionary.home.cardsCountOne

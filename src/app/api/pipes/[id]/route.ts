@@ -1,4 +1,4 @@
-import { getPipeWithPhases } from "@/lib/pipes";
+import { deletePipe, getPipeWithPhases } from "@/lib/pipes";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -13,4 +13,20 @@ export async function GET(
   }
 
   return NextResponse.json(result);
+}
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+  try {
+    await deletePipe(id);
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Failed to delete pipe" },
+      { status: 400 },
+    );
+  }
 }

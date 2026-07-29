@@ -2,7 +2,7 @@ import { KanbanBoard } from "@/components/KanbanBoard";
 import { TopNav } from "@/components/TopNav";
 import { listCardsForPipe, listStartFormFields } from "@/lib/cards";
 import { getTranslations } from "@/lib/i18n";
-import { getPipeWithPhases } from "@/lib/pipes";
+import { getPipeWithPhases, resolveCreateCardButtonLabel } from "@/lib/pipes";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -50,6 +50,7 @@ export default async function PipePage({
         initialCards={cards}
         startFormFields={startFormFields}
         dictionary={dictionary}
+        createCardButtonLabel={resolveCreateCardButtonLabel(pipe, dictionary)}
       />
       <div className="px-6 pb-6">
         <Link href="/" className="text-sm text-blue-600 hover:underline">

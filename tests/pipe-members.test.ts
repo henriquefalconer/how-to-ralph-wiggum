@@ -12,7 +12,7 @@ import {
   removeMember,
   updateMemberRole,
 } from "@/lib/pipe-members";
-import { createPipe } from "@/lib/pipes";
+import { createPipe, updatePipeSettings } from "@/lib/pipes";
 import { asc, eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -301,5 +301,37 @@ describe("pipe-members", () => {
 
     await removeMember(member.id);
     expect(await getMember(member.id)).toBeNull();
+  });
+
+  it("restrictDeleteToAdmin blocks a plain pipe_member from deleting cards", async () => {
+    const pipe = await makePipe("Restrict Delete To Admin Pipe");
+    const [inbox] = await pipePhases(pipe.id);
+    const titleField = await createField("start_form", pipe.id, {
+      label: "Title",
+      type: "short_text",
+    });
+    const card = await createCard(pipe.id, inbox.id, {
+      [titleField.id]: "Task 1",
+    });
+
+    const member = await inviteMember(orgId, pipe.id, {
+      name: "Plain Member",
+      email: "plain-member@example.com",
+      role: "pipe_member",
+    });
+
+    await updatePipeSettings(pipe.id, { restrictDeleteToAdmin: true });
+
+    await expect(deleteCard(card.id, member.user.id)).rejects.toThrow(
+      AuthorizationError,
+    );
+
+    const admin = await ensureSelfMembership(orgId, pipe.id);
+    await deleteCard(card.id, admin.user.id);
+    const remaining = await db
+      .select()
+      .from(cards)
+      .where(eq(cards.id, card.id));
+    expect(remaining.length).toBe(0);
   });
 });

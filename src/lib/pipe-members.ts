@@ -127,10 +127,18 @@ export async function getMemberRole(
   return (row?.role as PipeMemberRole | undefined) ?? null;
 }
 
-export function assertCanDeleteCard(role: PipeMemberRole | null): void {
+export function assertCanDeleteCard(
+  role: PipeMemberRole | null,
+  restrictToAdmin = false,
+): void {
   if (!role || !ROLE_CAN_DELETE_CARD[role]) {
     throw new AuthorizationError(
       "This role does not have permission to delete cards",
+    );
+  }
+  if (restrictToAdmin && role !== "pipe_admin") {
+    throw new AuthorizationError(
+      "Only pipe admins may delete cards in this pipe",
     );
   }
 }

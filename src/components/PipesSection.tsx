@@ -56,7 +56,7 @@ export function PipesSection({
                 {pipe.name}
               </p>
               <p className="text-xs text-gray-500">
-                {formatCardsCount(dictionary, pipe.cardsCount)}
+                {formatCardsCount(dictionary, pipe.cardsCount, pipe.itemName)}
               </p>
             </div>
           </Link>

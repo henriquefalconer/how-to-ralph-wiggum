@@ -750,7 +750,7 @@
     "data_model": "pipes: icon, tags (jsonb array, max 3), item_name (text, default 'Cards'), create_card_button_label (text, default 'Criar novo card'), default_view (enum: kanban|list|...), title_field_id (fk, nullable — see feature-004), kanban_preview_field_ids (jsonb array), connected_card_field_ids (jsonb array, default ['created_at','current_phase']), expiration_alert_time (int, default 0), expiration_alert_unit (enum: minutes|hours|days), expiration_alert_business_days_only (bool), visibility (enum: org_open|invite_only), ai_agents_enabled (bool, default true), ai_copilot_enabled (bool, default true), allow_bulk_actions (bool, default false), restrict_edit_to_assignee (bool, default false), restrict_delete_to_admin (bool, default false)",
     "priority": 11,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {

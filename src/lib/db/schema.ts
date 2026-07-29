@@ -56,6 +56,10 @@ export const pipeMembers = pgTable("pipe_members", {
   joinedAt: timestamp("joined_at"),
 });
 
+export const pipeDefaultViews = ["kanban", "list"] as const;
+export const pipeExpirationAlertUnits = ["minutes", "hours", "days"] as const;
+export const pipeVisibilities = ["org_open", "invite_only"] as const;
+
 export const pipes = pgTable("pipes", {
   id: uuid("id").primaryKey().defaultRandom(),
   orgId: uuid("org_id")
@@ -66,6 +70,45 @@ export const pipes = pgTable("pipes", {
   // References fields.id within the (owner_type='start_form', owner_id=pipes.id) scope.
   // Not a DB-level FK (fields has a composite PK keyed by scope, not a surrogate id).
   titleFieldId: text("title_field_id"),
+  icon: text("icon"),
+  tags: jsonb("tags").$type<string[]>().notNull().default([]),
+  // null means "use the dictionary's localized default" rather than a stored override.
+  itemName: text("item_name"),
+  createCardButtonLabel: text("create_card_button_label"),
+  defaultView: text("default_view", { enum: pipeDefaultViews })
+    .notNull()
+    .default("kanban"),
+  kanbanPreviewFieldIds: jsonb("kanban_preview_field_ids")
+    .$type<string[]>()
+    .notNull()
+    .default([]),
+  connectedCardFieldIds: jsonb("connected_card_field_ids")
+    .$type<string[]>()
+    .notNull()
+    .default(["created_at", "current_phase"]),
+  expirationAlertTime: integer("expiration_alert_time").notNull().default(0),
+  expirationAlertUnit: text("expiration_alert_unit", {
+    enum: pipeExpirationAlertUnits,
+  })
+    .notNull()
+    .default("minutes"),
+  expirationAlertBusinessDaysOnly: boolean(
+    "expiration_alert_business_days_only",
+  )
+    .notNull()
+    .default(false),
+  visibility: text("visibility", { enum: pipeVisibilities })
+    .notNull()
+    .default("org_open"),
+  aiAgentsEnabled: boolean("ai_agents_enabled").notNull().default(true),
+  aiCopilotEnabled: boolean("ai_copilot_enabled").notNull().default(true),
+  allowBulkActions: boolean("allow_bulk_actions").notNull().default(false),
+  restrictEditToAssignee: boolean("restrict_edit_to_assignee")
+    .notNull()
+    .default(false),
+  restrictDeleteToAdmin: boolean("restrict_delete_to_admin")
+    .notNull()
+    .default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

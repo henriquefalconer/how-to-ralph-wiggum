@@ -17,12 +17,14 @@ export function KanbanBoard({
   initialCards,
   startFormFields,
   dictionary,
+  createCardButtonLabel,
 }: {
   pipeId: string;
   initialPhases: Phase[];
   initialCards: Card[];
   startFormFields: Field[];
   dictionary: Dictionary;
+  createCardButtonLabel?: string;
 }) {
   const router = useRouter();
   const [phaseList, setPhaseList] = useState(initialPhases);
@@ -167,7 +169,7 @@ export function KanbanBoard({
           }
           className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
         >
-          + {dictionary.kanban.createCard}
+          + {createCardButtonLabel ?? dictionary.kanban.createCard}
         </button>
       </div>
 

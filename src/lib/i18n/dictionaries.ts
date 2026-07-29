@@ -31,6 +31,7 @@ export interface Dictionary {
   kanban: {
     newPhase: string;
     createCard: string;
+    createCardTemplate: string;
     searchPlaceholder: string;
     backToHome: string;
     manage: string;
@@ -187,6 +188,7 @@ export interface Dictionary {
     reports: string;
     dashboards: string;
     members: string;
+    general: string;
   };
   members: {
     heading: string;
@@ -213,6 +215,50 @@ export interface Dictionary {
       read_only: { label: string; description: string };
       restricted_view: { label: string; description: string };
     };
+  };
+  generalSettings: {
+    heading: string;
+    iconLabel: string;
+    nameLabel: string;
+    tagsLabel: string;
+    tagsNewBadge: string;
+    tagsMaxHint: string;
+    itemNameLabel: string;
+    itemNamePlaceholder: string;
+    createButtonLabelLabel: string;
+    visualHeading: string;
+    defaultViewLabel: string;
+    defaultViewKanban: string;
+    defaultViewList: string;
+    titleFieldLabel: string;
+    selectFieldPlaceholder: string;
+    kanbanPreviewFieldsLabel: string;
+    connectedCardFieldsLabel: string;
+    clearAll: string;
+    expirationAlertHeading: string;
+    expirationTimeLabel: string;
+    expirationUnitLabel: string;
+    expirationUnitMinutes: string;
+    expirationUnitHours: string;
+    expirationUnitDays: string;
+    businessDaysOnlyLabel: string;
+    permissionsHeading: string;
+    visibilityLabel: string;
+    visibilityOrgOpen: string;
+    visibilityInviteOnly: string;
+    visibilityHelper: string;
+    aiToolsHeading: string;
+    aiAgentsLabel: string;
+    aiCopilotLabel: string;
+    allowBulkActionsLabel: string;
+    restrictEditToAssigneeLabel: string;
+    restrictDeleteToAdminLabel: string;
+    clonePipeHeading: string;
+    clonePipeButton: string;
+    dangerZoneDescription: string;
+    deletePipeButton: string;
+    saveButton: string;
+    savedToast: string;
   };
   automations: {
     heading: string;
@@ -577,6 +623,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     kanban: {
       newPhase: "New phase",
       createCard: "Create new card",
+      createCardTemplate: "Create new {item}",
       searchPlaceholder: "Search cards",
       backToHome: "Back to home",
       manage: "Manage",
@@ -732,6 +779,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       reports: "Reports",
       dashboards: "Dashboards",
       members: "People",
+      general: "Settings",
     },
     members: {
       heading: "{count} people in {pipeName}",
@@ -772,6 +820,53 @@ export const dictionaries: Record<Locale, Dictionary> = {
             "Can create and edit cards they created or were assigned to. Cannot delete cards",
         },
       },
+    },
+    generalSettings: {
+      heading: "Pipe settings",
+      iconLabel: "Pipe icon",
+      nameLabel: "Pipe name",
+      tagsLabel: "Pipe tags",
+      tagsNewBadge: "New",
+      tagsMaxHint: "Up to 3 tags",
+      itemNameLabel: "Item name",
+      itemNamePlaceholder: '"Cards" is the default',
+      createButtonLabelLabel: "Create card button text",
+      visualHeading: "Visual",
+      defaultViewLabel: "Default view",
+      defaultViewKanban: "Kanban",
+      defaultViewList: "List",
+      titleFieldLabel: "Card title",
+      selectFieldPlaceholder: "Select a field",
+      kanbanPreviewFieldsLabel: "Fields shown on kanban cards",
+      connectedCardFieldsLabel: "Fields shown on connected cards",
+      clearAll: "Clear all",
+      expirationAlertHeading: "Expiration alert",
+      expirationTimeLabel: "Time",
+      expirationUnitLabel: "Unit",
+      expirationUnitMinutes: "minutes",
+      expirationUnitHours: "hours",
+      expirationUnitDays: "days",
+      businessDaysOnlyLabel: "Alerts will only count Monday through Friday",
+      permissionsHeading: "Permissions",
+      visibilityLabel: "Privacy and visibility",
+      visibilityOrgOpen: "Open to {org}",
+      visibilityInviteOnly: "Invite only",
+      visibilityHelper:
+        "Anyone in {org} can view and join this pipe as a Member",
+      aiToolsHeading: "AI tools",
+      aiAgentsLabel: "Allow AI Agents in this pipe",
+      aiCopilotLabel: "Allow AI Copilot in this pipe",
+      allowBulkActionsLabel: "Allow pipe members to perform bulk actions",
+      restrictEditToAssigneeLabel:
+        "People in this pipe can only edit cards assigned to them",
+      restrictDeleteToAdminLabel: "Only pipe admins can delete cards",
+      clonePipeHeading: "Clone pipe",
+      clonePipeButton: "Clone pipe to",
+      dangerZoneDescription:
+        "Delete this pipe. This is a permanent action and cannot be undone.",
+      deletePipeButton: "Delete pipe",
+      saveButton: "Save",
+      savedToast: "Settings saved",
     },
     automations: {
       heading: "Automations",
@@ -1143,6 +1238,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     kanban: {
       newPhase: "Nova fase",
       createCard: "Criar novo card",
+      createCardTemplate: "Criar novo {item}",
       searchPlaceholder: "Procurar cards",
       backToHome: "Voltar ao início",
       manage: "Gerenciar",
@@ -1303,6 +1399,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       reports: "Relatórios",
       dashboards: "Painéis",
       members: "Pessoas",
+      general: "Configurações",
     },
     members: {
       heading: "{count} pessoa(s) em {pipeName}",
@@ -1343,6 +1440,56 @@ export const dictionaries: Record<Locale, Dictionary> = {
             "Pode criar e editar cards que criou ou que foram atribuídos a ela. Não pode deletar cards",
         },
       },
+    },
+    generalSettings: {
+      heading: "Configurações do pipe",
+      iconLabel: "Ícone do pipe",
+      nameLabel: "Nome do pipe",
+      tagsLabel: "Tags do pipe",
+      tagsNewBadge: "Novo",
+      tagsMaxHint: "Até 3 tags",
+      itemNameLabel: "Item do pipe",
+      itemNamePlaceholder: '"Cards" é o padrão',
+      createButtonLabelLabel: "Texto do botão de criar cards",
+      visualHeading: "Visual",
+      defaultViewLabel: "Visualização padrão",
+      defaultViewKanban: "Kanban",
+      defaultViewList: "Lista",
+      titleFieldLabel: "Título do card",
+      selectFieldPlaceholder: "Selecione um campo",
+      kanbanPreviewFieldsLabel: "Campos a serem exibidos nos cards do kanban",
+      connectedCardFieldsLabel: "Campos a serem exibidos nos cards conectados",
+      clearAll: "Limpar tudo",
+      expirationAlertHeading: "Alerta de expirado",
+      expirationTimeLabel: "Tempo",
+      expirationUnitLabel: "Unidade",
+      expirationUnitMinutes: "minutos",
+      expirationUnitHours: "horas",
+      expirationUnitDays: "dias",
+      businessDaysOnlyLabel:
+        "Os alertas serão contados de segunda a sexta-feira",
+      permissionsHeading: "Permissões",
+      visibilityLabel: "Privacidade e visibilidade",
+      visibilityOrgOpen: "Aberto para {org}",
+      visibilityInviteOnly: "Somente convidados",
+      visibilityHelper:
+        "Qualquer pessoa em {org} pode visualizar e ingressar como Membro deste pipe",
+      aiToolsHeading: "Ferramentas de IA",
+      aiAgentsLabel: "Permitir Agentes de IA neste pipe",
+      aiCopilotLabel: "Permitir Copilot de IA neste pipe",
+      allowBulkActionsLabel:
+        "Permitir que membros do pipe executem ações em massa",
+      restrictEditToAssigneeLabel:
+        "As pessoas neste pipe só podem editar os cards atribuídos a elas",
+      restrictDeleteToAdminLabel:
+        "Somente administradores do pipe podem excluir cards",
+      clonePipeHeading: "Clonar pipe",
+      clonePipeButton: "Clonar pipe para",
+      dangerZoneDescription:
+        "Excluir o pipe. Essa é uma ação permanente e não pode ser desfeita.",
+      deletePipeButton: "Excluir pipe",
+      saveButton: "Salvar",
+      savedToast: "Configurações salvas",
     },
     automations: {
       heading: "Automações",
@@ -1714,6 +1861,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     kanban: {
       newPhase: "Nueva fase",
       createCard: "Crear nueva tarjeta",
+      createCardTemplate: "Crear nuevo {item}",
       searchPlaceholder: "Buscar tarjetas",
       backToHome: "Volver al inicio",
       manage: "Gestionar",
@@ -1875,6 +2023,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       reports: "Informes",
       dashboards: "Paneles",
       members: "Personas",
+      general: "Configuración",
     },
     members: {
       heading: "{count} persona(s) en {pipeName}",
@@ -1915,6 +2064,55 @@ export const dictionaries: Record<Locale, Dictionary> = {
             "Puede crear y editar cards que creó o que le fueron asignados. No puede eliminar cards",
         },
       },
+    },
+    generalSettings: {
+      heading: "Configuración del pipe",
+      iconLabel: "Ícono del pipe",
+      nameLabel: "Nombre del pipe",
+      tagsLabel: "Etiquetas del pipe",
+      tagsNewBadge: "Nuevo",
+      tagsMaxHint: "Hasta 3 etiquetas",
+      itemNameLabel: "Nombre del ítem",
+      itemNamePlaceholder: '"Tarjetas" es el valor por defecto',
+      createButtonLabelLabel: "Texto del botón para crear tarjetas",
+      visualHeading: "Visual",
+      defaultViewLabel: "Vista predeterminada",
+      defaultViewKanban: "Kanban",
+      defaultViewList: "Lista",
+      titleFieldLabel: "Título de la tarjeta",
+      selectFieldPlaceholder: "Seleccione un campo",
+      kanbanPreviewFieldsLabel: "Campos mostrados en las tarjetas del kanban",
+      connectedCardFieldsLabel: "Campos mostrados en las tarjetas conectadas",
+      clearAll: "Borrar todo",
+      expirationAlertHeading: "Alerta de vencimiento",
+      expirationTimeLabel: "Tiempo",
+      expirationUnitLabel: "Unidad",
+      expirationUnitMinutes: "minutos",
+      expirationUnitHours: "horas",
+      expirationUnitDays: "días",
+      businessDaysOnlyLabel: "Las alertas solo se contarán de lunes a viernes",
+      permissionsHeading: "Permisos",
+      visibilityLabel: "Privacidad y visibilidad",
+      visibilityOrgOpen: "Abierto para {org}",
+      visibilityInviteOnly: "Solo por invitación",
+      visibilityHelper:
+        "Cualquier persona en {org} puede ver y unirse como miembro de este pipe",
+      aiToolsHeading: "Herramientas de IA",
+      aiAgentsLabel: "Permitir Agentes de IA en este pipe",
+      aiCopilotLabel: "Permitir Copilot de IA en este pipe",
+      allowBulkActionsLabel:
+        "Permitir que los miembros del pipe realicen acciones masivas",
+      restrictEditToAssigneeLabel:
+        "Las personas en este pipe solo pueden editar las tarjetas que se les asignaron",
+      restrictDeleteToAdminLabel:
+        "Solo los administradores del pipe pueden eliminar tarjetas",
+      clonePipeHeading: "Clonar pipe",
+      clonePipeButton: "Clonar pipe a",
+      dangerZoneDescription:
+        "Eliminar este pipe. Esta es una acción permanente y no se puede deshacer.",
+      deletePipeButton: "Eliminar pipe",
+      saveButton: "Guardar",
+      savedToast: "Configuración guardada",
     },
     automations: {
       heading: "Automatizaciones",
@@ -2286,6 +2484,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     kanban: {
       newPhase: "新阶段",
       createCard: "创建新卡片",
+      createCardTemplate: "创建新{item}",
       searchPlaceholder: "搜索卡片",
       backToHome: "返回首页",
       manage: "管理",
@@ -2438,6 +2637,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       reports: "报表",
       dashboards: "仪表盘",
       members: "成员",
+      general: "设置",
     },
     members: {
       heading: "{pipeName} 中有 {count} 位成员",
@@ -2473,6 +2673,50 @@ export const dictionaries: Record<Locale, Dictionary> = {
           description: "可以创建和编辑自己创建或被分配的卡片，不能删除卡片",
         },
       },
+    },
+    generalSettings: {
+      heading: "流程设置",
+      iconLabel: "流程图标",
+      nameLabel: "流程名称",
+      tagsLabel: "流程标签",
+      tagsNewBadge: "新",
+      tagsMaxHint: "最多 3 个标签",
+      itemNameLabel: "项目名称",
+      itemNamePlaceholder: "默认值为“卡片”",
+      createButtonLabelLabel: "创建卡片按钮文字",
+      visualHeading: "视图",
+      defaultViewLabel: "默认视图",
+      defaultViewKanban: "看板",
+      defaultViewList: "列表",
+      titleFieldLabel: "卡片标题",
+      selectFieldPlaceholder: "选择字段",
+      kanbanPreviewFieldsLabel: "看板卡片上显示的字段",
+      connectedCardFieldsLabel: "关联卡片上显示的字段",
+      clearAll: "清除全部",
+      expirationAlertHeading: "过期提醒",
+      expirationTimeLabel: "时间",
+      expirationUnitLabel: "单位",
+      expirationUnitMinutes: "分钟",
+      expirationUnitHours: "小时",
+      expirationUnitDays: "天",
+      businessDaysOnlyLabel: "提醒仅在周一至周五计算",
+      permissionsHeading: "权限",
+      visibilityLabel: "隐私与可见性",
+      visibilityOrgOpen: "对 {org} 开放",
+      visibilityInviteOnly: "仅限邀请",
+      visibilityHelper: "{org} 中的任何人都可以查看并以成员身份加入此流程",
+      aiToolsHeading: "AI 工具",
+      aiAgentsLabel: "在此流程中允许 AI 代理",
+      aiCopilotLabel: "在此流程中允许 AI Copilot",
+      allowBulkActionsLabel: "允许流程成员执行批量操作",
+      restrictEditToAssigneeLabel: "此流程中的人员只能编辑分配给他们的卡片",
+      restrictDeleteToAdminLabel: "只有流程管理员可以删除卡片",
+      clonePipeHeading: "复制流程",
+      clonePipeButton: "将流程复制到",
+      dangerZoneDescription: "删除此流程。此操作是永久性的，无法撤销。",
+      deletePipeButton: "删除流程",
+      saveButton: "保存",
+      savedToast: "设置已保存",
     },
     automations: {
       heading: "自动化",
@@ -2836,6 +3080,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     kanban: {
       newPhase: "Neue Phase",
       createCard: "Neue Karte erstellen",
+      createCardTemplate: "Neues {item} erstellen",
       searchPlaceholder: "Karten suchen",
       backToHome: "Zurück zum Start",
       manage: "Verwalten",
@@ -2999,6 +3244,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       reports: "Berichte",
       dashboards: "Dashboards",
       members: "Personen",
+      general: "Einstellungen",
     },
     members: {
       heading: "{count} Person(en) in {pipeName}",
@@ -3039,6 +3285,57 @@ export const dictionaries: Record<Locale, Dictionary> = {
             "Kann Cards erstellen und bearbeiten, die sie erstellt hat oder ihr zugewiesen wurden. Kann keine Cards löschen",
         },
       },
+    },
+    generalSettings: {
+      heading: "Pipe-Einstellungen",
+      iconLabel: "Pipe-Symbol",
+      nameLabel: "Pipe-Name",
+      tagsLabel: "Pipe-Tags",
+      tagsNewBadge: "Neu",
+      tagsMaxHint: "Bis zu 3 Tags",
+      itemNameLabel: "Elementname",
+      itemNamePlaceholder: '"Karten" ist der Standard',
+      createButtonLabelLabel: "Text der Schaltfläche zum Erstellen von Karten",
+      visualHeading: "Ansicht",
+      defaultViewLabel: "Standardansicht",
+      defaultViewKanban: "Kanban",
+      defaultViewList: "Liste",
+      titleFieldLabel: "Kartentitel",
+      selectFieldPlaceholder: "Feld auswählen",
+      kanbanPreviewFieldsLabel:
+        "Felder, die auf Kanban-Karten angezeigt werden",
+      connectedCardFieldsLabel:
+        "Felder, die auf verbundenen Karten angezeigt werden",
+      clearAll: "Alle löschen",
+      expirationAlertHeading: "Ablaufwarnung",
+      expirationTimeLabel: "Zeit",
+      expirationUnitLabel: "Einheit",
+      expirationUnitMinutes: "Minuten",
+      expirationUnitHours: "Stunden",
+      expirationUnitDays: "Tage",
+      businessDaysOnlyLabel:
+        "Warnungen werden nur von Montag bis Freitag gezählt",
+      permissionsHeading: "Berechtigungen",
+      visibilityLabel: "Datenschutz und Sichtbarkeit",
+      visibilityOrgOpen: "Offen für {org}",
+      visibilityInviteOnly: "Nur auf Einladung",
+      visibilityHelper:
+        "Jeder in {org} kann diese Pipe als Mitglied ansehen und beitreten",
+      aiToolsHeading: "KI-Tools",
+      aiAgentsLabel: "KI-Agenten in dieser Pipe zulassen",
+      aiCopilotLabel: "KI-Copilot in dieser Pipe zulassen",
+      allowBulkActionsLabel: "Pipe-Mitgliedern Massenaktionen erlauben",
+      restrictEditToAssigneeLabel:
+        "Personen in dieser Pipe können nur die ihnen zugewiesenen Karten bearbeiten",
+      restrictDeleteToAdminLabel:
+        "Nur Pipe-Administratoren können Karten löschen",
+      clonePipeHeading: "Pipe klonen",
+      clonePipeButton: "Pipe klonen nach",
+      dangerZoneDescription:
+        "Diese Pipe löschen. Dies ist eine dauerhafte Aktion und kann nicht rückgängig gemacht werden.",
+      deletePipeButton: "Pipe löschen",
+      saveButton: "Speichern",
+      savedToast: "Einstellungen gespeichert",
     },
     automations: {
       heading: "Automatisierungen",
@@ -3414,6 +3711,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     kanban: {
       newPhase: "Nouvelle phase",
       createCard: "Créer une nouvelle carte",
+      createCardTemplate: "Créer un nouveau {item}",
       searchPlaceholder: "Rechercher des cartes",
       backToHome: "Retour à l'accueil",
       manage: "Gérer",
@@ -3576,6 +3874,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       reports: "Rapports",
       dashboards: "Tableaux de bord",
       members: "Personnes",
+      general: "Paramètres",
     },
     members: {
       heading: "{count} personne(s) dans {pipeName}",
@@ -3616,6 +3915,56 @@ export const dictionaries: Record<Locale, Dictionary> = {
             "Peut créer et modifier les cards qu'elle a créées ou qui lui sont assignées. Ne peut pas supprimer de cards",
         },
       },
+    },
+    generalSettings: {
+      heading: "Paramètres du pipe",
+      iconLabel: "Icône du pipe",
+      nameLabel: "Nom du pipe",
+      tagsLabel: "Tags du pipe",
+      tagsNewBadge: "Nouveau",
+      tagsMaxHint: "Jusqu'à 3 tags",
+      itemNameLabel: "Nom de l'élément",
+      itemNamePlaceholder: '"Cartes" est la valeur par défaut',
+      createButtonLabelLabel: "Texte du bouton de création de carte",
+      visualHeading: "Visuel",
+      defaultViewLabel: "Vue par défaut",
+      defaultViewKanban: "Kanban",
+      defaultViewList: "Liste",
+      titleFieldLabel: "Titre de la carte",
+      selectFieldPlaceholder: "Sélectionner un champ",
+      kanbanPreviewFieldsLabel: "Champs affichés sur les cartes du kanban",
+      connectedCardFieldsLabel: "Champs affichés sur les cartes connectées",
+      clearAll: "Tout effacer",
+      expirationAlertHeading: "Alerte d'expiration",
+      expirationTimeLabel: "Durée",
+      expirationUnitLabel: "Unité",
+      expirationUnitMinutes: "minutes",
+      expirationUnitHours: "heures",
+      expirationUnitDays: "jours",
+      businessDaysOnlyLabel:
+        "Les alertes ne seront comptées que du lundi au vendredi",
+      permissionsHeading: "Permissions",
+      visibilityLabel: "Confidentialité et visibilité",
+      visibilityOrgOpen: "Ouvert pour {org}",
+      visibilityInviteOnly: "Sur invitation uniquement",
+      visibilityHelper:
+        "Toute personne dans {org} peut voir et rejoindre ce pipe en tant que membre",
+      aiToolsHeading: "Outils d'IA",
+      aiAgentsLabel: "Autoriser les agents IA dans ce pipe",
+      aiCopilotLabel: "Autoriser le Copilot IA dans ce pipe",
+      allowBulkActionsLabel:
+        "Autoriser les membres du pipe à effectuer des actions groupées",
+      restrictEditToAssigneeLabel:
+        "Les personnes de ce pipe ne peuvent modifier que les cartes qui leur sont assignées",
+      restrictDeleteToAdminLabel:
+        "Seuls les administrateurs du pipe peuvent supprimer des cartes",
+      clonePipeHeading: "Cloner le pipe",
+      clonePipeButton: "Cloner le pipe vers",
+      dangerZoneDescription:
+        "Supprimer ce pipe. Cette action est permanente et ne peut pas être annulée.",
+      deletePipeButton: "Supprimer le pipe",
+      saveButton: "Enregistrer",
+      savedToast: "Paramètres enregistrés",
     },
     automations: {
       heading: "Automatisations",
@@ -3992,6 +4341,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     kanban: {
       newPhase: "新しいフェーズ",
       createCard: "新しいカードを作成",
+      createCardTemplate: "新しい{item}を作成",
       searchPlaceholder: "カードを検索",
       backToHome: "ホームに戻る",
       manage: "管理",
@@ -4149,6 +4499,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       reports: "レポート",
       dashboards: "ダッシュボード",
       members: "メンバー",
+      general: "設定",
     },
     members: {
       heading: "{pipeName} には {count} 人のメンバーがいます",
@@ -4189,6 +4540,53 @@ export const dictionaries: Record<Locale, Dictionary> = {
             "自分が作成したか割り当てられたカードのみ作成・編集できます。カードを削除できません",
         },
       },
+    },
+    generalSettings: {
+      heading: "パイプ設定",
+      iconLabel: "パイプアイコン",
+      nameLabel: "パイプ名",
+      tagsLabel: "パイプタグ",
+      tagsNewBadge: "新規",
+      tagsMaxHint: "最大3つまで",
+      itemNameLabel: "項目名",
+      itemNamePlaceholder: "デフォルトは「カード」です",
+      createButtonLabelLabel: "カード作成ボタンのテキスト",
+      visualHeading: "表示",
+      defaultViewLabel: "デフォルトビュー",
+      defaultViewKanban: "カンバン",
+      defaultViewList: "リスト",
+      titleFieldLabel: "カードタイトル",
+      selectFieldPlaceholder: "フィールドを選択",
+      kanbanPreviewFieldsLabel: "カンバンカードに表示するフィールド",
+      connectedCardFieldsLabel: "接続されたカードに表示するフィールド",
+      clearAll: "すべてクリア",
+      expirationAlertHeading: "期限切れアラート",
+      expirationTimeLabel: "時間",
+      expirationUnitLabel: "単位",
+      expirationUnitMinutes: "分",
+      expirationUnitHours: "時間",
+      expirationUnitDays: "日",
+      businessDaysOnlyLabel: "アラートは月曜から金曜のみカウントされます",
+      permissionsHeading: "権限",
+      visibilityLabel: "プライバシーと公開範囲",
+      visibilityOrgOpen: "{org} に公開",
+      visibilityInviteOnly: "招待制",
+      visibilityHelper:
+        "{org} の誰でもこのパイプをメンバーとして閲覧・参加できます",
+      aiToolsHeading: "AIツール",
+      aiAgentsLabel: "このパイプでAIエージェントを許可する",
+      aiCopilotLabel: "このパイプでAI Copilotを許可する",
+      allowBulkActionsLabel: "パイプメンバーによる一括操作を許可する",
+      restrictEditToAssigneeLabel:
+        "このパイプのメンバーは自分に割り当てられたカードのみ編集できます",
+      restrictDeleteToAdminLabel: "パイプ管理者のみカードを削除できます",
+      clonePipeHeading: "パイプを複製",
+      clonePipeButton: "パイプの複製先",
+      dangerZoneDescription:
+        "このパイプを削除します。この操作は永久的で元に戻せません。",
+      deletePipeButton: "パイプを削除",
+      saveButton: "保存",
+      savedToast: "設定を保存しました",
     },
     automations: {
       heading: "オートメーション",
@@ -4561,6 +4959,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     kanban: {
       newPhase: "नया चरण",
       createCard: "नया कार्ड बनाएं",
+      createCardTemplate: "नया {item} बनाएं",
       searchPlaceholder: "कार्ड खोजें",
       backToHome: "होम पर वापस जाएं",
       manage: "प्रबंधित करें",
@@ -4716,6 +5115,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       reports: "रिपोर्ट",
       dashboards: "डैशबोर्ड",
       members: "सदस्य",
+      general: "सेटिंग्स",
     },
     members: {
       heading: "{pipeName} में {count} सदस्य",
@@ -4756,6 +5156,53 @@ export const dictionaries: Record<Locale, Dictionary> = {
             "केवल वही कार्ड बना/संपादित कर सकते हैं जो उन्होंने बनाए या जिन्हें सौंपे गए। कार्ड हटा नहीं सकते",
         },
       },
+    },
+    generalSettings: {
+      heading: "पाइप सेटिंग्स",
+      iconLabel: "पाइप आइकन",
+      nameLabel: "पाइप का नाम",
+      tagsLabel: "पाइप टैग",
+      tagsNewBadge: "नया",
+      tagsMaxHint: "अधिकतम 3 टैग",
+      itemNameLabel: "आइटम का नाम",
+      itemNamePlaceholder: '"कार्ड" डिफ़ॉल्ट है',
+      createButtonLabelLabel: "कार्ड बनाएं बटन का टेक्स्ट",
+      visualHeading: "विज़ुअल",
+      defaultViewLabel: "डिफ़ॉल्ट व्यू",
+      defaultViewKanban: "कानबन",
+      defaultViewList: "सूची",
+      titleFieldLabel: "कार्ड शीर्षक",
+      selectFieldPlaceholder: "एक फ़ील्ड चुनें",
+      kanbanPreviewFieldsLabel: "कानबन कार्ड पर दिखाए जाने वाले फ़ील्ड",
+      connectedCardFieldsLabel: "जुड़े हुए कार्ड पर दिखाए जाने वाले फ़ील्ड",
+      clearAll: "सभी साफ़ करें",
+      expirationAlertHeading: "समाप्ति चेतावनी",
+      expirationTimeLabel: "समय",
+      expirationUnitLabel: "इकाई",
+      expirationUnitMinutes: "मिनट",
+      expirationUnitHours: "घंटे",
+      expirationUnitDays: "दिन",
+      businessDaysOnlyLabel: "चेतावनियाँ केवल सोमवार से शुक्रवार तक गिनी जाएंगी",
+      permissionsHeading: "अनुमतियाँ",
+      visibilityLabel: "गोपनीयता और दृश्यता",
+      visibilityOrgOpen: "{org} के लिए खुला",
+      visibilityInviteOnly: "केवल आमंत्रण द्वारा",
+      visibilityHelper:
+        "{org} में कोई भी व्यक्ति इस पाइप को सदस्य के रूप में देख और शामिल हो सकता है",
+      aiToolsHeading: "AI उपकरण",
+      aiAgentsLabel: "इस पाइप में AI एजेंट की अनुमति दें",
+      aiCopilotLabel: "इस पाइप में AI कोपायलट की अनुमति दें",
+      allowBulkActionsLabel: "पाइप सदस्यों को बल्क एक्शन करने की अनुमति दें",
+      restrictEditToAssigneeLabel:
+        "इस पाइप के लोग केवल उन्हीं कार्ड को संपादित कर सकते हैं जो उन्हें सौंपे गए हैं",
+      restrictDeleteToAdminLabel: "केवल पाइप व्यवस्थापक ही कार्ड हटा सकते हैं",
+      clonePipeHeading: "पाइप क्लोन करें",
+      clonePipeButton: "पाइप को इसमें क्लोन करें",
+      dangerZoneDescription:
+        "इस पाइप को हटाएं। यह एक स्थायी कार्रवाई है और इसे पूर्ववत नहीं किया जा सकता।",
+      deletePipeButton: "पाइप हटाएं",
+      saveButton: "सहेजें",
+      savedToast: "सेटिंग्स सहेजी गईं",
     },
     automations: {
       heading: "ऑटोमेशन",
@@ -5125,6 +5572,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     kanban: {
       newPhase: "مرحلة جديدة",
       createCard: "إنشاء بطاقة جديدة",
+      createCardTemplate: "إنشاء {item} جديد",
       searchPlaceholder: "البحث عن البطاقات",
       backToHome: "العودة إلى الرئيسية",
       manage: "إدارة",
@@ -5280,6 +5728,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       reports: "التقارير",
       dashboards: "لوحات المعلومات",
       members: "الأشخاص",
+      general: "الإعدادات",
     },
     members: {
       heading: "{count} شخص في {pipeName}",
@@ -5320,6 +5769,53 @@ export const dictionaries: Record<Locale, Dictionary> = {
             "يمكنه إنشاء وتعديل البطاقات التي أنشأها أو المسندة إليه فقط. لا يمكنه حذف البطاقات",
         },
       },
+    },
+    generalSettings: {
+      heading: "إعدادات الأنبوب",
+      iconLabel: "أيقونة الأنبوب",
+      nameLabel: "اسم الأنبوب",
+      tagsLabel: "وسوم الأنبوب",
+      tagsNewBadge: "جديد",
+      tagsMaxHint: "حتى 3 وسوم",
+      itemNameLabel: "اسم العنصر",
+      itemNamePlaceholder: '"البطاقات" هو الافتراضي',
+      createButtonLabelLabel: "نص زر إنشاء البطاقة",
+      visualHeading: "العرض",
+      defaultViewLabel: "العرض الافتراضي",
+      defaultViewKanban: "كانبان",
+      defaultViewList: "قائمة",
+      titleFieldLabel: "عنوان البطاقة",
+      selectFieldPlaceholder: "اختر حقلاً",
+      kanbanPreviewFieldsLabel: "الحقول المعروضة على بطاقات الكانبان",
+      connectedCardFieldsLabel: "الحقول المعروضة على البطاقات المرتبطة",
+      clearAll: "مسح الكل",
+      expirationAlertHeading: "تنبيه انتهاء الصلاحية",
+      expirationTimeLabel: "الوقت",
+      expirationUnitLabel: "الوحدة",
+      expirationUnitMinutes: "دقائق",
+      expirationUnitHours: "ساعات",
+      expirationUnitDays: "أيام",
+      businessDaysOnlyLabel: "سيتم احتساب التنبيهات من الاثنين إلى الجمعة فقط",
+      permissionsHeading: "الأذونات",
+      visibilityLabel: "الخصوصية والظهور",
+      visibilityOrgOpen: "مفتوح لـ {org}",
+      visibilityInviteOnly: "بالدعوة فقط",
+      visibilityHelper:
+        "يمكن لأي شخص في {org} عرض هذا الأنبوب والانضمام إليه كعضو",
+      aiToolsHeading: "أدوات الذكاء الاصطناعي",
+      aiAgentsLabel: "السماح بوكلاء الذكاء الاصطناعي في هذا الأنبوب",
+      aiCopilotLabel: "السماح بمساعد الذكاء الاصطناعي في هذا الأنبوب",
+      allowBulkActionsLabel: "السماح لأعضاء الأنبوب بتنفيذ إجراءات جماعية",
+      restrictEditToAssigneeLabel:
+        "لا يمكن للأشخاص في هذا الأنبوب تعديل سوى البطاقات المسندة إليهم",
+      restrictDeleteToAdminLabel: "يمكن فقط لمسؤولي الأنبوب حذف البطاقات",
+      clonePipeHeading: "استنساخ الأنبوب",
+      clonePipeButton: "استنساخ الأنبوب إلى",
+      dangerZoneDescription:
+        "حذف هذا الأنبوب. هذا إجراء دائم ولا يمكن التراجع عنه.",
+      deletePipeButton: "حذف الأنبوب",
+      saveButton: "حفظ",
+      savedToast: "تم حفظ الإعدادات",
     },
     automations: {
       heading: "الأتمتة",
@@ -5689,6 +6185,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     kanban: {
       newPhase: "Новый этап",
       createCard: "Создать карточку",
+      createCardTemplate: "Создать новый {item}",
       searchPlaceholder: "Поиск карточек",
       backToHome: "На главную",
       manage: "Управление",
@@ -5846,6 +6343,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       reports: "Отчёты",
       dashboards: "Панели",
       members: "Участники",
+      general: "Настройки",
     },
     members: {
       heading: "{count} участник(ов) в {pipeName}",
@@ -5887,6 +6385,56 @@ export const dictionaries: Record<Locale, Dictionary> = {
             "Может создавать и редактировать карточки, которые создал или которые назначены ему. Не может удалять карточки",
         },
       },
+    },
+    generalSettings: {
+      heading: "Настройки пайпа",
+      iconLabel: "Значок пайпа",
+      nameLabel: "Название пайпа",
+      tagsLabel: "Теги пайпа",
+      tagsNewBadge: "Новое",
+      tagsMaxHint: "До 3 тегов",
+      itemNameLabel: "Название элемента",
+      itemNamePlaceholder: 'По умолчанию — "Карточки"',
+      createButtonLabelLabel: "Текст кнопки создания карточки",
+      visualHeading: "Вид",
+      defaultViewLabel: "Вид по умолчанию",
+      defaultViewKanban: "Канбан",
+      defaultViewList: "Список",
+      titleFieldLabel: "Заголовок карточки",
+      selectFieldPlaceholder: "Выберите поле",
+      kanbanPreviewFieldsLabel: "Поля, отображаемые на карточках канбана",
+      connectedCardFieldsLabel: "Поля, отображаемые на связанных карточках",
+      clearAll: "Очистить всё",
+      expirationAlertHeading: "Оповещение об истечении срока",
+      expirationTimeLabel: "Время",
+      expirationUnitLabel: "Единица",
+      expirationUnitMinutes: "минуты",
+      expirationUnitHours: "часы",
+      expirationUnitDays: "дни",
+      businessDaysOnlyLabel:
+        "Оповещения будут учитываться только с понедельника по пятницу",
+      permissionsHeading: "Разрешения",
+      visibilityLabel: "Конфиденциальность и видимость",
+      visibilityOrgOpen: "Открыто для {org}",
+      visibilityInviteOnly: "Только по приглашению",
+      visibilityHelper:
+        "Любой человек в {org} может просматривать этот пайп и присоединиться к нему как участник",
+      aiToolsHeading: "Инструменты ИИ",
+      aiAgentsLabel: "Разрешить ИИ-агентов в этом пайпе",
+      aiCopilotLabel: "Разрешить ИИ Copilot в этом пайпе",
+      allowBulkActionsLabel:
+        "Разрешить участникам пайпа выполнять массовые действия",
+      restrictEditToAssigneeLabel:
+        "Участники этого пайпа могут редактировать только назначенные им карточки",
+      restrictDeleteToAdminLabel:
+        "Только администраторы пайпа могут удалять карточки",
+      clonePipeHeading: "Клонировать пайп",
+      clonePipeButton: "Клонировать пайп в",
+      dangerZoneDescription:
+        "Удалить этот пайп. Это необратимое действие, отменить его нельзя.",
+      deletePipeButton: "Удалить пайп",
+      saveButton: "Сохранить",
+      savedToast: "Настройки сохранены",
     },
     automations: {
       heading: "Автоматизации",
