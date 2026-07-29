@@ -88,5 +88,19 @@
       "Built SDK successfully (TypeScript compiles, exports to dist with type definitions)"
     ],
     "bugs_found": []
+  },
+  {
+    "feature_id": "feature-007",
+    "status": "pass",
+    "tested_steps": [
+      "Ran webhook unit tests via: npx vitest run tests/webhooks.test.ts",
+      "All 9 tests passed: webhook registration, listing, deletion",
+      "Verified webhook POST triggered on card.moved with correct payload (cardId, fromPhaseId, toPhaseId, timestamp)",
+      "Confirmed webhook filtering: wrong event type does not trigger",
+      "Verified failure handling: unreachable URLs logged without blocking card move",
+      "Tested table-scoped webhooks: table.record.created event delivery",
+      "Confirmed: triggering events with no registered webhooks is a no-op"
+    ],
+    "bugs_found": []
   }
 ]
