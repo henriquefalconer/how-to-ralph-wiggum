@@ -30,7 +30,7 @@ RUN_DIR="$STATE_DIR/runs/$RALPH_RUN_ID"
 PROGRESS="${RALPH_PROGRESS:-$RUN_DIR/progress.txt}"
 export RALPH_RUN_ID RALPH_PROGRESS="$PROGRESS"
 
-MODEL="${RALPH_MODEL:-claude-sonnet-5}"
+MODEL="${MODEL:-claude-sonnet-5}"
 WATCHDOG="${RALPH_WATCHDOG_SECS:-1800}"   # kill a session after N s with no PROGRESS append (0 disables)
 GROUP_WAIT_MAX="${RALPH_GROUP_WAIT_MAX:-900}"
 RESUME_MAX="${RALPH_RESUME_MAX:-4}"       # resumes allowed within one iteration
