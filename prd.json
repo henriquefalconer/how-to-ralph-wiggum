@@ -1199,7 +1199,7 @@
     "data_model": "PdfTemplate: id, pipe_id (fk), title, enabled (bool), body (rich-text/HTML with embedded field-token placeholders e.g. {{field:field_id}}), created_at, updated_at. Rendering: given a card_id and template_id, resolve every token against that card's field values and produce a PDF (e.g. via a headless HTML-to-PDF render step).",
     "priority": 9,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {

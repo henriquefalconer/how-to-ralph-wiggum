@@ -616,3 +616,15 @@ export const dashboardCharts = pgTable("dashboard_charts", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const pdfTemplates = pgTable("pdf_templates", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  pipeId: uuid("pipe_id")
+    .notNull()
+    .references(() => pipes.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  enabled: boolean("enabled").notNull().default(false),
+  body: text("body").notNull().default(""),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
