@@ -19,7 +19,7 @@ import {
   getMemberRole,
 } from "@/lib/pipe-members";
 import { triggerWebhookEvent } from "@/lib/webhooks";
-import { and, asc, desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq, isNull } from "drizzle-orm";
 
 export type Card = typeof cards.$inferSelect;
 export type CardTransition = typeof cardTransitions.$inferSelect;
@@ -49,7 +49,7 @@ export async function listCardsForPipe(pipeId: string): Promise<Card[]> {
   return db
     .select()
     .from(cards)
-    .where(eq(cards.pipeId, pipeId))
+    .where(and(eq(cards.pipeId, pipeId), isNull(cards.deletedAt)))
     .orderBy(desc(cards.createdAt));
 }
 
@@ -346,6 +346,10 @@ export async function deleteCard(
     throw new Error("Card not found");
   }
 
+  if (card.deletedAt) {
+    throw new Error("Card is already deleted");
+  }
+
   const [pipe] = await db
     .select({ restrictDeleteToAdmin: pipes.restrictDeleteToAdmin })
     .from(pipes)
@@ -354,7 +358,14 @@ export async function deleteCard(
   const role = await getMemberRole(card.pipeId, actingUserId);
   assertCanDeleteCard(role, pipe?.restrictDeleteToAdmin ?? false);
 
-  await db.delete(cards).where(eq(cards.id, cardId));
+  const now = new Date();
+  const purgeAt = new Date(now);
+  purgeAt.setDate(purgeAt.getDate() + 15);
+
+  await db
+    .update(cards)
+    .set({ deletedAt: now, purgeAt })
+    .where(eq(cards.id, cardId));
 
   await triggerWebhookEvent("pipe", card.pipeId, "card.deleted", {
     cardId,
@@ -365,6 +376,48 @@ export async function deleteCard(
     category: "card_activity",
     resourceType: "card",
     messageKey: "cardDeleted",
+    params: { card: card.title },
+    actorUserId: actingUserId,
+  });
+}
+
+export async function restoreCard(
+  cardId: string,
+  actingUserId: string,
+): Promise<void> {
+  const [card] = await db.select().from(cards).where(eq(cards.id, cardId));
+  if (!card) {
+    throw new Error("Card not found");
+  }
+
+  if (!card.deletedAt) {
+    throw new Error("Card is not deleted");
+  }
+
+  const [pipe] = await db
+    .select({ id: pipes.id })
+    .from(pipes)
+    .where(eq(pipes.id, card.pipeId));
+
+  if (!pipe) {
+    throw new Error("Pipe not found");
+  }
+
+  const role = await getMemberRole(card.pipeId, actingUserId);
+  if (role !== "pipe_admin") {
+    throw new Error("Only pipe admins can restore cards");
+  }
+
+  await db
+    .update(cards)
+    .set({ deletedAt: null, purgeAt: null })
+    .where(eq(cards.id, cardId));
+
+  await logAuditEntry({
+    pipeId: card.pipeId,
+    category: "card_activity",
+    resourceType: "card",
+    messageKey: "cardRestored",
     params: { card: card.title },
     actorUserId: actingUserId,
   });

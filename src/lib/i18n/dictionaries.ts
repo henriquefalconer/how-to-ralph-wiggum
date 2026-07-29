@@ -262,6 +262,7 @@ export interface Dictionary {
       cardCreated: string;
       cardMoved: string;
       cardDeleted: string;
+      cardRestored: string;
       cardFieldUpdated: string;
       pipeCreated: string;
       pipeSettingUpdated: string;
@@ -925,6 +926,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         cardCreated: 'Created the card "{card}"',
         cardMoved: 'Moved the card "{card}" from "{from}" to "{to}"',
         cardDeleted: 'Deleted the card "{card}"',
+        cardRestored: 'Restored the card "{card}"',
         cardFieldUpdated: 'Updated the field "{field}" on the card "{card}"',
         pipeCreated: "Created this pipe",
         pipeSettingUpdated:
@@ -1605,6 +1607,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         cardCreated: 'Criou o card "{card}"',
         cardMoved: 'Moveu o card "{card}" de "{from}" para "{to}"',
         cardDeleted: 'Excluiu o card "{card}"',
+        cardRestored: 'Restaurou o card "{card}"',
         cardFieldUpdated: 'Atualizou o campo "{field}" no card "{card}"',
         pipeCreated: "Criou este pipe",
         pipeSettingUpdated:
@@ -2289,6 +2292,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         cardCreated: 'Creó la tarjeta "{card}"',
         cardMoved: 'Movió la tarjeta "{card}" de "{from}" a "{to}"',
         cardDeleted: 'Eliminó la tarjeta "{card}"',
+        cardRestored: 'Restauró la tarjeta "{card}"',
         cardFieldUpdated: 'Actualizó el campo "{field}" en la tarjeta "{card}"',
         pipeCreated: "Creó este pipe",
         pipeSettingUpdated:
@@ -2955,7 +2959,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
       messages: {
         cardCreated: "创建了卡片“{card}”",
         cardMoved: "将卡片“{card}”从“{from}”移动到“{to}”",
-        cardDeleted: "删除了卡片“{card}”",
+        cardDeleted: "删除了卡片”{card}”",
+        cardRestored: "恢复了卡片”{card}”",
         cardFieldUpdated: "更新了卡片“{card}”上的字段“{field}”",
         pipeCreated: "创建了此流程",
         pipeSettingUpdated: "将{setting}配置从“{from}”更新为“{to}”",
@@ -3627,6 +3632,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         cardCreated: 'Hat die Karte "{card}" erstellt',
         cardMoved: 'Hat die Karte "{card}" von "{from}" nach "{to}" verschoben',
         cardDeleted: 'Hat die Karte "{card}" gelöscht',
+        cardRestored: 'Hat die Karte "{card}" wiederhergestellt',
         cardFieldUpdated:
           'Hat das Feld "{field}" auf der Karte "{card}" aktualisiert',
         pipeCreated: "Hat diese Pipe erstellt",
@@ -4319,6 +4325,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         cardCreated: 'A créé la carte "{card}"',
         cardMoved: 'A déplacé la carte "{card}" de "{from}" vers "{to}"',
         cardDeleted: 'A supprimé la carte "{card}"',
+        cardRestored: 'A restauré la carte "{card}"',
         cardFieldUpdated:
           'A mis à jour le champ "{field}" sur la carte "{card}"',
         pipeCreated: "A créé ce pipe",
@@ -5005,6 +5012,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         cardCreated: "カード「{card}」を作成しました",
         cardMoved: "カード「{card}」を「{from}」から「{to}」に移動しました",
         cardDeleted: "カード「{card}」を削除しました",
+        cardRestored: "カード「{card}」を復元しました",
         cardFieldUpdated:
           "カード「{card}」のフィールド「{field}」を更新しました",
         pipeCreated: "このパイプを作成しました",
@@ -5681,6 +5689,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         cardCreated: 'कार्ड "{card}" बनाया',
         cardMoved: 'कार्ड "{card}" को "{from}" से "{to}" में स्थानांतरित किया',
         cardDeleted: 'कार्ड "{card}" हटाया',
+        cardRestored: 'कार्ड "{card}" को पुनः स्थापित किया',
         cardFieldUpdated: 'कार्ड "{card}" पर फ़ील्ड "{field}" अपडेट किया',
         pipeCreated: "यह पाइप बनाया",
         pipeSettingUpdated:
@@ -6353,6 +6362,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         cardCreated: 'أنشأ البطاقة "{card}"',
         cardMoved: 'نقل البطاقة "{card}" من "{from}" إلى "{to}"',
         cardDeleted: 'حذف البطاقة "{card}"',
+        cardRestored: 'استعادة البطاقة "{card}"',
         cardFieldUpdated: 'حدّث الحقل "{field}" في البطاقة "{card}"',
         pipeCreated: "أنشأ هذا الـ pipe",
         pipeSettingUpdated: 'حدّث إعداد {setting} من "{from}" إلى "{to}"',
@@ -7028,6 +7038,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         cardCreated: 'Создал карточку "{card}"',
         cardMoved: 'Переместил карточку "{card}" из "{from}" в "{to}"',
         cardDeleted: 'Удалил карточку "{card}"',
+        cardRestored: 'Восстановил карточку "{card}"',
         cardFieldUpdated: 'Обновил поле "{field}" в карточке "{card}"',
         pipeCreated: "Создал этот пайп",
         pipeSettingUpdated: 'Изменил настройку {setting} с "{from}" на "{to}"',

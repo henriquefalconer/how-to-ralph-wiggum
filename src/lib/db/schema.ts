@@ -232,6 +232,8 @@ export const cards = pgTable("cards", {
   done: boolean("done").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  deletedAt: timestamp("deleted_at"),
+  purgeAt: timestamp("purge_at"),
 });
 
 export const cardFieldValues = pgTable(
