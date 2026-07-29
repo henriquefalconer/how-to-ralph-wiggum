@@ -145,5 +145,21 @@
       "Unsupported action types log error instead of throwing"
     ],
     "bugs_found": []
+  },
+  {
+    "feature_id": "feature-011",
+    "status": "pass",
+    "tested_steps": [
+      "Ran reports unit tests: npx vitest run tests/reports.test.ts",
+      "All 8 tests passed",
+      "Verified report CRUD: create, list, update, delete with name validation",
+      "Confirmed filter operator validation (rejects unknown operators)",
+      "Verified AND-within-group, OR-across-groups filter logic",
+      "Confirmed reports re-query live data on every open (not cached snapshots)",
+      "Tested empty result handling (zero matching cards returns 0 results, not error)",
+      "Verified filtering on built-in card attributes (current phase)",
+      "Confirmed live result-count badge updates per report"
+    ],
+    "bugs_found": []
   }
 ]
