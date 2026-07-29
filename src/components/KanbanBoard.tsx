@@ -1,6 +1,7 @@
 "use client";
 
 import { CreateCardPopover } from "@/components/CreateCardPopover";
+import { filterCardsByTitle } from "@/lib/card-search";
 import type { Card } from "@/lib/cards";
 import type { Field } from "@/lib/fields";
 import type { Dictionary } from "@/lib/i18n";
@@ -9,7 +10,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import * as Popover from "@radix-ui/react-popover";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function KanbanBoard({
   pipeId,
@@ -40,6 +41,13 @@ export function KanbanBoard({
     message: string;
     cardId: string;
   } | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(searchQuery), 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   function showToast(message: string, cardId: string) {
     setToast({ message, cardId });
@@ -157,9 +165,11 @@ export function KanbanBoard({
   const defaultCreatePhaseId =
     phaseList.find((p) => p.allowCardCreation)?.id ?? phaseList[0]?.id;
 
+  const filteredCards = filterCardsByTitle(cardList, debouncedQuery);
+
   return (
     <div>
-      <div className="flex items-center justify-between px-6 pt-4">
+      <div className="flex items-center justify-between gap-4 px-6 pt-4">
         <button
           type="button"
           data-testid="create-card-button"
@@ -171,6 +181,27 @@ export function KanbanBoard({
         >
           + {createCardButtonLabel ?? dictionary.kanban.createCard}
         </button>
+        <div className="ml-auto flex items-center gap-2">
+          <input
+            type="text"
+            data-testid="card-search-input"
+            placeholder={dictionary.kanban.searchPlaceholder}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              data-testid="card-search-clear"
+              onClick={() => setSearchQuery("")}
+              className="text-gray-400 hover:text-gray-600"
+              title="Clear search"
+            >
+              ✕
+            </button>
+          )}
+        </div>
       </div>
 
       <div
@@ -178,7 +209,7 @@ export function KanbanBoard({
         className="flex gap-4 overflow-x-auto p-6"
       >
         {phaseList.map((phase) => {
-          const phaseCards = cardList.filter((c) => c.phaseId === phase.id);
+          const phaseCards = filteredCards.filter((c) => c.phaseId === phase.id);
           return (
             <div
               key={phase.id}

@@ -1588,7 +1588,7 @@
     "data_model": "No new entity — a pure client-side derived view. searchQuery: string (component-local UI state, not persisted, not part of the Card entity or any URL param observed). Filter predicate: card.title.toLowerCase().includes(searchQuery.toLowerCase()), applied independently within each phase's already-fetched card array.",
     "priority": 15,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {
