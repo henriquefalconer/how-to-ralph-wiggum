@@ -140,6 +140,7 @@ export const labels = pgTable("labels", {
     .references(() => pipes.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   color: text("color").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const fieldOwnerTypes = ["phase", "start_form", "table"] as const;

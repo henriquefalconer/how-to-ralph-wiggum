@@ -217,6 +217,22 @@ export interface Dictionary {
       restricted_view: { label: string; description: string };
     };
   };
+  labels: {
+    modalTitle: string;
+    emptyStateIcon: string;
+    emptyStateText: string;
+    emptyStateLink: string;
+    createButton: string;
+    createModalTitle: string;
+    nameLabel: string;
+    namePlaceholder: string;
+    colorLabel: string;
+    submit: string;
+    cancel: string;
+    editButton: string;
+    deleteButton: string;
+    deleteConfirm: string;
+  };
   auditLog: {
     heading: string;
     subtitle: string;
@@ -861,6 +877,23 @@ export const dictionaries: Record<Locale, Dictionary> = {
             "Can create and edit cards they created or were assigned to. Cannot delete cards",
         },
       },
+    },
+    labels: {
+      modalTitle: "Labels",
+      emptyStateIcon: "🏷️",
+      emptyStateText:
+        "Create labels to filter and identify cards according to your criteria.",
+      emptyStateLink: "Learn more",
+      createButton: "Create label",
+      createModalTitle: "Create label",
+      nameLabel: "Label name",
+      namePlaceholder: "e.g. Urgent",
+      colorLabel: "Color",
+      submit: "Save",
+      cancel: "Cancel",
+      editButton: "Edit",
+      deleteButton: "Delete",
+      deleteConfirm: "Delete this label?",
     },
     auditLog: {
       heading: "Activities",
@@ -1524,6 +1557,23 @@ export const dictionaries: Record<Locale, Dictionary> = {
             "Pode criar e editar cards que criou ou que foram atribuídos a ela. Não pode deletar cards",
         },
       },
+    },
+    labels: {
+      modalTitle: "Etiquetas",
+      emptyStateIcon: "🏷️",
+      emptyStateText:
+        "Crie etiquetas para filtrar e identificar cards conforme o critério desejado.",
+      emptyStateLink: "Saiba mais",
+      createButton: "Criar etiqueta",
+      createModalTitle: "Criar etiqueta",
+      nameLabel: "Nome da etiqueta",
+      namePlaceholder: "ex: Urgente",
+      colorLabel: "Cor",
+      submit: "Salvar",
+      cancel: "Cancelar",
+      editButton: "Editar",
+      deleteButton: "Deletar",
+      deleteConfirm: "Deletar esta etiqueta?",
     },
     auditLog: {
       heading: "Atividades",
@@ -2192,6 +2242,23 @@ export const dictionaries: Record<Locale, Dictionary> = {
         },
       },
     },
+    labels: {
+      modalTitle: "Etiquetas",
+      emptyStateIcon: "🏷️",
+      emptyStateText:
+        "Cree etiquetas para filtrar e identificar tarjetas según el criterio deseado.",
+      emptyStateLink: "Conocer más",
+      createButton: "Crear etiqueta",
+      createModalTitle: "Crear etiqueta",
+      nameLabel: "Nombre de la etiqueta",
+      namePlaceholder: "p. ej. Urgente",
+      colorLabel: "Color",
+      submit: "Guardar",
+      cancel: "Cancelar",
+      editButton: "Editar",
+      deleteButton: "Eliminar",
+      deleteConfirm: "¿Eliminar esta etiqueta?",
+    },
     auditLog: {
       heading: "Actividades",
       subtitle:
@@ -2843,6 +2910,22 @@ export const dictionaries: Record<Locale, Dictionary> = {
           description: "可以创建和编辑自己创建或被分配的卡片，不能删除卡片",
         },
       },
+    },
+    labels: {
+      modalTitle: "标签",
+      emptyStateIcon: "🏷️",
+      emptyStateText: "创建标签以根据所需标准过滤和识别卡片。",
+      emptyStateLink: "了解更多",
+      createButton: "创建标签",
+      createModalTitle: "创建标签",
+      nameLabel: "标签名称",
+      namePlaceholder: "例：紧急",
+      colorLabel: "颜色",
+      submit: "保存",
+      cancel: "取消",
+      editButton: "编辑",
+      deleteButton: "删除",
+      deleteConfirm: "删除此标签？",
     },
     auditLog: {
       heading: "活动",
@@ -3496,6 +3579,23 @@ export const dictionaries: Record<Locale, Dictionary> = {
             "Kann Cards erstellen und bearbeiten, die sie erstellt hat oder ihr zugewiesen wurden. Kann keine Cards löschen",
         },
       },
+    },
+    labels: {
+      modalTitle: "Etiketten",
+      emptyStateIcon: "🏷️",
+      emptyStateText:
+        "Erstellen Sie Etiketten, um Cards nach dem gewünschten Kriterium zu filtern und zu kennzeichnen.",
+      emptyStateLink: "Mehr erfahren",
+      createButton: "Etikett erstellen",
+      createModalTitle: "Etikett erstellen",
+      nameLabel: "Etikettenname",
+      namePlaceholder: "z. B. Dringend",
+      colorLabel: "Farbe",
+      submit: "Speichern",
+      cancel: "Abbrechen",
+      editButton: "Bearbeiten",
+      deleteButton: "Löschen",
+      deleteConfirm: "Dieses Etikett löschen?",
     },
     auditLog: {
       heading: "Aktivitäten",
@@ -4172,6 +4272,23 @@ export const dictionaries: Record<Locale, Dictionary> = {
         },
       },
     },
+    labels: {
+      modalTitle: "Étiquettes",
+      emptyStateIcon: "🏷️",
+      emptyStateText:
+        "Créez des étiquettes pour filtrer et identifier les cards selon le critère souhaité.",
+      emptyStateLink: "En savoir plus",
+      createButton: "Créer une étiquette",
+      createModalTitle: "Créer une étiquette",
+      nameLabel: "Nom de l'étiquette",
+      namePlaceholder: "ex. : Urgent",
+      colorLabel: "Couleur",
+      submit: "Enregistrer",
+      cancel: "Annuler",
+      editButton: "Modifier",
+      deleteButton: "Supprimer",
+      deleteConfirm: "Supprimer cette étiquette ?",
+    },
     auditLog: {
       heading: "Activités",
       subtitle:
@@ -4841,6 +4958,23 @@ export const dictionaries: Record<Locale, Dictionary> = {
         },
       },
     },
+    labels: {
+      modalTitle: "ラベル",
+      emptyStateIcon: "🏷️",
+      emptyStateText:
+        "ラベルを作成して、希望の基準に応じてカードをフィルタリングして識別します。",
+      emptyStateLink: "詳細を表示",
+      createButton: "ラベルを作成",
+      createModalTitle: "ラベルを作成",
+      nameLabel: "ラベル名",
+      namePlaceholder: "例：緊急",
+      colorLabel: "色",
+      submit: "保存",
+      cancel: "キャンセル",
+      editButton: "編集",
+      deleteButton: "削除",
+      deleteConfirm: "このラベルを削除しますか？",
+    },
     auditLog: {
       heading: "アクティビティ",
       subtitle:
@@ -5501,6 +5635,22 @@ export const dictionaries: Record<Locale, Dictionary> = {
         },
       },
     },
+    labels: {
+      modalTitle: "लेबल",
+      emptyStateIcon: "🏷️",
+      emptyStateText: "कार्ड्स को फ़िल्टर और पहचानने के लिए लेबल बनाएं।",
+      emptyStateLink: "और जानें",
+      createButton: "लेबल बनाएं",
+      createModalTitle: "लेबल बनाएं",
+      nameLabel: "लेबल नाम",
+      namePlaceholder: "उदा. तत्काल",
+      colorLabel: "रंग",
+      submit: "सहेजें",
+      cancel: "रद्द करें",
+      editButton: "संपादित करें",
+      deleteButton: "हटाएं",
+      deleteConfirm: "क्या आप इस लेबल को हटाना चाहते हैं?",
+    },
     auditLog: {
       heading: "गतिविधियाँ",
       subtitle:
@@ -6156,6 +6306,22 @@ export const dictionaries: Record<Locale, Dictionary> = {
             "يمكنه إنشاء وتعديل البطاقات التي أنشأها أو المسندة إليه فقط. لا يمكنه حذف البطاقات",
         },
       },
+    },
+    labels: {
+      modalTitle: "التسميات",
+      emptyStateIcon: "🏷️",
+      emptyStateText: "أنشئ تسميات لتصفية وتحديد البطاقات حسب المعيار المطلوب.",
+      emptyStateLink: "معرفة المزيد",
+      createButton: "إنشاء تسمية",
+      createModalTitle: "إنشاء تسمية",
+      nameLabel: "اسم التسمية",
+      namePlaceholder: "مثال: عاجل",
+      colorLabel: "اللون",
+      submit: "حفظ",
+      cancel: "إلغاء",
+      editButton: "تعديل",
+      deleteButton: "حذف",
+      deleteConfirm: "حذف هذه التسمية؟",
     },
     auditLog: {
       heading: "الأنشطة",
@@ -6814,6 +6980,23 @@ export const dictionaries: Record<Locale, Dictionary> = {
             "Может создавать и редактировать карточки, которые создал или которые назначены ему. Не может удалять карточки",
         },
       },
+    },
+    labels: {
+      modalTitle: "Метки",
+      emptyStateIcon: "🏷️",
+      emptyStateText:
+        "Создавайте метки для фильтрации и идентификации карточек по нужному критерию.",
+      emptyStateLink: "Узнать больше",
+      createButton: "Создать метку",
+      createModalTitle: "Создать метку",
+      nameLabel: "Название метки",
+      namePlaceholder: "напр. Срочно",
+      colorLabel: "Цвет",
+      submit: "Сохранить",
+      cancel: "Отмена",
+      editButton: "Редактировать",
+      deleteButton: "Удалить",
+      deleteConfirm: "Удалить эту метку?",
     },
     auditLog: {
       heading: "Действия",

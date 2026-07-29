@@ -845,7 +845,7 @@
     "data_model": "labels: id, pipe_id (fk), name, color (hex string, e.g. '#35FFDD'), created_at",
     "priority": 6,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {
