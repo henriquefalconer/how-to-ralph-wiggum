@@ -120,6 +120,23 @@ test.describe("smoke", () => {
     await expect(page.getByTestId("reports-empty-state")).toBeVisible();
   });
 
+  test("the Manage tabs navigate from Fases to Painéis", async ({ page }) => {
+    await page.goto("/");
+    await page.getByTestId("create-pipe-tile").click();
+    await page.getByTestId("create-from-scratch").click();
+    await page
+      .getByTestId("pipe-name-input")
+      .fill(`Smoke Dashboards ${Date.now()}`);
+    await page.getByTestId("submit-create-pipe").click();
+    await page.waitForURL(/\/pipes\/.+/);
+
+    await page.getByTestId("manage-pipe-link").click();
+    await page.waitForURL(/\/settings\/phases\/.+/);
+    await page.getByTestId("manage-tab-dashboards").click();
+    await page.waitForURL(/\/dashboards$/);
+    await expect(page.getByTestId("dashboards-empty-state")).toBeVisible();
+  });
+
   test("the Databases tab creates a database and loads its grid page", async ({
     page,
   }) => {

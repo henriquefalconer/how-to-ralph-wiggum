@@ -644,7 +644,7 @@
     "data_model": "dashboards: id, pipe_id (fk), name, default_time_range (text, default 'all_time'), created_at. dashboard_charts: id, dashboard_id (fk), title, metric (enum: cards_total|attachments_total|comments_total|lead_time_min|lead_time_sum|lead_time_max|lead_time_avg|assignees_total), dimension_field_id (fk, nullable), time_field_id (fk, default = card.created_at), time_range (text), time_grouping (enum: day|week|month|none, nullable), viz_type (enum: area|bar|calendar|line|number|pie|scatter|table), filters (jsonb), position (jsonb — {x,y,w,h} grid layout), created_at, updated_at",
     "priority": 9,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {

@@ -429,3 +429,68 @@ export const reports = pgTable("reports", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const dashboardChartMetrics = [
+  "cards_total",
+  "attachments_total",
+  "comments_total",
+  "lead_time_min",
+  "lead_time_sum",
+  "lead_time_max",
+  "lead_time_avg",
+  "assignees_total",
+] as const;
+
+export const dashboardChartTimeGroupings = [
+  "day",
+  "week",
+  "month",
+  "none",
+] as const;
+
+export const dashboardChartVizTypes = [
+  "area",
+  "bar",
+  "calendar",
+  "line",
+  "number",
+  "pie",
+  "scatter",
+  "table",
+] as const;
+
+export const dashboards = pgTable("dashboards", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  pipeId: uuid("pipe_id")
+    .notNull()
+    .references(() => pipes.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  defaultTimeRange: text("default_time_range").notNull().default("all_time"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const dashboardCharts = pgTable("dashboard_charts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  dashboardId: uuid("dashboard_id")
+    .notNull()
+    .references(() => dashboards.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  metric: text("metric", { enum: dashboardChartMetrics }).notNull(),
+  // References a fields.id (any pipe field) or a CARD_ATTRIBUTE_FIELD_IDS
+  // underscore-prefixed id (e.g. "_currentPhase") — same dual addressing
+  // scheme report-types.ts uses for report filters/columns.
+  dimensionFieldId: text("dimension_field_id"),
+  // "_createdAt" or "_updatedAt" — the same underscore-prefixed card
+  // attribute ids as above, restricted here to timestamp-bearing ones.
+  timeFieldId: text("time_field_id").notNull().default("_createdAt"),
+  timeRange: text("time_range").notNull().default("all_time"),
+  timeGrouping: text("time_grouping", { enum: dashboardChartTimeGroupings }),
+  vizType: text("viz_type", { enum: dashboardChartVizTypes }).notNull(),
+  filters: jsonb("filters").$type<ReportFilterGroup[]>().notNull().default([]),
+  position: jsonb("position")
+    .$type<{ x: number; y: number; w: number; h: number }>()
+    .notNull()
+    .default({ x: 0, y: 0, w: 4, h: 3 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});

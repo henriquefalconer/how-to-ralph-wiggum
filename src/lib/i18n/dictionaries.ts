@@ -185,6 +185,7 @@ export interface Dictionary {
     phases: string;
     automations: string;
     reports: string;
+    dashboards: string;
   };
   automations: {
     heading: string;
@@ -361,6 +362,90 @@ export interface Dictionary {
       namePlaceholder: string;
       save: string;
       requiredError: string;
+    };
+  };
+  dashboards: {
+    heading: string;
+    emptyStateTitle: string;
+    emptyStateCta: string;
+    createModalTitle: string;
+    nameLabel: string;
+    namePlaceholder: string;
+    submit: string;
+    cancel: string;
+    backToList: string;
+    backToBoard: string;
+    addChartButton: string;
+    filterChipLabel: string;
+    deleteDashboard: string;
+    deleteConfirm: string;
+    deleteChartConfirm: string;
+    chartMenu: {
+      reload: string;
+      edit: string;
+      delete: string;
+    };
+    builder: {
+      metricLabel: string;
+      dimensionLabel: string;
+      timeGroupLabel: string;
+      selectMetricPlaceholder: string;
+      selectDimensionPlaceholder: string;
+      noDimension: string;
+      emptyValueLabel: string;
+      metrics: {
+        cards_total: string;
+        attachments_total: string;
+        comments_total: string;
+        lead_time_min: string;
+        lead_time_sum: string;
+        lead_time_max: string;
+        lead_time_avg: string;
+        assignees_total: string;
+      };
+      timeGroupings: {
+        day: string;
+        week: string;
+        month: string;
+        none: string;
+      };
+      titleSuffixes: {
+        day: string;
+        week: string;
+        month: string;
+      };
+      vizTypes: {
+        area: string;
+        bar: string;
+        calendar: string;
+        line: string;
+        number: string;
+        pie: string;
+        scatter: string;
+        table: string;
+      };
+      timeFieldLabel: string;
+      timeFieldCreatedAt: string;
+      timeFieldUpdatedAt: string;
+      timeRangeLabel: string;
+      timeRanges: {
+        all_time: string;
+        last_7_days: string;
+        last_30_days: string;
+        last_12_months: string;
+      };
+      filtersHeading: string;
+      visualizationLabel: string;
+      saveButton: string;
+      saveModalTitle: string;
+      nameLabel: string;
+      namePlaceholder: string;
+      dashboardTargetLabel: string;
+      save: string;
+      cancel: string;
+      createdToast: string;
+      requiredError: string;
+      noResults: string;
     };
   };
   interfaces: {
@@ -618,6 +703,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       phases: "Phases",
       automations: "Automations",
       reports: "Reports",
+      dashboards: "Dashboards",
     },
     automations: {
       heading: "Automations",
@@ -800,6 +886,92 @@ export const dictionaries: Record<Locale, Dictionary> = {
         namePlaceholder: "Name this report",
         save: "Save",
         requiredError: "must be filled in",
+      },
+    },
+    dashboards: {
+      heading: "Dashboards",
+      emptyStateTitle: "No dashboard created yet",
+      emptyStateCta: "Create dashboard",
+      createModalTitle: "Name this dashboard",
+      nameLabel: "Dashboard name",
+      namePlaceholder: "Name this dashboard",
+      submit: "Create",
+      cancel: "Cancel",
+      backToList: "Back to dashboards",
+      backToBoard: "Back to board",
+      addChartButton: "Add chart",
+      filterChipLabel: "Filter: {range}",
+      deleteDashboard: "Delete this dashboard",
+      deleteConfirm:
+        "Are you sure you want to delete this dashboard? This action cannot be undone.",
+      deleteChartConfirm:
+        "Are you sure you want to delete this chart? This action cannot be undone.",
+      chartMenu: {
+        reload: "Reload chart",
+        edit: "Edit chart",
+        delete: "Delete chart",
+      },
+      builder: {
+        metricLabel: "Metric",
+        dimensionLabel: "Dimension",
+        timeGroupLabel: "Time grouping",
+        selectMetricPlaceholder: "Select a metric",
+        selectDimensionPlaceholder: "Dimension",
+        noDimension: "No dimension",
+        emptyValueLabel: "(empty)",
+        metrics: {
+          cards_total: "Cards (Total)",
+          attachments_total: "Card Attachments (Total)",
+          comments_total: "Card Comments (Total)",
+          lead_time_min: "Lead Time (hours) - Min",
+          lead_time_sum: "Lead Time (hours) - Sum",
+          lead_time_max: "Lead Time (hours) - Max",
+          lead_time_avg: "Lead Time (hours) - Avg",
+          assignees_total: "Assignee (Total)",
+        },
+        timeGroupings: {
+          day: "Day",
+          week: "Week",
+          month: "Month",
+          none: "No grouping",
+        },
+        titleSuffixes: {
+          day: "By Day",
+          week: "By Week",
+          month: "By Month",
+        },
+        vizTypes: {
+          area: "Area",
+          bar: "Bar",
+          calendar: "Calendar",
+          line: "Line",
+          number: "Number",
+          pie: "Pie",
+          scatter: "Scatter",
+          table: "Table",
+        },
+        timeFieldLabel: "For",
+        timeFieldCreatedAt: "Created at",
+        timeFieldUpdatedAt: "Updated at",
+        timeRangeLabel: "By",
+        timeRanges: {
+          all_time: "Since the beginning",
+          last_7_days: "Last 7 days",
+          last_30_days: "Last 30 days",
+          last_12_months: "Last 12 months",
+        },
+        filtersHeading: "Filters",
+        visualizationLabel: "Visualization",
+        saveButton: "Save chart",
+        saveModalTitle: "Save chart",
+        nameLabel: "Chart name",
+        namePlaceholder: "Name this chart",
+        dashboardTargetLabel: "Select the dashboard",
+        save: "Save",
+        cancel: "Cancel",
+        createdToast: "Chart created. Check it out!",
+        requiredError: "must be filled in",
+        noResults: "No data yet",
       },
     },
     interfaces: {
@@ -1061,6 +1233,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       phases: "Fases",
       automations: "Automações",
       reports: "Relatórios",
+      dashboards: "Painéis",
     },
     automations: {
       heading: "Automações",
@@ -1243,6 +1416,92 @@ export const dictionaries: Record<Locale, Dictionary> = {
         namePlaceholder: "Nomeie este relatório",
         save: "Salvar",
         requiredError: "precisa ser preenchido",
+      },
+    },
+    dashboards: {
+      heading: "Painéis",
+      emptyStateTitle: "Nenhum painel criado",
+      emptyStateCta: "Criar painel",
+      createModalTitle: "Nomeie este painel",
+      nameLabel: "Nome do painel",
+      namePlaceholder: "Nomeie este painel",
+      submit: "Criar",
+      cancel: "Cancelar",
+      backToList: "Voltar aos painéis",
+      backToBoard: "Voltar ao quadro",
+      addChartButton: "Adicionar gráfico",
+      filterChipLabel: "Filtro: {range}",
+      deleteDashboard: "Excluir painel",
+      deleteConfirm:
+        "Tem certeza de que deseja excluir este painel? Esta ação não pode ser desfeita.",
+      deleteChartConfirm:
+        "Tem certeza de que deseja excluir este gráfico? Esta ação não pode ser desfeita.",
+      chartMenu: {
+        reload: "Recarregar gráfico",
+        edit: "Editar gráfico",
+        delete: "Excluir gráfico",
+      },
+      builder: {
+        metricLabel: "Métrica",
+        dimensionLabel: "Dimensão",
+        timeGroupLabel: "Grupo de tempo",
+        selectMetricPlaceholder: "Selecione uma métrica",
+        selectDimensionPlaceholder: "Dimensão",
+        noDimension: "Sem dimensão",
+        emptyValueLabel: "(vazio)",
+        metrics: {
+          cards_total: "Cards (Total)",
+          attachments_total: "Anexos do Card (Total)",
+          comments_total: "Comentários do card (Total)",
+          lead_time_min: "Lead Time (horas) - Min",
+          lead_time_sum: "Lead Time (horas) - Somatória",
+          lead_time_max: "Lead time (horas) - máx",
+          lead_time_avg: "Lead time (horas) - média",
+          assignees_total: "Responsável (Total)",
+        },
+        timeGroupings: {
+          day: "Dia",
+          week: "Semana",
+          month: "Mês",
+          none: "Sem agrupamento",
+        },
+        titleSuffixes: {
+          day: "Por Dia",
+          week: "Por Semana",
+          month: "Por Mês",
+        },
+        vizTypes: {
+          area: "Área",
+          bar: "Barra",
+          calendar: "Calendário",
+          line: "Linha",
+          number: "Número",
+          pie: "Pizza",
+          scatter: "Dispersão",
+          table: "Tabela",
+        },
+        timeFieldLabel: "Para",
+        timeFieldCreatedAt: "Criado em",
+        timeFieldUpdatedAt: "Atualizado em",
+        timeRangeLabel: "Por",
+        timeRanges: {
+          all_time: "Desde o início",
+          last_7_days: "Últimos 7 dias",
+          last_30_days: "Últimos 30 dias",
+          last_12_months: "Últimos 12 meses",
+        },
+        filtersHeading: "Filtros",
+        visualizationLabel: "Visualização",
+        saveButton: "Salvar gráfico",
+        saveModalTitle: "Salvar gráfico",
+        nameLabel: "Nome do gráfico",
+        namePlaceholder: "Nomeie este gráfico",
+        dashboardTargetLabel: "Selecione o painel",
+        save: "Salvar",
+        cancel: "Cancelar",
+        createdToast: "Gráfico criado. Confira!",
+        requiredError: "precisa ser preenchido",
+        noResults: "Ainda não há dados",
       },
     },
     interfaces: {
@@ -1505,6 +1764,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       phases: "Fases",
       automations: "Automatizaciones",
       reports: "Informes",
+      dashboards: "Paneles",
     },
     automations: {
       heading: "Automatizaciones",
@@ -1687,6 +1947,92 @@ export const dictionaries: Record<Locale, Dictionary> = {
         namePlaceholder: "Nombra este informe",
         save: "Guardar",
         requiredError: "debe completarse",
+      },
+    },
+    dashboards: {
+      heading: "Paneles",
+      emptyStateTitle: "Ningún panel creado",
+      emptyStateCta: "Crear panel",
+      createModalTitle: "Nombra este panel",
+      nameLabel: "Nombre del panel",
+      namePlaceholder: "Nombra este panel",
+      submit: "Crear",
+      cancel: "Cancelar",
+      backToList: "Volver a los paneles",
+      backToBoard: "Volver al tablero",
+      addChartButton: "Agregar gráfico",
+      filterChipLabel: "Filtro: {range}",
+      deleteDashboard: "Eliminar este panel",
+      deleteConfirm:
+        "¿Seguro que deseas eliminar este panel? Esta acción no se puede deshacer.",
+      deleteChartConfirm:
+        "¿Seguro que deseas eliminar este gráfico? Esta acción no se puede deshacer.",
+      chartMenu: {
+        reload: "Recargar gráfico",
+        edit: "Editar gráfico",
+        delete: "Eliminar gráfico",
+      },
+      builder: {
+        metricLabel: "Métrica",
+        dimensionLabel: "Dimensión",
+        timeGroupLabel: "Agrupación de tiempo",
+        selectMetricPlaceholder: "Selecciona una métrica",
+        selectDimensionPlaceholder: "Dimensión",
+        noDimension: "Sin dimensión",
+        emptyValueLabel: "(vacío)",
+        metrics: {
+          cards_total: "Tarjetas (Total)",
+          attachments_total: "Adjuntos de la tarjeta (Total)",
+          comments_total: "Comentarios de la tarjeta (Total)",
+          lead_time_min: "Tiempo de espera (horas) - Mín",
+          lead_time_sum: "Tiempo de espera (horas) - Suma",
+          lead_time_max: "Tiempo de espera (horas) - Máx",
+          lead_time_avg: "Tiempo de espera (horas) - Promedio",
+          assignees_total: "Responsable (Total)",
+        },
+        timeGroupings: {
+          day: "Día",
+          week: "Semana",
+          month: "Mes",
+          none: "Sin agrupación",
+        },
+        titleSuffixes: {
+          day: "Por Día",
+          week: "Por Semana",
+          month: "Por Mes",
+        },
+        vizTypes: {
+          area: "Área",
+          bar: "Barra",
+          calendar: "Calendario",
+          line: "Línea",
+          number: "Número",
+          pie: "Circular",
+          scatter: "Dispersión",
+          table: "Tabla",
+        },
+        timeFieldLabel: "Para",
+        timeFieldCreatedAt: "Creado el",
+        timeFieldUpdatedAt: "Actualizado el",
+        timeRangeLabel: "Por",
+        timeRanges: {
+          all_time: "Desde el inicio",
+          last_7_days: "Últimos 7 días",
+          last_30_days: "Últimos 30 días",
+          last_12_months: "Últimos 12 meses",
+        },
+        filtersHeading: "Filtros",
+        visualizationLabel: "Visualización",
+        saveButton: "Guardar gráfico",
+        saveModalTitle: "Guardar gráfico",
+        nameLabel: "Nombre del gráfico",
+        namePlaceholder: "Nombra este gráfico",
+        dashboardTargetLabel: "Selecciona el panel",
+        save: "Guardar",
+        cancel: "Cancelar",
+        createdToast: "¡Gráfico creado. Échale un vistazo!",
+        requiredError: "debe completarse",
+        noResults: "Aún no hay datos",
       },
     },
     interfaces: {
@@ -1940,6 +2286,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       phases: "阶段",
       automations: "自动化",
       reports: "报表",
+      dashboards: "仪表盘",
     },
     automations: {
       heading: "自动化",
@@ -2117,6 +2464,90 @@ export const dictionaries: Record<Locale, Dictionary> = {
         namePlaceholder: "为此报表命名",
         save: "保存",
         requiredError: "为必填项",
+      },
+    },
+    dashboards: {
+      heading: "仪表盘",
+      emptyStateTitle: "尚未创建仪表盘",
+      emptyStateCta: "创建仪表盘",
+      createModalTitle: "为此仪表盘命名",
+      nameLabel: "仪表盘名称",
+      namePlaceholder: "为此仪表盘命名",
+      submit: "创建",
+      cancel: "取消",
+      backToList: "返回仪表盘列表",
+      backToBoard: "返回看板",
+      addChartButton: "添加图表",
+      filterChipLabel: "筛选：{range}",
+      deleteDashboard: "删除此仪表盘",
+      deleteConfirm: "确定要删除此仪表盘吗？此操作无法撤销。",
+      deleteChartConfirm: "确定要删除此图表吗？此操作无法撤销。",
+      chartMenu: {
+        reload: "重新加载图表",
+        edit: "编辑图表",
+        delete: "删除图表",
+      },
+      builder: {
+        metricLabel: "指标",
+        dimensionLabel: "维度",
+        timeGroupLabel: "时间分组",
+        selectMetricPlaceholder: "选择一个指标",
+        selectDimensionPlaceholder: "维度",
+        noDimension: "无维度",
+        emptyValueLabel: "（空）",
+        metrics: {
+          cards_total: "卡片（总数）",
+          attachments_total: "卡片附件（总数）",
+          comments_total: "卡片评论（总数）",
+          lead_time_min: "处理时长（小时）- 最小值",
+          lead_time_sum: "处理时长（小时）- 总和",
+          lead_time_max: "处理时长（小时）- 最大值",
+          lead_time_avg: "处理时长（小时）- 平均值",
+          assignees_total: "负责人（总数）",
+        },
+        timeGroupings: {
+          day: "天",
+          week: "周",
+          month: "月",
+          none: "不分组",
+        },
+        titleSuffixes: {
+          day: "按天",
+          week: "按周",
+          month: "按月",
+        },
+        vizTypes: {
+          area: "面积图",
+          bar: "柱状图",
+          calendar: "日历图",
+          line: "折线图",
+          number: "数字",
+          pie: "饼图",
+          scatter: "散点图",
+          table: "表格",
+        },
+        timeFieldLabel: "范围",
+        timeFieldCreatedAt: "创建时间",
+        timeFieldUpdatedAt: "更新时间",
+        timeRangeLabel: "按",
+        timeRanges: {
+          all_time: "自开始以来",
+          last_7_days: "最近7天",
+          last_30_days: "最近30天",
+          last_12_months: "最近12个月",
+        },
+        filtersHeading: "筛选条件",
+        visualizationLabel: "可视化",
+        saveButton: "保存图表",
+        saveModalTitle: "保存图表",
+        nameLabel: "图表名称",
+        namePlaceholder: "为此图表命名",
+        dashboardTargetLabel: "选择仪表盘",
+        save: "保存",
+        cancel: "取消",
+        createdToast: "图表已创建，快去看看吧！",
+        requiredError: "为必填项",
+        noResults: "暂无数据",
       },
     },
     interfaces: {
@@ -2380,6 +2811,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       phases: "Phasen",
       automations: "Automatisierungen",
       reports: "Berichte",
+      dashboards: "Dashboards",
     },
     automations: {
       heading: "Automatisierungen",
@@ -2565,6 +2997,92 @@ export const dictionaries: Record<Locale, Dictionary> = {
         namePlaceholder: "Benennen Sie diesen Bericht",
         save: "Speichern",
         requiredError: "muss ausgefüllt werden",
+      },
+    },
+    dashboards: {
+      heading: "Dashboards",
+      emptyStateTitle: "Noch kein Dashboard erstellt",
+      emptyStateCta: "Dashboard erstellen",
+      createModalTitle: "Dieses Dashboard benennen",
+      nameLabel: "Dashboard-Name",
+      namePlaceholder: "Benennen Sie dieses Dashboard",
+      submit: "Erstellen",
+      cancel: "Abbrechen",
+      backToList: "Zurück zu den Dashboards",
+      backToBoard: "Zurück zum Board",
+      addChartButton: "Diagramm hinzufügen",
+      filterChipLabel: "Filter: {range}",
+      deleteDashboard: "Dieses Dashboard löschen",
+      deleteConfirm:
+        "Möchten Sie dieses Dashboard wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      deleteChartConfirm:
+        "Möchten Sie dieses Diagramm wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      chartMenu: {
+        reload: "Diagramm neu laden",
+        edit: "Diagramm bearbeiten",
+        delete: "Diagramm löschen",
+      },
+      builder: {
+        metricLabel: "Metrik",
+        dimensionLabel: "Dimension",
+        timeGroupLabel: "Zeitgruppierung",
+        selectMetricPlaceholder: "Metrik auswählen",
+        selectDimensionPlaceholder: "Dimension",
+        noDimension: "Keine Dimension",
+        emptyValueLabel: "(leer)",
+        metrics: {
+          cards_total: "Karten (Gesamt)",
+          attachments_total: "Kartenanhänge (Gesamt)",
+          comments_total: "Kartenkommentare (Gesamt)",
+          lead_time_min: "Durchlaufzeit (Std.) - Min",
+          lead_time_sum: "Durchlaufzeit (Std.) - Summe",
+          lead_time_max: "Durchlaufzeit (Std.) - Max",
+          lead_time_avg: "Durchlaufzeit (Std.) - Durchschnitt",
+          assignees_total: "Verantwortlicher (Gesamt)",
+        },
+        timeGroupings: {
+          day: "Tag",
+          week: "Woche",
+          month: "Monat",
+          none: "Keine Gruppierung",
+        },
+        titleSuffixes: {
+          day: "Nach Tag",
+          week: "Nach Woche",
+          month: "Nach Monat",
+        },
+        vizTypes: {
+          area: "Fläche",
+          bar: "Balken",
+          calendar: "Kalender",
+          line: "Linie",
+          number: "Zahl",
+          pie: "Kreis",
+          scatter: "Streuung",
+          table: "Tabelle",
+        },
+        timeFieldLabel: "Für",
+        timeFieldCreatedAt: "Erstellt am",
+        timeFieldUpdatedAt: "Aktualisiert am",
+        timeRangeLabel: "Nach",
+        timeRanges: {
+          all_time: "Seit Beginn",
+          last_7_days: "Letzte 7 Tage",
+          last_30_days: "Letzte 30 Tage",
+          last_12_months: "Letzte 12 Monate",
+        },
+        filtersHeading: "Filter",
+        visualizationLabel: "Visualisierung",
+        saveButton: "Diagramm speichern",
+        saveModalTitle: "Diagramm speichern",
+        nameLabel: "Diagrammname",
+        namePlaceholder: "Benennen Sie dieses Diagramm",
+        dashboardTargetLabel: "Dashboard auswählen",
+        save: "Speichern",
+        cancel: "Abbrechen",
+        createdToast: "Diagramm erstellt. Schauen Sie es sich an!",
+        requiredError: "muss ausgefüllt werden",
+        noResults: "Noch keine Daten",
       },
     },
     interfaces: {
@@ -2829,6 +3347,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       phases: "Phases",
       automations: "Automatisations",
       reports: "Rapports",
+      dashboards: "Tableaux de bord",
     },
     automations: {
       heading: "Automatisations",
@@ -3014,6 +3533,92 @@ export const dictionaries: Record<Locale, Dictionary> = {
         namePlaceholder: "Nommez ce rapport",
         save: "Enregistrer",
         requiredError: "doit être rempli",
+      },
+    },
+    dashboards: {
+      heading: "Tableaux de bord",
+      emptyStateTitle: "Aucun tableau de bord créé",
+      emptyStateCta: "Créer un tableau de bord",
+      createModalTitle: "Nommez ce tableau de bord",
+      nameLabel: "Nom du tableau de bord",
+      namePlaceholder: "Nommez ce tableau de bord",
+      submit: "Créer",
+      cancel: "Annuler",
+      backToList: "Retour aux tableaux de bord",
+      backToBoard: "Retour au tableau",
+      addChartButton: "Ajouter un graphique",
+      filterChipLabel: "Filtre : {range}",
+      deleteDashboard: "Supprimer ce tableau de bord",
+      deleteConfirm:
+        "Voulez-vous vraiment supprimer ce tableau de bord ? Cette action est irréversible.",
+      deleteChartConfirm:
+        "Voulez-vous vraiment supprimer ce graphique ? Cette action est irréversible.",
+      chartMenu: {
+        reload: "Recharger le graphique",
+        edit: "Modifier le graphique",
+        delete: "Supprimer le graphique",
+      },
+      builder: {
+        metricLabel: "Métrique",
+        dimensionLabel: "Dimension",
+        timeGroupLabel: "Regroupement temporel",
+        selectMetricPlaceholder: "Sélectionnez une métrique",
+        selectDimensionPlaceholder: "Dimension",
+        noDimension: "Aucune dimension",
+        emptyValueLabel: "(vide)",
+        metrics: {
+          cards_total: "Cartes (Total)",
+          attachments_total: "Pièces jointes de la carte (Total)",
+          comments_total: "Commentaires de la carte (Total)",
+          lead_time_min: "Délai (heures) - Min",
+          lead_time_sum: "Délai (heures) - Somme",
+          lead_time_max: "Délai (heures) - Max",
+          lead_time_avg: "Délai (heures) - Moyenne",
+          assignees_total: "Responsable (Total)",
+        },
+        timeGroupings: {
+          day: "Jour",
+          week: "Semaine",
+          month: "Mois",
+          none: "Aucun regroupement",
+        },
+        titleSuffixes: {
+          day: "Par jour",
+          week: "Par semaine",
+          month: "Par mois",
+        },
+        vizTypes: {
+          area: "Aire",
+          bar: "Barres",
+          calendar: "Calendrier",
+          line: "Ligne",
+          number: "Nombre",
+          pie: "Camembert",
+          scatter: "Nuage de points",
+          table: "Tableau",
+        },
+        timeFieldLabel: "Pour",
+        timeFieldCreatedAt: "Créé le",
+        timeFieldUpdatedAt: "Mis à jour le",
+        timeRangeLabel: "Par",
+        timeRanges: {
+          all_time: "Depuis le début",
+          last_7_days: "7 derniers jours",
+          last_30_days: "30 derniers jours",
+          last_12_months: "12 derniers mois",
+        },
+        filtersHeading: "Filtres",
+        visualizationLabel: "Visualisation",
+        saveButton: "Enregistrer le graphique",
+        saveModalTitle: "Enregistrer le graphique",
+        nameLabel: "Nom du graphique",
+        namePlaceholder: "Nommez ce graphique",
+        dashboardTargetLabel: "Sélectionnez le tableau de bord",
+        save: "Enregistrer",
+        cancel: "Annuler",
+        createdToast: "Graphique créé. Allez y jeter un œil !",
+        requiredError: "doit être rempli",
+        noResults: "Pas encore de données",
       },
     },
     interfaces: {
@@ -3274,6 +3879,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       phases: "フェーズ",
       automations: "オートメーション",
       reports: "レポート",
+      dashboards: "ダッシュボード",
     },
     automations: {
       heading: "オートメーション",
@@ -3456,6 +4062,92 @@ export const dictionaries: Record<Locale, Dictionary> = {
         namePlaceholder: "このレポートに名前を付ける",
         save: "保存",
         requiredError: "は必須項目です",
+      },
+    },
+    dashboards: {
+      heading: "ダッシュボード",
+      emptyStateTitle: "作成されたダッシュボードはありません",
+      emptyStateCta: "ダッシュボードを作成",
+      createModalTitle: "このダッシュボードに名前を付ける",
+      nameLabel: "ダッシュボード名",
+      namePlaceholder: "このダッシュボードに名前を付ける",
+      submit: "作成",
+      cancel: "キャンセル",
+      backToList: "ダッシュボード一覧に戻る",
+      backToBoard: "ボードに戻る",
+      addChartButton: "グラフを追加",
+      filterChipLabel: "フィルター: {range}",
+      deleteDashboard: "このダッシュボードを削除",
+      deleteConfirm:
+        "このダッシュボードを削除してもよろしいですか？この操作は取り消せません。",
+      deleteChartConfirm:
+        "このグラフを削除してもよろしいですか？この操作は取り消せません。",
+      chartMenu: {
+        reload: "グラフを再読み込み",
+        edit: "グラフを編集",
+        delete: "グラフを削除",
+      },
+      builder: {
+        metricLabel: "メトリック",
+        dimensionLabel: "ディメンション",
+        timeGroupLabel: "時間グループ",
+        selectMetricPlaceholder: "メトリックを選択",
+        selectDimensionPlaceholder: "ディメンション",
+        noDimension: "ディメンションなし",
+        emptyValueLabel: "（空）",
+        metrics: {
+          cards_total: "カード（合計）",
+          attachments_total: "カードの添付ファイル（合計）",
+          comments_total: "カードのコメント（合計）",
+          lead_time_min: "リードタイム（時間）- 最小",
+          lead_time_sum: "リードタイム（時間）- 合計",
+          lead_time_max: "リードタイム（時間）- 最大",
+          lead_time_avg: "リードタイム（時間）- 平均",
+          assignees_total: "担当者（合計）",
+        },
+        timeGroupings: {
+          day: "日",
+          week: "週",
+          month: "月",
+          none: "グループ化なし",
+        },
+        titleSuffixes: {
+          day: "日別",
+          week: "週別",
+          month: "月別",
+        },
+        vizTypes: {
+          area: "エリア",
+          bar: "棒グラフ",
+          calendar: "カレンダー",
+          line: "折れ線",
+          number: "数値",
+          pie: "円グラフ",
+          scatter: "散布図",
+          table: "テーブル",
+        },
+        timeFieldLabel: "対象",
+        timeFieldCreatedAt: "作成日",
+        timeFieldUpdatedAt: "更新日",
+        timeRangeLabel: "期間",
+        timeRanges: {
+          all_time: "開始以降すべて",
+          last_7_days: "過去7日間",
+          last_30_days: "過去30日間",
+          last_12_months: "過去12か月間",
+        },
+        filtersHeading: "フィルター",
+        visualizationLabel: "可視化",
+        saveButton: "グラフを保存",
+        saveModalTitle: "グラフを保存",
+        nameLabel: "グラフ名",
+        namePlaceholder: "このグラフに名前を付ける",
+        dashboardTargetLabel: "ダッシュボードを選択",
+        save: "保存",
+        cancel: "キャンセル",
+        createdToast: "グラフを作成しました。確認しましょう！",
+        requiredError: "は必須項目です",
+        noResults: "まだデータがありません",
       },
     },
     interfaces: {
@@ -3713,6 +4405,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       phases: "चरण",
       automations: "ऑटोमेशन",
       reports: "रिपोर्ट",
+      dashboards: "डैशबोर्ड",
     },
     automations: {
       heading: "ऑटोमेशन",
@@ -3894,6 +4587,92 @@ export const dictionaries: Record<Locale, Dictionary> = {
         namePlaceholder: "इस रिपोर्ट को नाम दें",
         save: "सहेजें",
         requiredError: "भरना आवश्यक है",
+      },
+    },
+    dashboards: {
+      heading: "डैशबोर्ड",
+      emptyStateTitle: "अभी तक कोई डैशबोर्ड नहीं बनाया गया",
+      emptyStateCta: "डैशबोर्ड बनाएं",
+      createModalTitle: "इस डैशबोर्ड को नाम दें",
+      nameLabel: "डैशबोर्ड का नाम",
+      namePlaceholder: "इस डैशबोर्ड को नाम दें",
+      submit: "बनाएं",
+      cancel: "रद्द करें",
+      backToList: "डैशबोर्ड सूची पर वापस जाएं",
+      backToBoard: "बोर्ड पर वापस जाएं",
+      addChartButton: "चार्ट जोड़ें",
+      filterChipLabel: "फ़िल्टर: {range}",
+      deleteDashboard: "यह डैशबोर्ड हटाएं",
+      deleteConfirm:
+        "क्या आप वाकई इस डैशबोर्ड को हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।",
+      deleteChartConfirm:
+        "क्या आप वाकई इस चार्ट को हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।",
+      chartMenu: {
+        reload: "चार्ट फिर से लोड करें",
+        edit: "चार्ट संपादित करें",
+        delete: "चार्ट हटाएं",
+      },
+      builder: {
+        metricLabel: "मेट्रिक",
+        dimensionLabel: "डाइमेंशन",
+        timeGroupLabel: "समय समूहन",
+        selectMetricPlaceholder: "एक मेट्रिक चुनें",
+        selectDimensionPlaceholder: "डाइमेंशन",
+        noDimension: "कोई डाइमेंशन नहीं",
+        emptyValueLabel: "(खाली)",
+        metrics: {
+          cards_total: "कार्ड्स (कुल)",
+          attachments_total: "कार्ड अनुलग्नक (कुल)",
+          comments_total: "कार्ड टिप्पणियां (कुल)",
+          lead_time_min: "लीड टाइम (घंटे) - न्यूनतम",
+          lead_time_sum: "लीड टाइम (घंटे) - योग",
+          lead_time_max: "लीड टाइम (घंटे) - अधिकतम",
+          lead_time_avg: "लीड टाइम (घंटे) - औसत",
+          assignees_total: "जिम्मेदार व्यक्ति (कुल)",
+        },
+        timeGroupings: {
+          day: "दिन",
+          week: "सप्ताह",
+          month: "महीना",
+          none: "कोई समूहन नहीं",
+        },
+        titleSuffixes: {
+          day: "दिन के अनुसार",
+          week: "सप्ताह के अनुसार",
+          month: "महीने के अनुसार",
+        },
+        vizTypes: {
+          area: "क्षेत्र",
+          bar: "बार",
+          calendar: "कैलेंडर",
+          line: "लाइन",
+          number: "संख्या",
+          pie: "पाई",
+          scatter: "स्कैटर",
+          table: "तालिका",
+        },
+        timeFieldLabel: "के लिए",
+        timeFieldCreatedAt: "बनाया गया",
+        timeFieldUpdatedAt: "अपडेट किया गया",
+        timeRangeLabel: "अनुसार",
+        timeRanges: {
+          all_time: "शुरुआत से",
+          last_7_days: "पिछले 7 दिन",
+          last_30_days: "पिछले 30 दिन",
+          last_12_months: "पिछले 12 महीने",
+        },
+        filtersHeading: "फ़िल्टर",
+        visualizationLabel: "विज़ुअलाइज़ेशन",
+        saveButton: "चार्ट सहेजें",
+        saveModalTitle: "चार्ट सहेजें",
+        nameLabel: "चार्ट का नाम",
+        namePlaceholder: "इस चार्ट को नाम दें",
+        dashboardTargetLabel: "डैशबोर्ड चुनें",
+        save: "सहेजें",
+        cancel: "रद्द करें",
+        createdToast: "चार्ट बन गया। देखें!",
+        requiredError: "भरना आवश्यक है",
+        noResults: "अभी तक कोई डेटा नहीं",
       },
     },
     interfaces: {
@@ -4149,6 +4928,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       phases: "المراحل",
       automations: "الأتمتة",
       reports: "التقارير",
+      dashboards: "لوحات المعلومات",
     },
     automations: {
       heading: "الأتمتة",
@@ -4330,6 +5110,92 @@ export const dictionaries: Record<Locale, Dictionary> = {
         namePlaceholder: "قم بتسمية هذا التقرير",
         save: "حفظ",
         requiredError: "يجب تعبئته",
+      },
+    },
+    dashboards: {
+      heading: "لوحات المعلومات",
+      emptyStateTitle: "لم يتم إنشاء أي لوحة معلومات بعد",
+      emptyStateCta: "إنشاء لوحة معلومات",
+      createModalTitle: "قم بتسمية لوحة المعلومات هذه",
+      nameLabel: "اسم لوحة المعلومات",
+      namePlaceholder: "قم بتسمية لوحة المعلومات هذه",
+      submit: "إنشاء",
+      cancel: "إلغاء",
+      backToList: "العودة إلى لوحات المعلومات",
+      backToBoard: "العودة إلى اللوحة",
+      addChartButton: "إضافة رسم بياني",
+      filterChipLabel: "التصفية: {range}",
+      deleteDashboard: "حذف لوحة المعلومات هذه",
+      deleteConfirm:
+        "هل أنت متأكد من رغبتك في حذف لوحة المعلومات هذه؟ لا يمكن التراجع عن هذا الإجراء.",
+      deleteChartConfirm:
+        "هل أنت متأكد من رغبتك في حذف هذا الرسم البياني؟ لا يمكن التراجع عن هذا الإجراء.",
+      chartMenu: {
+        reload: "إعادة تحميل الرسم البياني",
+        edit: "تعديل الرسم البياني",
+        delete: "حذف الرسم البياني",
+      },
+      builder: {
+        metricLabel: "المقياس",
+        dimensionLabel: "البُعد",
+        timeGroupLabel: "تجميع زمني",
+        selectMetricPlaceholder: "اختر مقياسًا",
+        selectDimensionPlaceholder: "البُعد",
+        noDimension: "بدون بُعد",
+        emptyValueLabel: "(فارغ)",
+        metrics: {
+          cards_total: "البطاقات (الإجمالي)",
+          attachments_total: "مرفقات البطاقة (الإجمالي)",
+          comments_total: "تعليقات البطاقة (الإجمالي)",
+          lead_time_min: "مدة الإنجاز (ساعات) - الحد الأدنى",
+          lead_time_sum: "مدة الإنجاز (ساعات) - المجموع",
+          lead_time_max: "مدة الإنجاز (ساعات) - الحد الأقصى",
+          lead_time_avg: "مدة الإنجاز (ساعات) - المتوسط",
+          assignees_total: "المسؤول (الإجمالي)",
+        },
+        timeGroupings: {
+          day: "يوم",
+          week: "أسبوع",
+          month: "شهر",
+          none: "بدون تجميع",
+        },
+        titleSuffixes: {
+          day: "حسب اليوم",
+          week: "حسب الأسبوع",
+          month: "حسب الشهر",
+        },
+        vizTypes: {
+          area: "مساحي",
+          bar: "أعمدة",
+          calendar: "تقويم",
+          line: "خطي",
+          number: "رقم",
+          pie: "دائري",
+          scatter: "مبعثر",
+          table: "جدول",
+        },
+        timeFieldLabel: "لـ",
+        timeFieldCreatedAt: "تاريخ الإنشاء",
+        timeFieldUpdatedAt: "تاريخ التحديث",
+        timeRangeLabel: "حسب",
+        timeRanges: {
+          all_time: "منذ البداية",
+          last_7_days: "آخر 7 أيام",
+          last_30_days: "آخر 30 يومًا",
+          last_12_months: "آخر 12 شهرًا",
+        },
+        filtersHeading: "عوامل التصفية",
+        visualizationLabel: "التصور",
+        saveButton: "حفظ الرسم البياني",
+        saveModalTitle: "حفظ الرسم البياني",
+        nameLabel: "اسم الرسم البياني",
+        namePlaceholder: "قم بتسمية هذا الرسم البياني",
+        dashboardTargetLabel: "اختر لوحة المعلومات",
+        save: "حفظ",
+        cancel: "إلغاء",
+        createdToast: "تم إنشاء الرسم البياني. ألق نظرة!",
+        requiredError: "يجب تعبئته",
+        noResults: "لا توجد بيانات بعد",
       },
     },
     interfaces: {
@@ -4587,6 +5453,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       phases: "Фазы",
       automations: "Автоматизации",
       reports: "Отчёты",
+      dashboards: "Панели",
     },
     automations: {
       heading: "Автоматизации",
@@ -4768,6 +5635,92 @@ export const dictionaries: Record<Locale, Dictionary> = {
         namePlaceholder: "Назовите этот отчёт",
         save: "Сохранить",
         requiredError: "обязательно для заполнения",
+      },
+    },
+    dashboards: {
+      heading: "Панели",
+      emptyStateTitle: "Ещё не создано ни одной панели",
+      emptyStateCta: "Создать панель",
+      createModalTitle: "Назовите эту панель",
+      nameLabel: "Название панели",
+      namePlaceholder: "Назовите эту панель",
+      submit: "Создать",
+      cancel: "Отмена",
+      backToList: "Назад к панелям",
+      backToBoard: "Назад к доске",
+      addChartButton: "Добавить график",
+      filterChipLabel: "Фильтр: {range}",
+      deleteDashboard: "Удалить эту панель",
+      deleteConfirm:
+        "Вы уверены, что хотите удалить эту панель? Это действие нельзя отменить.",
+      deleteChartConfirm:
+        "Вы уверены, что хотите удалить этот график? Это действие нельзя отменить.",
+      chartMenu: {
+        reload: "Перезагрузить график",
+        edit: "Редактировать график",
+        delete: "Удалить график",
+      },
+      builder: {
+        metricLabel: "Метрика",
+        dimensionLabel: "Измерение",
+        timeGroupLabel: "Группировка по времени",
+        selectMetricPlaceholder: "Выберите метрику",
+        selectDimensionPlaceholder: "Измерение",
+        noDimension: "Без измерения",
+        emptyValueLabel: "(пусто)",
+        metrics: {
+          cards_total: "Карточки (всего)",
+          attachments_total: "Вложения карточки (всего)",
+          comments_total: "Комментарии карточки (всего)",
+          lead_time_min: "Время выполнения (часы) - Мин",
+          lead_time_sum: "Время выполнения (часы) - Сумма",
+          lead_time_max: "Время выполнения (часы) - Макс",
+          lead_time_avg: "Время выполнения (часы) - Среднее",
+          assignees_total: "Ответственный (всего)",
+        },
+        timeGroupings: {
+          day: "День",
+          week: "Неделя",
+          month: "Месяц",
+          none: "Без группировки",
+        },
+        titleSuffixes: {
+          day: "По дням",
+          week: "По неделям",
+          month: "По месяцам",
+        },
+        vizTypes: {
+          area: "Область",
+          bar: "Столбцы",
+          calendar: "Календарь",
+          line: "Линия",
+          number: "Число",
+          pie: "Круговая",
+          scatter: "Точечная",
+          table: "Таблица",
+        },
+        timeFieldLabel: "За",
+        timeFieldCreatedAt: "Дата создания",
+        timeFieldUpdatedAt: "Дата обновления",
+        timeRangeLabel: "По",
+        timeRanges: {
+          all_time: "С самого начала",
+          last_7_days: "Последние 7 дней",
+          last_30_days: "Последние 30 дней",
+          last_12_months: "Последние 12 месяцев",
+        },
+        filtersHeading: "Фильтры",
+        visualizationLabel: "Визуализация",
+        saveButton: "Сохранить график",
+        saveModalTitle: "Сохранить график",
+        nameLabel: "Название графика",
+        namePlaceholder: "Назовите этот график",
+        dashboardTargetLabel: "Выберите панель",
+        save: "Сохранить",
+        cancel: "Отмена",
+        createdToast: "График создан. Посмотрите!",
+        requiredError: "обязательно для заполнения",
+        noResults: "Пока нет данных",
       },
     },
     interfaces: {
