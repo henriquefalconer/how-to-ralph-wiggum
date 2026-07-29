@@ -1,6 +1,6 @@
 "use client";
 
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { PipeMemberRole, PipeMemberWithUser } from "@/lib/pipe-members";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";

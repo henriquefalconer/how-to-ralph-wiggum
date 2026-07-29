@@ -11,7 +11,7 @@ import {
 } from "@/lib/dashboard-types";
 import type { ChartData, Dashboard, DashboardChart } from "@/lib/dashboards";
 import type { Field } from "@/lib/fields";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Phase } from "@/lib/phases";
 import {
   CARD_ATTRIBUTE_FIELD_IDS,

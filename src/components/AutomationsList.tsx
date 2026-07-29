@@ -5,7 +5,7 @@ import type {
   AutomationActionType,
   AutomationTriggerType,
 } from "@/lib/automations";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Switch from "@radix-ui/react-switch";

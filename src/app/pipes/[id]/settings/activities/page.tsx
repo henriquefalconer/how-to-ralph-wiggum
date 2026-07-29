@@ -2,7 +2,7 @@ import { AuditLogModal } from "@/components/AuditLogModal";
 import { ManageTabs } from "@/components/ManageTabs";
 import { TopNav } from "@/components/TopNav";
 import { listAuditLog, toAuditLogEntryView } from "@/lib/audit-log";
-import { getTranslations } from "@/lib/i18n";
+import { getTranslations } from "@/lib/i18n/server";
 import { getPipe } from "@/lib/pipes";
 import { notFound } from "next/navigation";
 

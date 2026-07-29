@@ -4,9 +4,9 @@
     "category": "data",
     "description": "Core data model: Pipe entity (Kanban board) with ordered Phases, labels, and start form fields",
     "page": "N/A (backend/API layer)",
-    "ui_details": "Confirmed (Iteration 3, live test): Início dashboard's tabbed Pipes/Databases grid — the 'Criar pipe' (+) tile opens a template-gallery side modal (search box + 'Categorias de processos' left rail of industry categories + a grid of 'AI Studio' template cards) with two bottom CTAs: 'Criar pipe do zero' and 'Criar com IA'. Clicking 'Criar pipe do zero' opens a second, minimal modal on top: a single 'Nome do pipe' text input, 'Criar pipe' submit button disabled until non-empty — same two-step shape as feature-005's Database Table create flow (template gallery is Database's equivalent-less; Database create is name-only from the start). Submitting redirects straight to the new pipe's Kanban board at /pipes/:id. Back on Início, the pipe grid card shows the pipe's icon glyph in a colored square, name, and 'N cards' count.",
-    "behavior": "A Pipe has id, uuid, name, color, users_count, cards_count, opened_cards_count. Has many ordered Phases, Labels ({id,name,color}), start_form_fields, and members ({user{id,email}, role_name}). CONFIRMED: every pipe created via 'Criar pipe do zero' auto-provisions the SAME 3-phase starter template — Caixa de entrada (done=false), Fazendo (done=false), Concluído (done=true) — with cards_count=0 in each phase; this matches the org's pre-existing 'Purchase Requests' pipe, confirming it's a fixed default template rather than a blank pipe. CONFIRMED: color is server-assigned at creation (no color picker in either creation modal, and it's not derived from the name — two pipes created back-to-back got a teal swatch and a green swatch respectively); color is user-editable afterward via Configurações do pipe (feature-014), so it's a mutable field with a system-chosen initial value, not an immutable hash of the name. NOTE: the live app's frontend talks to a single batched POST https://app.pipefy.com/internal_api endpoint rather than discrete REST routes per action — irrelevant to the clone's own API design (which must expose conventional REST/JSON routes per spec-build.md), but confirms there is no literal endpoint shape to mirror, only UI-observed behavior.",
-    "data_model": "pipes: id, uuid, name, color (server-assigned on create, user-editable after), org_id (fk), cards_count (derived), opened_cards_count (derived). labels: id, pipe_id (fk), name, color. Pipe creation is a single required field (name) — all other fields (color, the 3 default phases) are server-populated side effects of the create action, not user input.",
+    "ui_details": "Confirmed (Iteration 3, live test): In\u00edcio dashboard's tabbed Pipes/Databases grid \u2014 the 'Criar pipe' (+) tile opens a template-gallery side modal (search box + 'Categorias de processos' left rail of industry categories + a grid of 'AI Studio' template cards) with two bottom CTAs: 'Criar pipe do zero' and 'Criar com IA'. Clicking 'Criar pipe do zero' opens a second, minimal modal on top: a single 'Nome do pipe' text input, 'Criar pipe' submit button disabled until non-empty \u2014 same two-step shape as feature-005's Database Table create flow (template gallery is Database's equivalent-less; Database create is name-only from the start). Submitting redirects straight to the new pipe's Kanban board at /pipes/:id. Back on In\u00edcio, the pipe grid card shows the pipe's icon glyph in a colored square, name, and 'N cards' count.",
+    "behavior": "A Pipe has id, uuid, name, color, users_count, cards_count, opened_cards_count. Has many ordered Phases, Labels ({id,name,color}), start_form_fields, and members ({user{id,email}, role_name}). CONFIRMED: every pipe created via 'Criar pipe do zero' auto-provisions the SAME 3-phase starter template \u2014 Caixa de entrada (done=false), Fazendo (done=false), Conclu\u00eddo (done=true) \u2014 with cards_count=0 in each phase; this matches the org's pre-existing 'Purchase Requests' pipe, confirming it's a fixed default template rather than a blank pipe. CONFIRMED: color is server-assigned at creation (no color picker in either creation modal, and it's not derived from the name \u2014 two pipes created back-to-back got a teal swatch and a green swatch respectively); color is user-editable afterward via Configura\u00e7\u00f5es do pipe (feature-014), so it's a mutable field with a system-chosen initial value, not an immutable hash of the name. NOTE: the live app's frontend talks to a single batched POST https://app.pipefy.com/internal_api endpoint rather than discrete REST routes per action \u2014 irrelevant to the clone's own API design (which must expose conventional REST/JSON routes per spec-build.md), but confirms there is no literal endpoint shape to mirror, only UI-observed behavior.",
+    "data_model": "pipes: id, uuid, name, color (server-assigned on create, user-editable after), org_id (fk), cards_count (derived), opened_cards_count (derived). labels: id, pipe_id (fk), name, color. Pipe creation is a single required field (name) \u2014 all other fields (color, the 3 default phases) are server-populated side effects of the create action, not user input.",
     "priority": 1,
     "core": true,
     "passes": true,
@@ -16,7 +16,7 @@
           "name": "pipe creation assigns default color and 3-phase starter template",
           "description": "Creating a pipe with only a name should succeed, auto-assign a color, and create the fixed 3-phase template",
           "input": "createPipe({ name: 'Purchase Requests' })",
-          "expected_output": "Pipe row with generated id/uuid, a non-null color, cards_count=0, opened_cards_count=0, and exactly 3 Phase rows named 'Caixa de entrada'/'Fazendo'/'Concluído' (only the last has done=true)"
+          "expected_output": "Pipe row with generated id/uuid, a non-null color, cards_count=0, opened_cards_count=0, and exactly 3 Phase rows named 'Caixa de entrada'/'Fazendo'/'Conclu\u00eddo' (only the last has done=true)"
         },
         {
           "name": "pipe requires a non-empty name",
@@ -33,7 +33,7 @@
       ],
       "e2e": [
         {
-          "name": "create a new pipe from the Início dashboard",
+          "name": "create a new pipe from the In\u00edcio dashboard",
           "steps": [
             "Navigate to /",
             "Click the 'Criar pipe' (+) tile in the Pipes grid",
@@ -41,7 +41,7 @@
             "Type 'Onboarding Clientes' into the 'Nome do pipe' input",
             "Click 'Criar pipe'"
           ],
-          "expected": "Redirects to the new pipe's Kanban board showing 3 phase columns (Caixa de entrada / Fazendo / Concluído) each with a '0' card count; navigating back to Início shows a new grid card titled 'Onboarding Clientes' with '0 cards'"
+          "expected": "Redirects to the new pipe's Kanban board showing 3 phase columns (Caixa de entrada / Fazendo / Conclu\u00eddo) each with a '0' card count; navigating back to In\u00edcio shows a new grid card titled 'Onboarding Clientes' with '0 cards'"
         }
       ],
       "edge_cases": [
@@ -50,14 +50,14 @@
           "steps": [
             "Create two pipes with the identical name"
           ],
-          "expected": "Both are created with distinct ids; names are not required to be unique (matches target behavior — confirmed no uniqueness validation error appears)"
+          "expected": "Both are created with distinct ids; names are not required to be unique (matches target behavior \u2014 confirmed no uniqueness validation error appears)"
         },
         {
           "name": "submit with only whitespace as the name",
           "steps": [
             "Open 'Criar pipe do zero', type only spaces into 'Nome do pipe', attempt to click 'Criar pipe'"
           ],
-          "expected": "Submit stays disabled/blocked — trimmed-empty name is treated the same as empty"
+          "expected": "Submit stays disabled/blocked \u2014 trimmed-empty name is treated the same as empty"
         }
       ]
     }
@@ -65,10 +65,10 @@
   {
     "id": "feature-002",
     "category": "data",
-    "description": "Core data model: Phase entity — an ordered column within a Pipe's Kanban board, holding a set of Fields",
+    "description": "Core data model: Phase entity \u2014 an ordered column within a Pipe's Kanban board, holding a set of Fields",
     "page": "N/A (backend/API layer)",
-    "ui_details": "Confirmed: Gerenciar (pipe settings dropdown) > Fases opens a full-screen editor at /pipes/:id/settings/phases. Top-left is a phase switcher dropdown (phase names, clicking one navs to /settings/phases/:phaseId) + '+ Criar uma nova fase'. Top-right has 'Condicionais em campos' and 'Opções Avançadas' buttons (see feature-003/feature-009). Left rail is the field-type palette; center is the live phase form editor (drag-and-drop or click-to-add); phases already marked done show an 'Esta é uma fase final' badge above the phase name in the center panel.",
-    "behavior": "A Phase has id, name, done (boolean, marks terminal phase), cards_count, and an ordered list of Fields. Phases belong to exactly one Pipe and are ordered left-to-right on the board. Confirmed in UI (Gerenciar > Fases > Opções Avançadas modal, per-phase): editable name + color swatch, description text (shown to users working the pipe), 'Definir como fase final de processo' checkbox = the done flag (when checked, the phase view shows an 'Esta é uma fase final' badge), 'Permitir criar cards nesta fase' checkbox (lets cards be created directly into a non-initial phase), 'Gerenciar tarefas' radio (Coletar endereços de e-mail / Não coletar — task email-collection setting), 'Adicionar responsável' (auto-assign one or more members to cards entering this phase), 'Alerta de atraso' SLA (Tempo + Unidade fields — numeric duration + unit, e.g. hours/days, before a card is flagged late in this phase), and 'Excluir esta fase' (destructive, irreversible per the UI's own warning text).",
+    "ui_details": "Confirmed: Gerenciar (pipe settings dropdown) > Fases opens a full-screen editor at /pipes/:id/settings/phases. Top-left is a phase switcher dropdown (phase names, clicking one navs to /settings/phases/:phaseId) + '+ Criar uma nova fase'. Top-right has 'Condicionais em campos' and 'Op\u00e7\u00f5es Avan\u00e7adas' buttons (see feature-003/feature-009). Left rail is the field-type palette; center is the live phase form editor (drag-and-drop or click-to-add); phases already marked done show an 'Esta \u00e9 uma fase final' badge above the phase name in the center panel.",
+    "behavior": "A Phase has id, name, done (boolean, marks terminal phase), cards_count, and an ordered list of Fields. Phases belong to exactly one Pipe and are ordered left-to-right on the board. Confirmed in UI (Gerenciar > Fases > Op\u00e7\u00f5es Avan\u00e7adas modal, per-phase): editable name + color swatch, description text (shown to users working the pipe), 'Definir como fase final de processo' checkbox = the done flag (when checked, the phase view shows an 'Esta \u00e9 uma fase final' badge), 'Permitir criar cards nesta fase' checkbox (lets cards be created directly into a non-initial phase), 'Gerenciar tarefas' radio (Coletar endere\u00e7os de e-mail / N\u00e3o coletar \u2014 task email-collection setting), 'Adicionar respons\u00e1vel' (auto-assign one or more members to cards entering this phase), 'Alerta de atraso' SLA (Tempo + Unidade fields \u2014 numeric duration + unit, e.g. hours/days, before a card is flagged late in this phase), and 'Excluir esta fase' (destructive, irreversible per the UI's own warning text).",
     "data_model": "phases: id, pipe_id (fk), name, position (int), done (bool), color, description (text), allow_card_creation (bool), sla_time (int, nullable), sla_unit (enum: hours|days, nullable), auto_assign_user_ids (jsonb array), collect_task_emails (bool)",
     "priority": 1,
     "core": true,
@@ -105,15 +105,15 @@
           "expected": "Column order updates and persists after page reload"
         },
         {
-          "name": "mark a phase as the final phase via Opções Avançadas",
+          "name": "mark a phase as the final phase via Op\u00e7\u00f5es Avan\u00e7adas",
           "steps": [
             "Navigate to a pipe's Gerenciar > Fases editor",
             "Select the last phase in the phase switcher",
-            "Click 'Opções Avançadas'",
+            "Click 'Op\u00e7\u00f5es Avan\u00e7adas'",
             "Check 'Definir como fase final de processo'",
             "Click 'Salvar'"
           ],
-          "expected": "Modal closes; the phase form header now shows an 'Esta é uma fase final' badge; phase.done becomes true"
+          "expected": "Modal closes; the phase form header now shows an 'Esta \u00e9 uma fase final' badge; phase.done becomes true"
         }
       ],
       "edge_cases": [
@@ -122,7 +122,7 @@
           "steps": [
             "Attempt to delete a phase containing 1+ cards"
           ],
-          "expected": "Blocked with an error, or cards are migrated to an adjacent phase — verify exact behavior against real UI"
+          "expected": "Blocked with an error, or cards are migrated to an adjacent phase \u2014 verify exact behavior against real UI"
         }
       ]
     }
@@ -132,7 +132,7 @@
     "category": "data",
     "description": "Core data model: Field type system (23 types) shared across phase fields, start form fields, and table fields",
     "page": "N/A (backend/API layer)",
-    "ui_details": "Confirmed: in Gerenciar > Fases, each field-type button in the left palette opens a config modal (Título do campo input, 'Escolha o tipo' dropdown that only swaps within the same conversion family — e.g. Texto curto<->Texto longo used internal values 'ShortText'/'LongText' [PascalCase, differs from the snake_case type names in the public GraphQL docs], Checklist vertical<->Checklist horizontal — confirming type conversion is restricted to compatible types, not any-to-any), toggles for Descrição, Texto de ajuda, 'Este campo é obrigatório', 'Validação customizada', 'Visualização compacta' (= minimal_view), 'Este campo é editável em outras fases' (on by default), 'Este campo deve ter valor único', plus a live right-hand preview pane that updates as you type/toggle. Choice-type fields (Checklist, and by extension Select/Radio/Label) add an 'Adicione as opções' section: a numbered list of option text inputs each with a delete (trash) icon, 'Adicionar opção +' to append one row, and 'Adicionar vários' for bulk paste. The Responsável (assignee_select) field's modal swaps 'Validação customizada'/'valor único' for a 'Sincronizar campos do card com este campo fixo' toggle instead. Anexo (attachment) shows an '+ Upload file' control in its preview. Saving shows a toast 'Configurações atualizadas.' and the field appears in the center form with hover-revealed icons: an AI-suggestion sparkle, an edit pencil, and a kebab '...' menu.",
+    "ui_details": "Confirmed: in Gerenciar > Fases, each field-type button in the left palette opens a config modal (T\u00edtulo do campo input, 'Escolha o tipo' dropdown that only swaps within the same conversion family \u2014 e.g. Texto curto<->Texto longo used internal values 'ShortText'/'LongText' [PascalCase, differs from the snake_case type names in the public GraphQL docs], Checklist vertical<->Checklist horizontal \u2014 confirming type conversion is restricted to compatible types, not any-to-any), toggles for Descri\u00e7\u00e3o, Texto de ajuda, 'Este campo \u00e9 obrigat\u00f3rio', 'Valida\u00e7\u00e3o customizada', 'Visualiza\u00e7\u00e3o compacta' (= minimal_view), 'Este campo \u00e9 edit\u00e1vel em outras fases' (on by default), 'Este campo deve ter valor \u00fanico', plus a live right-hand preview pane that updates as you type/toggle. Choice-type fields (Checklist, and by extension Select/Radio/Label) add an 'Adicione as op\u00e7\u00f5es' section: a numbered list of option text inputs each with a delete (trash) icon, 'Adicionar op\u00e7\u00e3o +' to append one row, and 'Adicionar v\u00e1rios' for bulk paste. The Respons\u00e1vel (assignee_select) field's modal swaps 'Valida\u00e7\u00e3o customizada'/'valor \u00fanico' for a 'Sincronizar campos do card com este campo fixo' toggle instead. Anexo (attachment) shows an '+ Upload file' control in its preview. Saving shows a toast 'Configura\u00e7\u00f5es atualizadas.' and the field appears in the center form with hover-revealed icons: an AI-suggestion sparkle, an edit pencil, and a kebab '...' menu.",
     "behavior": "A Field has id (slug auto-generated from label), label, type, required, help, description, editable, minimal_view, and options (for choice types). Field types: assignee_select, attachment, checklist_horizontal, checklist_vertical, cnpj, connector, cpf, currency, date, datetime, due_date, email, id, label_select, long_text, number, phone, radio_horizontal, radio_vertical, select, short_text, statement, time. connector fields reference another pipe or table via connectedRepoId.",
     "data_model": "fields: id (slug, unique per phase/table), owner_type (phase|start_form|table), owner_id (fk), label, type (enum), required (bool), help (text), description (text), editable (bool), minimal_view (bool), options (jsonb array), connector_target_id (fk, nullable)",
     "priority": 2,
@@ -143,7 +143,7 @@
         {
           "name": "field id slug generation",
           "description": "Field id is generated from the label: lowercased, special chars/spaces replaced with underscores",
-          "input": "createField({ label: 'Long Text Fiéld' })",
+          "input": "createField({ label: 'Long Text Fi\u00e9ld' })",
           "expected_output": "field.id === 'long_text_fi_ld'"
         },
         {
@@ -179,7 +179,7 @@
           "steps": [
             "Create a field labeled 'Name', then create another field labeled 'Name' in the same phase"
           ],
-          "expected": "Either rejected as duplicate id, or auto-suffixed (e.g. 'name_2') — verify against real UI"
+          "expected": "Either rejected as duplicate id, or auto-suffixed (e.g. 'name_2') \u2014 verify against real UI"
         }
       ]
     }
@@ -187,10 +187,10 @@
   {
     "id": "feature-004",
     "category": "data",
-    "description": "Core data model: Card entity — the unit of work moving through a Pipe's phases, holding Card Field Values",
+    "description": "Core data model: Card entity \u2014 the unit of work moving through a Pipe's phases, holding Card Field Values",
     "page": "Kanban board (/pipes/:id) + Card detail (/open-cards/:cardId)",
-    "ui_details": "Confirmed (Iteration 3, live test): Kanban 'Criar novo card' / a phase column's '+' is BLOCKED until the pipe's start form has ≥1 field — with an empty start form both open a 'Compartilhar formulário' promo modal instead of a create form. Once the start form has a field, the same buttons open an inline popover create-form (title + fields + 'Criar novo card' submit); required-field validation shows a red border + 'deve ser informado' inline, no toast, submit blocked. On success: toast 'Card criado com sucesso. Para abri-lo, clique aqui' + card appears at top of its phase column titled with the first field's submitted value. Card detail view (3 columns): LEFT = title, quick actions (Adicionar responsável/Vencimento/Adicionar etiquetas), tab strip (Form/Atividades/Anexos/Checklists/Comentários/Email/PDF/+), read-only 'Formulário Inicial' section (creator + relative timestamp + submitted field values), 'Histórico' phase-transition timeline, 'Editar visualização do card' link. MIDDLE = 'Fase atual' badge + gear (phase settings) + Compartilhar, then the current phase's own fields as a live autosave-on-blur form (no save button; no toast on this particular autosave). RIGHT = 'Mover card para fase' one-click button naming the next phase, 'Configurar mover cards', 'Mover cards com IA'. Cards in a done:true phase render a checkmark + '<N>min' badge and dimmed title text.",
-    "behavior": "A Card has id, title, done (bool), updated_at, belongs to a current phase, and has many field values ({name, value, filled_at, field}). Cards move between phases (drag-and-drop on Kanban, or the detail view's quick-mover button); moving a card fires toast 'Card movido com sucesso para <Fase>. Para reabri-lo, clique aqui' and appends a Histórico entry. CORRECTED (Iteration 2, confirmed via Gerenciar > Configurações do pipe + its Atividades > Alterações de configuração log): card title is NOT hardcoded to the first start-form field — it is driven by an explicit 'Título do card' field-picker in Configurações do pipe (defaults to the first start-form field but is independently changeable at any time), the same title_field_id pattern as feature-005's Database Table records. The config-change log literally records 'Atualizou a configuração do título do card de \"—\" para \"Nome do solicitante\"'. CONFIRMED: a start-form field and a phase field with the identical label are separate Field rows with independent values — the clone must not merge/dedupe fields by label across owner types (start_form vs phase). Confirmed non-cloneable client quirk: phase column card-count badges do not live-update after a same-session move — only correct after a full reload; the clone should update counts synchronously instead.",
+    "ui_details": "Confirmed (Iteration 3, live test): Kanban 'Criar novo card' / a phase column's '+' is BLOCKED until the pipe's start form has \u22651 field \u2014 with an empty start form both open a 'Compartilhar formul\u00e1rio' promo modal instead of a create form. Once the start form has a field, the same buttons open an inline popover create-form (title + fields + 'Criar novo card' submit); required-field validation shows a red border + 'deve ser informado' inline, no toast, submit blocked. On success: toast 'Card criado com sucesso. Para abri-lo, clique aqui' + card appears at top of its phase column titled with the first field's submitted value. Card detail view (3 columns): LEFT = title, quick actions (Adicionar respons\u00e1vel/Vencimento/Adicionar etiquetas), tab strip (Form/Atividades/Anexos/Checklists/Coment\u00e1rios/Email/PDF/+), read-only 'Formul\u00e1rio Inicial' section (creator + relative timestamp + submitted field values), 'Hist\u00f3rico' phase-transition timeline, 'Editar visualiza\u00e7\u00e3o do card' link. MIDDLE = 'Fase atual' badge + gear (phase settings) + Compartilhar, then the current phase's own fields as a live autosave-on-blur form (no save button; no toast on this particular autosave). RIGHT = 'Mover card para fase' one-click button naming the next phase, 'Configurar mover cards', 'Mover cards com IA'. Cards in a done:true phase render a checkmark + '<N>min' badge and dimmed title text.",
+    "behavior": "A Card has id, title, done (bool), updated_at, belongs to a current phase, and has many field values ({name, value, filled_at, field}). Cards move between phases (drag-and-drop on Kanban, or the detail view's quick-mover button); moving a card fires toast 'Card movido com sucesso para <Fase>. Para reabri-lo, clique aqui' and appends a Hist\u00f3rico entry. CORRECTED (Iteration 2, confirmed via Gerenciar > Configura\u00e7\u00f5es do pipe + its Atividades > Altera\u00e7\u00f5es de configura\u00e7\u00e3o log): card title is NOT hardcoded to the first start-form field \u2014 it is driven by an explicit 'T\u00edtulo do card' field-picker in Configura\u00e7\u00f5es do pipe (defaults to the first start-form field but is independently changeable at any time), the same title_field_id pattern as feature-005's Database Table records. The config-change log literally records 'Atualizou a configura\u00e7\u00e3o do t\u00edtulo do card de \"\u2014\" para \"Nome do solicitante\"'. CONFIRMED: a start-form field and a phase field with the identical label are separate Field rows with independent values \u2014 the clone must not merge/dedupe fields by label across owner types (start_form vs phase). Confirmed non-cloneable client quirk: phase column card-count badges do not live-update after a same-session move \u2014 only correct after a full reload; the clone should update counts synchronously instead.",
     "data_model": "cards: id, pipe_id (fk), phase_id (fk), title (derived live from pipe.title_field_id's value), done (bool), created_at, updated_at. card_field_values: id, card_id (fk), field_id (fk), value (text), filled_at. pipes gains: title_field_id (fk, nullable, defaults to the start form's first field)",
     "priority": 2,
     "core": true,
@@ -219,7 +219,7 @@
             "Drag it into the second column",
             "Release"
           ],
-          "expected": "Card renders under the second column's header immediately (counts update synchronously, unlike the target's observed staleness quirk); a toast confirms the move and a Histórico entry is appended on the card detail view"
+          "expected": "Card renders under the second column's header immediately (counts update synchronously, unlike the target's observed staleness quirk); a toast confirms the move and a Hist\u00f3rico entry is appended on the card detail view"
         },
         {
           "name": "create a card via the Kanban 'Criar novo card' popover and open its detail view",
@@ -231,7 +231,7 @@
             "Fill the field with 'Test Card' and submit",
             "Click the newly created card"
           ],
-          "expected": "Card is created, titled 'Test Card', appears at the top of its phase column; opening it shows the value under 'Formulário Inicial' as read-only and the phase's own fields as a separate editable section"
+          "expected": "Card is created, titled 'Test Card', appears at the top of its phase column; opening it shows the value under 'Formul\u00e1rio Inicial' as read-only and the phase's own fields as a separate editable section"
         }
       ],
       "edge_cases": [
@@ -240,7 +240,7 @@
           "steps": [
             "Create a card with a 1000-character title"
           ],
-          "expected": "Either truncated per a max length or stored in full — verify against real UI; title should not break the Kanban layout"
+          "expected": "Either truncated per a max length or stored in full \u2014 verify against real UI; title should not break the Kanban layout"
         }
       ]
     }
@@ -248,10 +248,10 @@
   {
     "id": "feature-005",
     "category": "data",
-    "description": "Database Table entity — spreadsheet-like structured data object, separate from Pipes, with its own fields and records",
-    "page": "Início > Databases tab (list) / /apollo_databases/:id (grid) / /apollo_databases/:id/records/:recordId (record detail) / /apollo_databases/:id/settings/general-settings (Configurações de database)",
-    "ui_details": "Confirmed (Iteration 4, live test): 'Criar database' is a name-only modal, lands on an empty grid ('Título' column + 'Criar registro' FAB). Grid column '+' opens the same field-config modal shape as the Fases editor (Título do campo, Escolha o tipo, toggles, live preview, 'Dependências do campo' link) with a fuller palette than phases: Responsável, Anexo, Texto curto, Checkbox, Documentos, Moeda (nested currency-code sub-type e.g. 'USD - US Dollar'), Data, Data e hora, Data de vencimento, Email, ID, Etiquetas, Texto longo, Numérico, Número de telefone, Seleção de única opção, Seleção de lista, Texto fixo, Tempo, plus a 'Campos de conexão' group with only 'Conexão de database' (narrower than phase connectors, which can also target a pipe). The Formulário inicial settings tab additionally lists 'Conteúdo dinâmico' — a field type not seen in the Fases editor, not yet tested. 'Dependências do campo' is a read-only impact-analysis viewer ('Nenhuma dependência encontrada' + note that apps/integrations aren't listed), NOT a rule editor — unrelated to feature-009's Field Conditionals. Record creation modal lists only non-title fields (no separate Título input, unlike Cards); currency fields auto-mask raw digit input as cents ('15000' -> '$ 150.00' live). Record detail opens as a deep-linkable modal (icon+title, status badge w/ dropdown, 'Informações de registro' creator/timestamp, per-field hover-'Editar' inline edit w/ Salvar/Cancelar, 'Atualizado em' footer, '⋮' kebab with 'Editar campos'/'Deletar registro'). Configurações de database (Gerenciar) has: 'Título do registro' (dropdown choosing which field is the record's display title), 'Subtítulo do registro conectado' (default 'Criado em'), 'Texto do botão de criar registros' (default 'Criar registro'), 'Permissões' (Database público/privado radio), 'Autorizações' (checkbox: all members can create/edit/delete records), 'Excluir database'. Screenshots: screenshots/inspect/database-grid.jpg, screenshots/inspect/database-record-detail.jpg.",
-    "behavior": "A Table has id (alphanumeric), name, public (bool), and table_fields (same type system as phase fields, richer palette per ui_details). A Table Record has id, title, and record_fields with rich per-type value columns (date_value, datetime_value, float_value, native_value, report_value). CONFIRMED: record title is NOT hardcoded to 'first field' — it's driven by an explicit title_field_id configured in Configurações de database, a real schema difference from Cards (whose title comes from the start form's first field and never re-derives). CONFIRMED client staleness quirk, same family as feature-004's Kanban count bug: saving a new field via '+' does not render the new column until reload (confirmed the save DID succeed server-side via a subsequent 'já está em uso' validation error on the label); a newly created record's own field values render as 'Vazio' and the 'N registros' header count doesn't update until reload either. CONFIRMED target-app bug (do not reproduce): the record detail modal's title-row status badge does not refresh after an inline field edit, persisting even across a fresh page navigation, while the field's own value and the grid row are both correct.",
+    "description": "Database Table entity \u2014 spreadsheet-like structured data object, separate from Pipes, with its own fields and records",
+    "page": "In\u00edcio > Databases tab (list) / /apollo_databases/:id (grid) / /apollo_databases/:id/records/:recordId (record detail) / /apollo_databases/:id/settings/general-settings (Configura\u00e7\u00f5es de database)",
+    "ui_details": "Confirmed (Iteration 4, live test): 'Criar database' is a name-only modal, lands on an empty grid ('T\u00edtulo' column + 'Criar registro' FAB). Grid column '+' opens the same field-config modal shape as the Fases editor (T\u00edtulo do campo, Escolha o tipo, toggles, live preview, 'Depend\u00eancias do campo' link) with a fuller palette than phases: Respons\u00e1vel, Anexo, Texto curto, Checkbox, Documentos, Moeda (nested currency-code sub-type e.g. 'USD - US Dollar'), Data, Data e hora, Data de vencimento, Email, ID, Etiquetas, Texto longo, Num\u00e9rico, N\u00famero de telefone, Sele\u00e7\u00e3o de \u00fanica op\u00e7\u00e3o, Sele\u00e7\u00e3o de lista, Texto fixo, Tempo, plus a 'Campos de conex\u00e3o' group with only 'Conex\u00e3o de database' (narrower than phase connectors, which can also target a pipe). The Formul\u00e1rio inicial settings tab additionally lists 'Conte\u00fado din\u00e2mico' \u2014 a field type not seen in the Fases editor, not yet tested. 'Depend\u00eancias do campo' is a read-only impact-analysis viewer ('Nenhuma depend\u00eancia encontrada' + note that apps/integrations aren't listed), NOT a rule editor \u2014 unrelated to feature-009's Field Conditionals. Record creation modal lists only non-title fields (no separate T\u00edtulo input, unlike Cards); currency fields auto-mask raw digit input as cents ('15000' -> '$ 150.00' live). Record detail opens as a deep-linkable modal (icon+title, status badge w/ dropdown, 'Informa\u00e7\u00f5es de registro' creator/timestamp, per-field hover-'Editar' inline edit w/ Salvar/Cancelar, 'Atualizado em' footer, '\u22ee' kebab with 'Editar campos'/'Deletar registro'). Configura\u00e7\u00f5es de database (Gerenciar) has: 'T\u00edtulo do registro' (dropdown choosing which field is the record's display title), 'Subt\u00edtulo do registro conectado' (default 'Criado em'), 'Texto do bot\u00e3o de criar registros' (default 'Criar registro'), 'Permiss\u00f5es' (Database p\u00fablico/privado radio), 'Autoriza\u00e7\u00f5es' (checkbox: all members can create/edit/delete records), 'Excluir database'. Screenshots: screenshots/inspect/database-grid.jpg, screenshots/inspect/database-record-detail.jpg.",
+    "behavior": "A Table has id (alphanumeric), name, public (bool), and table_fields (same type system as phase fields, richer palette per ui_details). A Table Record has id, title, and record_fields with rich per-type value columns (date_value, datetime_value, float_value, native_value, report_value). CONFIRMED: record title is NOT hardcoded to 'first field' \u2014 it's driven by an explicit title_field_id configured in Configura\u00e7\u00f5es de database, a real schema difference from Cards (whose title comes from the start form's first field and never re-derives). CONFIRMED client staleness quirk, same family as feature-004's Kanban count bug: saving a new field via '+' does not render the new column until reload (confirmed the save DID succeed server-side via a subsequent 'j\u00e1 est\u00e1 em uso' validation error on the label); a newly created record's own field values render as 'Vazio' and the 'N registros' header count doesn't update until reload either. CONFIRMED target-app bug (do not reproduce): the record detail modal's title-row status badge does not refresh after an inline field edit, persisting even across a fresh page navigation, while the field's own value and the grid row are both correct.",
     "data_model": "tables: id, org_id (fk), name, public (bool), title_field_id (fk, nullable), subtitle_template (text, default 'Criado em'), create_button_label (text, default 'Criar registro'), all_members_can_crud (bool). table_records: id, table_id (fk), title (derived live from title_field_id's value), created_at, updated_at. table_record_field_values: id, record_id (fk), field_id (fk), value (text), date_value, datetime_value, float_value",
     "priority": 3,
     "core": true,
@@ -283,7 +283,7 @@
           "steps": [
             "Navigate to a Database Table's grid view",
             "Click 'Criar registro'",
-            "Fill in the visible fields (not the title — no separate title input)",
+            "Fill in the visible fields (not the title \u2014 no separate title input)",
             "Click 'Criar registro' submit"
           ],
           "expected": "New row appears in the grid immediately with the entered values (no reload needed, unlike the target's own staleness bug) and the 'N registros' count updates synchronously"
@@ -312,7 +312,7 @@
           "steps": [
             "Create a field labeled 'Status', then attempt to create another field labeled 'Status' in the same table"
           ],
-          "expected": "Rejected with a 'já está em uso' (already in use) validation error, matching the confirmed target behavior"
+          "expected": "Rejected with a 'j\u00e1 est\u00e1 em uso' (already in use) validation error, matching the confirmed target behavior"
         }
       ]
     }
@@ -322,8 +322,8 @@
     "category": "sdk",
     "description": "TypeScript SDK wrapping the clone's own REST API with typed methods mirroring Pipefy's GraphQL resource names",
     "page": "N/A (packages/sdk)",
-    "ui_details": "N/A — developer-facing library, no UI.",
-    "behavior": "Target offers no npm/pip client library — its DX is GraphQL-only. Per spec-inspect.md SDK scope rules (TypeScript/Node only), the clone ships a thin TS SDK: client.pipes.get(id), client.pipes.create({name}), client.cards.create({pipeId, title, fields}), client.cards.moveToPhase(cardId, phaseId), client.tables.records.list(tableId), client.tables.records.create(tableId, {fields}).",
+    "ui_details": "N/A \u2014 developer-facing library, no UI.",
+    "behavior": "Target offers no npm/pip client library \u2014 its DX is GraphQL-only. Per spec-inspect.md SDK scope rules (TypeScript/Node only), the clone ships a thin TS SDK: client.pipes.get(id), client.pipes.create({name}), client.cards.create({pipeId, title, fields}), client.cards.moveToPhase(cardId, phaseId), client.tables.records.list(tableId), client.tables.records.create(tableId, {fields}).",
     "data_model": "N/A",
     "priority": 3,
     "core": false,
@@ -360,8 +360,8 @@
     "category": "data",
     "description": "Webhook registration and outbound event delivery for pipe/table events",
     "page": "N/A (backend/API layer)",
-    "ui_details": "TBD — not yet observed as a standalone webhook-management UI. Confirmed (iteration 5): outbound HTTP is exposed to end users as an Automations action ('Faça uma requisição HTTP') and a matching trigger ('Uma resposta for recebida da automação de requisição HTTP') — see feature-010. Pipefy does not appear to have a separate generic webhook-registration settings page distinct from the Automations builder; model outbound events as the Automations HTTP action/trigger pair, not a separate subscription list.",
-    "behavior": "Org/pipe/table-scoped webhook URLs receive an HTTP POST when relevant events occur (card created/moved/updated, table record created/updated). Mirrors organization-webhooks.md and pipe-table-webhooks.md event shapes. In the live product this is implemented via the Automations engine's 'Faça uma requisição HTTP' action (any trigger → outbound POST) and its paired 'response received' trigger (an HTTP call-and-continue pattern, letting a follow-up automation act on the response body) rather than a persistent webhook-subscription CRUD screen.",
+    "ui_details": "TBD \u2014 not yet observed as a standalone webhook-management UI. Confirmed (iteration 5): outbound HTTP is exposed to end users as an Automations action ('Fa\u00e7a uma requisi\u00e7\u00e3o HTTP') and a matching trigger ('Uma resposta for recebida da automa\u00e7\u00e3o de requisi\u00e7\u00e3o HTTP') \u2014 see feature-010. Pipefy does not appear to have a separate generic webhook-registration settings page distinct from the Automations builder; model outbound events as the Automations HTTP action/trigger pair, not a separate subscription list.",
+    "behavior": "Org/pipe/table-scoped webhook URLs receive an HTTP POST when relevant events occur (card created/moved/updated, table record created/updated). Mirrors organization-webhooks.md and pipe-table-webhooks.md event shapes. In the live product this is implemented via the Automations engine's 'Fa\u00e7a uma requisi\u00e7\u00e3o HTTP' action (any trigger \u2192 outbound POST) and its paired 'response received' trigger (an HTTP call-and-continue pattern, letting a follow-up automation act on the response body) rather than a persistent webhook-subscription CRUD screen.",
     "data_model": "webhooks: id, scope_type (org|pipe|table), scope_id (fk), url, events (jsonb array of event names), created_at",
     "priority": 8,
     "core": false,
@@ -390,11 +390,11 @@
   {
     "id": "feature-010",
     "category": "data",
-    "description": "Automations engine: pipe-scoped trigger→action rules (10 trigger types × 12 action types), with a token/variable picker for dynamic values",
-    "page": "Gerenciar (pipe top nav) > Automações — /pipes/:id/automations (list), /pipes/:id/automations/new (builder), /pipes/:id/automations/logs (run history)",
-    "ui_details": "Confirmed (iteration 5, live test, created + fired a real rule): list view has search, Filtros, 'Ordenar por', a per-row on/off toggle, and a kebab (Editar/Duplicar/Excluir); empty state shows a two-icon diagram + 'Nova automação' CTA. The builder is a two-column 'Sempre que... / Faça isso...' picker. Triggers: 'Um card entrar em uma fase', 'Um campo for atualizado', 'Um card for criado', 'Uma atividade for recorrente', 'Um alerta for acionado', 'Um card sair de uma fase', 'Um email for recebido', 'Todos os cards conectados forem movidos para uma fase', 'Uma resposta for recebida da automação de requisição HTTP', 'Um botão em Interfaces é clicado'. Actions: 'Peça à IA', 'Envie uma tarefa', 'Mova um card', 'Atualize um campo no card ou registro', 'Crie um card ou registro conectado', 'Crie um card ou registro', 'Mova o card pai', 'Distribua responsáveis', 'Aplique uma fórmula', 'Faça uma requisição HTTP', 'Aplique regras de SLA', and 'Envie um template de email' (rendered greyed-out/disabled in this trial org — likely plan-gated). Selecting a trigger opens an inline config card (e.g. 'Um card entrar em uma fase' → pipe selector locked to current pipe + 'Para a fase' dropdown + '+ Adicionar condição'). Selecting an action opens its own inline config card (e.g. 'Atualize um campo no card ou registro' → 'Onde está o campo' radio [Pipe atual / Pipe ou database conectado] → warning banner about validating required-field references → 'Selecione um campo' dropdown → a value input with a '+' token-picker button). The token picker is a searchable dropdown grouped into 'Atributos de evento' (e.g. Data e Hora do evento), 'Atributos gerais' (Criado em, Fase atual, Data de vencimento, Finalizado em, ID, A última fase em que o card estava, Título), then one group PER PHASE NAME (e.g. 'Start form', 'Caixa de entrada') each listing that phase's own fields — inserted tokens render as removable pills. Saving prompts for a rule name via a small modal, then the rule appears in the list with an enabled toggle. Screenshot: screenshots/inspect/automations-builder.jpg.",
-    "behavior": "CONFIRMED end-to-end: created a rule (trigger: card enters phase 'Fazendo' in this pipe; action: update the 'Caixa de entrada' phase's 'Nome do solicitante' field, value = a token for the start form's 'Nome do solicitante' field). Dragged a real card into 'Fazendo' — a toast confirmed the move, then Automações > Logs showed a new row (automation name, card name, card id, status 'Sucesso', start timestamp) within seconds, expandable to 'Automação executada com sucesso.' Opening the card's detail view and expanding its 'Caixa de entrada' Histórico entry confirmed the target field's value was actually written (previously blank, now 'João Silva'). KEY FINDING: the action's target field is NOT restricted to the trigger's destination phase — 'Fazendo' has zero fields configured, yet the rule successfully wrote to a field on a different phase entirely ('Caixa de entrada'). This means automation actions must be modeled as free field references across the whole pipe (any phase/start-form field, keyed by field id), not scoped to the triggering phase. The value-editor's token picker confirms the same 'fields grouped by owner phase, independent rows even when labels collide' modeling already required by feature-004's card fields. Not yet tested: the other 9 trigger types or 11 action types (email-received, recurring-activity, HTTP round-trip, formula, SLA-rule actions) — only the phase-enter → update-field pair was exercised this pass.",
-    "data_model": "automations: id, pipe_id (fk), name, enabled (bool), trigger_type (enum, 10 values), trigger_config (jsonb — e.g. {phaseId, conditions[]}), action_type (enum, 12 values), action_config (jsonb — e.g. {targetFieldId, targetFieldOwnerId, value: string with embedded {{token}} refs}), created_at, updated_at, updated_by_user_id. automation_runs: id, automation_id (fk), card_id (fk), card_title (denormalized for the log list), status (enum: success|error), message (text), started_at.",
+    "description": "Automations engine: pipe-scoped trigger\u2192action rules (10 trigger types \u00d7 12 action types), with a token/variable picker for dynamic values",
+    "page": "Gerenciar (pipe top nav) > Automa\u00e7\u00f5es \u2014 /pipes/:id/automations (list), /pipes/:id/automations/new (builder), /pipes/:id/automations/logs (run history)",
+    "ui_details": "Confirmed (iteration 5, live test, created + fired a real rule): list view has search, Filtros, 'Ordenar por', a per-row on/off toggle, and a kebab (Editar/Duplicar/Excluir); empty state shows a two-icon diagram + 'Nova automa\u00e7\u00e3o' CTA. The builder is a two-column 'Sempre que... / Fa\u00e7a isso...' picker. Triggers: 'Um card entrar em uma fase', 'Um campo for atualizado', 'Um card for criado', 'Uma atividade for recorrente', 'Um alerta for acionado', 'Um card sair de uma fase', 'Um email for recebido', 'Todos os cards conectados forem movidos para uma fase', 'Uma resposta for recebida da automa\u00e7\u00e3o de requisi\u00e7\u00e3o HTTP', 'Um bot\u00e3o em Interfaces \u00e9 clicado'. Actions: 'Pe\u00e7a \u00e0 IA', 'Envie uma tarefa', 'Mova um card', 'Atualize um campo no card ou registro', 'Crie um card ou registro conectado', 'Crie um card ou registro', 'Mova o card pai', 'Distribua respons\u00e1veis', 'Aplique uma f\u00f3rmula', 'Fa\u00e7a uma requisi\u00e7\u00e3o HTTP', 'Aplique regras de SLA', and 'Envie um template de email' (rendered greyed-out/disabled in this trial org \u2014 likely plan-gated). Selecting a trigger opens an inline config card (e.g. 'Um card entrar em uma fase' \u2192 pipe selector locked to current pipe + 'Para a fase' dropdown + '+ Adicionar condi\u00e7\u00e3o'). Selecting an action opens its own inline config card (e.g. 'Atualize um campo no card ou registro' \u2192 'Onde est\u00e1 o campo' radio [Pipe atual / Pipe ou database conectado] \u2192 warning banner about validating required-field references \u2192 'Selecione um campo' dropdown \u2192 a value input with a '+' token-picker button). The token picker is a searchable dropdown grouped into 'Atributos de evento' (e.g. Data e Hora do evento), 'Atributos gerais' (Criado em, Fase atual, Data de vencimento, Finalizado em, ID, A \u00faltima fase em que o card estava, T\u00edtulo), then one group PER PHASE NAME (e.g. 'Start form', 'Caixa de entrada') each listing that phase's own fields \u2014 inserted tokens render as removable pills. Saving prompts for a rule name via a small modal, then the rule appears in the list with an enabled toggle. Screenshot: screenshots/inspect/automations-builder.jpg.",
+    "behavior": "CONFIRMED end-to-end: created a rule (trigger: card enters phase 'Fazendo' in this pipe; action: update the 'Caixa de entrada' phase's 'Nome do solicitante' field, value = a token for the start form's 'Nome do solicitante' field). Dragged a real card into 'Fazendo' \u2014 a toast confirmed the move, then Automa\u00e7\u00f5es > Logs showed a new row (automation name, card name, card id, status 'Sucesso', start timestamp) within seconds, expandable to 'Automa\u00e7\u00e3o executada com sucesso.' Opening the card's detail view and expanding its 'Caixa de entrada' Hist\u00f3rico entry confirmed the target field's value was actually written (previously blank, now 'Jo\u00e3o Silva'). KEY FINDING: the action's target field is NOT restricted to the trigger's destination phase \u2014 'Fazendo' has zero fields configured, yet the rule successfully wrote to a field on a different phase entirely ('Caixa de entrada'). This means automation actions must be modeled as free field references across the whole pipe (any phase/start-form field, keyed by field id), not scoped to the triggering phase. The value-editor's token picker confirms the same 'fields grouped by owner phase, independent rows even when labels collide' modeling already required by feature-004's card fields. Not yet tested: the other 9 trigger types or 11 action types (email-received, recurring-activity, HTTP round-trip, formula, SLA-rule actions) \u2014 only the phase-enter \u2192 update-field pair was exercised this pass.",
+    "data_model": "automations: id, pipe_id (fk), name, enabled (bool), trigger_type (enum, 10 values), trigger_config (jsonb \u2014 e.g. {phaseId, conditions[]}), action_type (enum, 12 values), action_config (jsonb \u2014 e.g. {targetFieldId, targetFieldOwnerId, value: string with embedded {{token}} refs}), created_at, updated_at, updated_by_user_id. automation_runs: id, automation_id (fk), card_id (fk), card_title (denormalized for the log list), status (enum: success|error), message (text), started_at.",
     "priority": 5,
     "core": false,
     "passes": true,
@@ -423,12 +423,12 @@
         {
           "name": "create a phase-enter automation that updates a field, then verify it fires",
           "steps": [
-            "Navigate to a pipe's Automações tab, click 'Nova automação'",
+            "Navigate to a pipe's Automa\u00e7\u00f5es tab, click 'Nova automa\u00e7\u00e3o'",
             "Click 'Um card entrar em uma fase', select a target phase",
             "Click 'Atualize um campo no card ou registro', select a field, insert a token value via the '+' picker",
-            "Click 'Criar automação', name it, click 'Salvar'",
+            "Click 'Criar automa\u00e7\u00e3o', name it, click 'Salvar'",
             "Drag a card into the configured phase on the Kanban board",
-            "Open Automações > Logs"
+            "Open Automa\u00e7\u00f5es > Logs"
           ],
           "expected": "A log row appears with status 'Sucesso' for that card; opening the card shows the targeted field's value updated"
         }
@@ -441,14 +441,14 @@
             "Delete the phase owning field X",
             "Trigger the automation"
           ],
-          "expected": "Run logged with status 'error' and a descriptive message — verify exact message against real UI in a follow-up pass"
+          "expected": "Run logged with status 'error' and a descriptive message \u2014 verify exact message against real UI in a follow-up pass"
         },
         {
           "name": "empty automations list",
           "steps": [
             "Navigate to a pipe with zero automations configured"
           ],
-          "expected": "Empty state with diagram + 'Nova automação' CTA, no error"
+          "expected": "Empty state with diagram + 'Nova automa\u00e7\u00e3o' CTA, no error"
         }
       ]
     }
@@ -530,11 +530,11 @@
   {
     "id": "feature-009",
     "category": "data",
-    "description": "Field Conditionals — rule engine that shows/hides (and otherwise acts on) phase fields based on other field values",
+    "description": "Field Conditionals \u2014 rule engine that shows/hides (and otherwise acts on) phase fields based on other field values",
     "page": "Gerenciar > Fases > 'Condicionais em campos'",
-    "ui_details": "Button in the Fases editor's top-right opens a 'Condicionais de campo' panel: search box, 'Campo: Todos'/'Uso do campo: Todos' filters, a banner explaining 'As condicionais agora estão em uma única lista, e são processadas de cima para baixo. Em caso de conflito, a última prevalece' (conditionals are a single ordered list, processed top-to-bottom, last one wins on conflict), a scrollable list of existing conditionals (each rendered as a small card: trigger condition → 'Então faça isso' action), and a 'Criar condicional' button. The builder modal ('Criar condicional'): 'Nome da condicional' text input, 'Defina as condições' (a 'Selecione um campo' dropdown + 'Adicionar condição' to AND more field checks + 'Novo grupo de condições' to add an OR'd group), then two action sections — 'Quando as condições forem verdadeiras' (Ação dropdown, default 'Ocultar' [hide], + target field dropdown + 'Adicionar ação') and 'Quando as condições forem falsas' (same shape, mirrored action for the false branch).",
-    "behavior": "Not yet tested end-to-end (no conditional was saved during this pass — cancelled out of the builder after inspecting its shape). Confirmed structurally: conditionals are pipe-phase-scoped, ordered (array, not a set — order determines conflict resolution), each has a condition tree (AND within a group via 'Adicionar condição', OR across groups via 'Novo grupo de condições') and two action lists (true-branch, false-branch), where each action is at least {action: 'Ocultar'|..., targetFieldId}. Only 'Ocultar' was observed as a default action value — other action verbs (e.g. show/require) were not enumerated this pass; verify the full action-type list in a follow-up iteration by opening the action dropdown.",
-    "data_model": "field_conditionals: id, phase_id (fk), name, position (int, determines evaluation/conflict order), condition_groups (jsonb — array of AND-groups, each an array of {field_id, operator, value}), true_actions (jsonb array of {action, target_field_id}), false_actions (jsonb array of {action, target_field_id})",
+    "ui_details": "Button in the Fases editor's top-right opens a 'Condicionais de campo' panel: search box, 'Campo: Todos'/'Uso do campo: Todos' filters, a banner explaining 'As condicionais agora est\u00e3o em uma \u00fanica lista, e s\u00e3o processadas de cima para baixo. Em caso de conflito, a \u00faltima prevalece' (conditionals are a single ordered list, processed top-to-bottom, last one wins on conflict), a scrollable list of existing conditionals (each rendered as a small card: trigger condition \u2192 'Ent\u00e3o fa\u00e7a isso' action), and a 'Criar condicional' button. The builder modal ('Criar condicional'): 'Nome da condicional' text input, 'Defina as condi\u00e7\u00f5es' (a 'Selecione um campo' dropdown + 'Adicionar condi\u00e7\u00e3o' to AND more field checks + 'Novo grupo de condi\u00e7\u00f5es' to add an OR'd group), then two action sections \u2014 'Quando as condi\u00e7\u00f5es forem verdadeiras' (A\u00e7\u00e3o dropdown, default 'Ocultar' [hide], + target field dropdown + 'Adicionar a\u00e7\u00e3o') and 'Quando as condi\u00e7\u00f5es forem falsas' (same shape, mirrored action for the false branch).",
+    "behavior": "Not yet tested end-to-end (no conditional was saved during this pass \u2014 cancelled out of the builder after inspecting its shape). Confirmed structurally: conditionals are pipe-phase-scoped, ordered (array, not a set \u2014 order determines conflict resolution), each has a condition tree (AND within a group via 'Adicionar condi\u00e7\u00e3o', OR across groups via 'Novo grupo de condi\u00e7\u00f5es') and two action lists (true-branch, false-branch), where each action is at least {action: 'Ocultar'|..., targetFieldId}. Only 'Ocultar' was observed as a default action value \u2014 other action verbs (e.g. show/require) were not enumerated this pass; verify the full action-type list in a follow-up iteration by opening the action dropdown.",
+    "data_model": "field_conditionals: id, phase_id (fk), name, position (int, determines evaluation/conflict order), condition_groups (jsonb \u2014 array of AND-groups, each an array of {field_id, operator, value}), true_actions (jsonb array of {action, target_field_id}), false_actions (jsonb array of {action, target_field_id})",
     "priority": 4,
     "core": false,
     "passes": true,
@@ -548,7 +548,7 @@
         },
         {
           "name": "AND within a condition group, OR across groups",
-          "description": "A conditional with two groups — group 1: [fieldA=1 AND fieldB=2], group 2: [fieldC=3] — triggers if either group fully matches",
+          "description": "A conditional with two groups \u2014 group 1: [fieldA=1 AND fieldB=2], group 2: [fieldC=3] \u2014 triggers if either group fully matches",
           "input": "cardFieldValues where fieldC=3 but fieldA/fieldB don't match group 1",
           "expected_output": "conditional triggers (group 2 alone satisfies the OR)"
         }
@@ -560,7 +560,7 @@
             "Open Gerenciar > Fases > Condicionais em campos > Criar condicional",
             "Name it 'Hide priority unless approved'",
             "Set condition: 'Status' field equals 'Pendente'",
-            "Under 'Quando as condições forem verdadeiras', leave Ação as 'Ocultar' and target the 'Prioridade' field",
+            "Under 'Quando as condi\u00e7\u00f5es forem verdadeiras', leave A\u00e7\u00e3o as 'Ocultar' and target the 'Prioridade' field",
             "Save"
           ],
           "expected": "Conditional appears in the list; on a card's field-fill form, setting Status to 'Pendente' hides the Prioridade field"
@@ -573,7 +573,7 @@
             "Create a conditional targeting field X",
             "Delete field X from the phase"
           ],
-          "expected": "Either the conditional is auto-removed/disabled, or it's flagged as broken — verify against real UI in a follow-up pass"
+          "expected": "Either the conditional is auto-removed/disabled, or it's flagged as broken \u2014 verify against real UI in a follow-up pass"
         }
       ]
     }
@@ -582,10 +582,10 @@
     "id": "feature-011",
     "category": "data",
     "description": "Report builder: saved live-query view over a pipe's cards with a grouped field filter/column picker (shared component with Automations token picker)",
-    "page": "Gerenciar/page tab Relatórios — /pipes/:id/reports_v2 (list), /pipes/:id/reports_v2/new (builder), /pipes/:id/reports_v2/:reportId (saved report)",
-    "ui_details": "Confirmed (Iteration 6, live test): list view is a tile grid (search + 'Ordenar por: Nome') of saved reports, each tile showing a live result-count badge, plus a 'Criar novo relatório' tile. Builder: left rail 'Adicionar filtro' opens the SAME grouped searchable field picker as the Automations token picker (feature-010) — 'Geral > Atributos do Card' (Código/Título/Fase atual/Etiquetas/Data de vencimento/Criador/Responsáveis/Finalizado em/Criado em/Atualizado em/Último comentário/Último comentário em/Expirado em) then 'Fases > <phase name> > <that phase's fields>'. Picking a field opens an operator radio list (é/não é/contém/não contém/é desconhecido/existe) + a value input for value-bearing operators; applied filters render as removable chips with 'e'/'ou' (AND/OR) buttons, plus a bottom 'ou' row to start a new OR'd group (AND-within-group, OR-across-groups — same shape as feature-009's field conditionals). Results render as a live table (no 'run' step — updates as filters change) with default columns Título/Fase atual/Criador/Criado em. Top-right icons: Σ formulas (disabled until a numeric field is chosen, tooltip 'Escolha os campos para fazer fórmulas' — not further tested), column picker (identical grouped-field checklist toggling visible columns), export (modal offering Email or Download, not triggered this pass to avoid a side effect). Save prompts a name-only modal, then redirects to /reports_v2/:reportId and the tile appears back on the list.",
-    "behavior": "CONFIRMED live: a saved report re-evaluates its filter against current card data every time it is opened — it is NOT a frozen snapshot/export. Filters combine via AND ('e') within a group and OR ('ou') across groups. The field list for both filters and columns is identical to (and should share an implementation with) the Automations action-value token picker's field grouping.",
-    "data_model": "reports: id, pipe_id (fk), name, filters (jsonb — array of AND-groups, each an array of {field_id, operator, value}), visible_column_field_ids (jsonb array), created_at, updated_at",
+    "page": "Gerenciar/page tab Relat\u00f3rios \u2014 /pipes/:id/reports_v2 (list), /pipes/:id/reports_v2/new (builder), /pipes/:id/reports_v2/:reportId (saved report)",
+    "ui_details": "Confirmed (Iteration 6, live test): list view is a tile grid (search + 'Ordenar por: Nome') of saved reports, each tile showing a live result-count badge, plus a 'Criar novo relat\u00f3rio' tile. Builder: left rail 'Adicionar filtro' opens the SAME grouped searchable field picker as the Automations token picker (feature-010) \u2014 'Geral > Atributos do Card' (C\u00f3digo/T\u00edtulo/Fase atual/Etiquetas/Data de vencimento/Criador/Respons\u00e1veis/Finalizado em/Criado em/Atualizado em/\u00daltimo coment\u00e1rio/\u00daltimo coment\u00e1rio em/Expirado em) then 'Fases > <phase name> > <that phase's fields>'. Picking a field opens an operator radio list (\u00e9/n\u00e3o \u00e9/cont\u00e9m/n\u00e3o cont\u00e9m/\u00e9 desconhecido/existe) + a value input for value-bearing operators; applied filters render as removable chips with 'e'/'ou' (AND/OR) buttons, plus a bottom 'ou' row to start a new OR'd group (AND-within-group, OR-across-groups \u2014 same shape as feature-009's field conditionals). Results render as a live table (no 'run' step \u2014 updates as filters change) with default columns T\u00edtulo/Fase atual/Criador/Criado em. Top-right icons: \u03a3 formulas (disabled until a numeric field is chosen, tooltip 'Escolha os campos para fazer f\u00f3rmulas' \u2014 not further tested), column picker (identical grouped-field checklist toggling visible columns), export (modal offering Email or Download, not triggered this pass to avoid a side effect). Save prompts a name-only modal, then redirects to /reports_v2/:reportId and the tile appears back on the list.",
+    "behavior": "CONFIRMED live: a saved report re-evaluates its filter against current card data every time it is opened \u2014 it is NOT a frozen snapshot/export. Filters combine via AND ('e') within a group and OR ('ou') across groups. The field list for both filters and columns is identical to (and should share an implementation with) the Automations action-value token picker's field grouping.",
+    "data_model": "reports: id, pipe_id (fk), name, filters (jsonb \u2014 array of AND-groups, each an array of {field_id, operator, value}), visible_column_field_ids (jsonb array), created_at, updated_at",
     "priority": 8,
     "core": false,
     "passes": true,
@@ -608,12 +608,12 @@
         {
           "name": "create and save a filtered report",
           "steps": [
-            "Navigate to a pipe's Relatórios tab, click 'Criar novo relatório'",
-            "Click 'Adicionar filtro', choose a start-form field, operator 'contém', type a value",
+            "Navigate to a pipe's Relat\u00f3rios tab, click 'Criar novo relat\u00f3rio'",
+            "Click 'Adicionar filtro', choose a start-form field, operator 'cont\u00e9m', type a value",
             "Verify the results table updates live to only matching cards",
             "Click 'Salvar', name it, confirm"
           ],
-          "expected": "Redirects to the saved report's own URL; navigating back to the Relatórios list shows the new report as a tile with a live result-count badge"
+          "expected": "Redirects to the saved report's own URL; navigating back to the Relat\u00f3rios list shows the new report as a tile with a live result-count badge"
         }
       ],
       "edge_cases": [
@@ -627,9 +627,9 @@
         {
           "name": "empty reports list",
           "steps": [
-            "Navigate to a pipe's Relatórios tab with zero saved reports"
+            "Navigate to a pipe's Relat\u00f3rios tab with zero saved reports"
           ],
-          "expected": "Empty state with 'Criar novo relatório' CTA, no error"
+          "expected": "Empty state with 'Criar novo relat\u00f3rio' CTA, no error"
         }
       ]
     }
@@ -637,11 +637,11 @@
   {
     "id": "feature-012",
     "category": "ui",
-    "description": "Dashboards (Painéis): named grid of chart widgets, each built from a metric + dimension + time grouping + one of 8 visualization types",
-    "page": "Page tab Painéis — /pipes/:id/dashboards (list/grid), /pipes/:id/dashboards/:dashboardId (a saved dashboard), /pipes/:id/dashboards/chart (chart builder)",
-    "ui_details": "Confirmed (Iteration 6, live test, created a real dashboard + chart): empty state 'Nenhum painel criado' + 'Criar painel' CTA; creation is a name-only modal (same pattern as Database Table creation). A dashboard starts as an empty grid with 'Adicionar gráfico'. Chart builder: three '+' pickers — Métrica, Dimensão, Grupo de tempo — each a searchable dropdown scoped to the current pipe. Metric options are computed aggregations over Cards (not raw field values): Anexos do Card (Total), Cards (Total), Comentários do card (Total), Lead Time (horas) - Min, Lead Time (horas) - Somatória, Lead time (horas) - máx, Lead time (horas) - média, Responsável (Total). Picking a metric auto-fills a title ('<Metric> Por <Grouping>'), a default time field (Criado em), time range ('Desde o início'), and grouping ('Por Dia'), each independently editable. 'Visualização' offers 8 chart types: Área, Barra, Calendário, Linha, Número, Pizza, Dispersão, Tabela; switching type auto-adjusts other config (confirmed: 'Número' collapses time grouping to 'Sem agrupamento' and drops the 'Por Dia' suffix from the title, rendering a single live KPI value instead of a series). Chart preview updates live (a newly created card appeared immediately on both a line chart and a number tile — no reload needed, unlike the Kanban/Database staleness quirks in feature-004/005). Save opens a modal (name pre-filled, 'Selecione o painel' dropdown targeting any existing dashboard); toast 'Gráfico criado. Confira!' on success, and the chart renders as a drag-resizable tile on the dashboard grid (same widget-grid pattern as feature-008 Interfaces). Per-chart kebab: Recarregar gráfico/Editar gráfico/Duplicar gráfico/Excluir gráfico. Per-dashboard kebab: Exportar painel em PDF/Definir permissões/Excluir painel. A dashboard-level date filter chip ('Filtro: Desde o início') applies a default time range across its charts.",
-    "behavior": "CONFIRMED: chart config auto-derives from vizType selection (time grouping resets, title regenerates) rather than being independently stored per type — the clone should treat these as computed UI defaults, re-derived whenever vizType changes, not persisted fields that could drift out of sync. Charts are live-querying (same re-evaluate-on-open behavior as feature-011 Reports), not frozen renders.",
-    "data_model": "dashboards: id, pipe_id (fk), name, default_time_range (text, default 'all_time'), created_at. dashboard_charts: id, dashboard_id (fk), title, metric (enum: cards_total|attachments_total|comments_total|lead_time_min|lead_time_sum|lead_time_max|lead_time_avg|assignees_total), dimension_field_id (fk, nullable), time_field_id (fk, default = card.created_at), time_range (text), time_grouping (enum: day|week|month|none, nullable), viz_type (enum: area|bar|calendar|line|number|pie|scatter|table), filters (jsonb), position (jsonb — {x,y,w,h} grid layout), created_at, updated_at",
+    "description": "Dashboards (Pain\u00e9is): named grid of chart widgets, each built from a metric + dimension + time grouping + one of 8 visualization types",
+    "page": "Page tab Pain\u00e9is \u2014 /pipes/:id/dashboards (list/grid), /pipes/:id/dashboards/:dashboardId (a saved dashboard), /pipes/:id/dashboards/chart (chart builder)",
+    "ui_details": "Confirmed (Iteration 6, live test, created a real dashboard + chart): empty state 'Nenhum painel criado' + 'Criar painel' CTA; creation is a name-only modal (same pattern as Database Table creation). A dashboard starts as an empty grid with 'Adicionar gr\u00e1fico'. Chart builder: three '+' pickers \u2014 M\u00e9trica, Dimens\u00e3o, Grupo de tempo \u2014 each a searchable dropdown scoped to the current pipe. Metric options are computed aggregations over Cards (not raw field values): Anexos do Card (Total), Cards (Total), Coment\u00e1rios do card (Total), Lead Time (horas) - Min, Lead Time (horas) - Somat\u00f3ria, Lead time (horas) - m\u00e1x, Lead time (horas) - m\u00e9dia, Respons\u00e1vel (Total). Picking a metric auto-fills a title ('<Metric> Por <Grouping>'), a default time field (Criado em), time range ('Desde o in\u00edcio'), and grouping ('Por Dia'), each independently editable. 'Visualiza\u00e7\u00e3o' offers 8 chart types: \u00c1rea, Barra, Calend\u00e1rio, Linha, N\u00famero, Pizza, Dispers\u00e3o, Tabela; switching type auto-adjusts other config (confirmed: 'N\u00famero' collapses time grouping to 'Sem agrupamento' and drops the 'Por Dia' suffix from the title, rendering a single live KPI value instead of a series). Chart preview updates live (a newly created card appeared immediately on both a line chart and a number tile \u2014 no reload needed, unlike the Kanban/Database staleness quirks in feature-004/005). Save opens a modal (name pre-filled, 'Selecione o painel' dropdown targeting any existing dashboard); toast 'Gr\u00e1fico criado. Confira!' on success, and the chart renders as a drag-resizable tile on the dashboard grid (same widget-grid pattern as feature-008 Interfaces). Per-chart kebab: Recarregar gr\u00e1fico/Editar gr\u00e1fico/Duplicar gr\u00e1fico/Excluir gr\u00e1fico. Per-dashboard kebab: Exportar painel em PDF/Definir permiss\u00f5es/Excluir painel. A dashboard-level date filter chip ('Filtro: Desde o in\u00edcio') applies a default time range across its charts.",
+    "behavior": "CONFIRMED: chart config auto-derives from vizType selection (time grouping resets, title regenerates) rather than being independently stored per type \u2014 the clone should treat these as computed UI defaults, re-derived whenever vizType changes, not persisted fields that could drift out of sync. Charts are live-querying (same re-evaluate-on-open behavior as feature-011 Reports), not frozen renders.",
+    "data_model": "dashboards: id, pipe_id (fk), name, default_time_range (text, default 'all_time'), created_at. dashboard_charts: id, dashboard_id (fk), title, metric (enum: cards_total|attachments_total|comments_total|lead_time_min|lead_time_sum|lead_time_max|lead_time_avg|assignees_total), dimension_field_id (fk, nullable), time_field_id (fk, default = card.created_at), time_range (text), time_grouping (enum: day|week|month|none, nullable), viz_type (enum: area|bar|calendar|line|number|pie|scatter|table), filters (jsonb), position (jsonb \u2014 {x,y,w,h} grid layout), created_at, updated_at",
     "priority": 9,
     "core": false,
     "passes": true,
@@ -649,7 +649,7 @@
       "unit": [
         {
           "name": "changing viz_type to 'number' clears time_grouping",
-          "description": "Selecting the Número visualization forces time_grouping to null/none, matching the observed auto-collapse behavior",
+          "description": "Selecting the N\u00famero visualization forces time_grouping to null/none, matching the observed auto-collapse behavior",
           "input": "updateChart(chartId, { vizType: 'number' }) on a chart previously grouped by day",
           "expected_output": "chart.timeGrouping === null; chart.title no longer contains a 'Por Dia' suffix if it was auto-generated"
         },
@@ -664,20 +664,20 @@
         {
           "name": "create a dashboard and add a KPI number chart",
           "steps": [
-            "Navigate to a pipe's Painéis tab, click 'Criar painel', name it",
-            "Click 'Adicionar gráfico'",
-            "Click '+ Métrica', choose 'Cards (Total)'",
-            "Click the 'Linha' visualization selector, choose 'Número'",
-            "Click 'Salvar gráfico', confirm the name and target dashboard"
+            "Navigate to a pipe's Pain\u00e9is tab, click 'Criar painel', name it",
+            "Click 'Adicionar gr\u00e1fico'",
+            "Click '+ M\u00e9trica', choose 'Cards (Total)'",
+            "Click the 'Linha' visualization selector, choose 'N\u00famero'",
+            "Click 'Salvar gr\u00e1fico', confirm the name and target dashboard"
           ],
-          "expected": "Toast 'Gráfico criado. Confira!' appears; the dashboard now shows a tile displaying the current total card count as a large number"
+          "expected": "Toast 'Gr\u00e1fico criado. Confira!' appears; the dashboard now shows a tile displaying the current total card count as a large number"
         }
       ],
       "edge_cases": [
         {
           "name": "empty dashboards list",
           "steps": [
-            "Navigate to a pipe's Painéis tab with zero dashboards created"
+            "Navigate to a pipe's Pain\u00e9is tab with zero dashboards created"
           ],
           "expected": "Empty state 'Nenhum painel criado' + 'Criar painel' CTA, no error"
         },
@@ -695,9 +695,9 @@
     "id": "feature-013",
     "category": "settings",
     "description": "Pipe member management: invite members, assign a per-member role scoped to the pipe",
-    "page": "Gerenciar > Pessoas — /pipes/:id/settings/members",
-    "ui_details": "Confirmed (Iteration 2, live test): modal header 'N pessoa(s) em <PipeName>', 'Convidar pessoas' primary button, 'Pesquisar por nome' search input, table with Nome (avatar+name+email, self-row tagged 'Esse é você!') and Função columns. The Função cell is a dropdown listing 4 roles each with a one-line description: Membro do pipe ('Pode criar cards e acessar todos os cards existentes no pipe para editá-los/movê-los') [Upgrade-gated in this trial org], Admin do Pipe ('...Pode acessar as configurações do pipe.') [selectable, current value], Somente leitura ('Só pode ver e comentar nos cards.') [Upgrade-gated], Visão restrita ('Pode criar e editar cards que criou ou que foram atribuídos a ela. Não pode deletar cards.') [Upgrade-gated]. Each row also has a remove (X) icon. Did NOT click 'Convidar pessoas' — inviting a real address was skipped to avoid an unauthorized side effect (would require entering a second person's email and sending mail).",
-    "behavior": "Not fully tested end-to-end (invite flow untested). Confirmed the role dropdown enumerates 4 fixed roles with descriptive copy, and that 3 of the 4 are gated behind 'Upgrade' in a trial org — this is a billing/plan concern (out of scope per spec-inspect.md's paywall exclusion); the clone should implement all 4 roles as freely selectable with no upgrade gate.",
+    "page": "Gerenciar > Pessoas \u2014 /pipes/:id/settings/members",
+    "ui_details": "Confirmed (Iteration 2, live test): modal header 'N pessoa(s) em <PipeName>', 'Convidar pessoas' primary button, 'Pesquisar por nome' search input, table with Nome (avatar+name+email, self-row tagged 'Esse \u00e9 voc\u00ea!') and Fun\u00e7\u00e3o columns. The Fun\u00e7\u00e3o cell is a dropdown listing 4 roles each with a one-line description: Membro do pipe ('Pode criar cards e acessar todos os cards existentes no pipe para edit\u00e1-los/mov\u00ea-los') [Upgrade-gated in this trial org], Admin do Pipe ('...Pode acessar as configura\u00e7\u00f5es do pipe.') [selectable, current value], Somente leitura ('S\u00f3 pode ver e comentar nos cards.') [Upgrade-gated], Vis\u00e3o restrita ('Pode criar e editar cards que criou ou que foram atribu\u00eddos a ela. N\u00e3o pode deletar cards.') [Upgrade-gated]. Each row also has a remove (X) icon. Did NOT click 'Convidar pessoas' \u2014 inviting a real address was skipped to avoid an unauthorized side effect (would require entering a second person's email and sending mail).",
+    "behavior": "Not fully tested end-to-end (invite flow untested). Confirmed the role dropdown enumerates 4 fixed roles with descriptive copy, and that 3 of the 4 are gated behind 'Upgrade' in a trial org \u2014 this is a billing/plan concern (out of scope per spec-inspect.md's paywall exclusion); the clone should implement all 4 roles as freely selectable with no upgrade gate.",
     "data_model": "pipe_members: id, pipe_id (fk), user_id (fk), role (enum: pipe_member|pipe_admin|read_only|restricted_view), invited_at, joined_at (nullable)",
     "priority": 11,
     "core": false,
@@ -719,10 +719,10 @@
       ],
       "e2e": [
         {
-          "name": "change a member's role via the Função dropdown",
+          "name": "change a member's role via the Fun\u00e7\u00e3o dropdown",
           "steps": [
             "Navigate to Gerenciar > Pessoas",
-            "Click the Função dropdown on a member row",
+            "Click the Fun\u00e7\u00e3o dropdown on a member row",
             "Select a different role",
             "Verify the dropdown closes and the new role is displayed"
           ],
@@ -735,7 +735,7 @@
           "steps": [
             "With exactly one Admin do Pipe member, click that member's remove (X) icon"
           ],
-          "expected": "Either blocked with an error (a pipe must always have ≥1 admin), or allowed and the pipe becomes adminless — verify against real UI in a follow-up pass"
+          "expected": "Either blocked with an error (a pipe must always have \u22651 admin), or allowed and the pipe becomes adminless \u2014 verify against real UI in a follow-up pass"
         }
       ]
     }
@@ -744,10 +744,10 @@
     "id": "feature-014",
     "category": "settings",
     "description": "Pipe general settings: identity (icon/name/tags), item naming, default view, card-title field picker, Kanban/connected-card display fields, pipe-wide expiration alert, visibility, AI-tool toggles, edit permissions, clone/delete pipe",
-    "page": "Gerenciar > Configurações do pipe — /pipes/:id/settings/general-settings",
-    "ui_details": "Confirmed (Iteration 2, live test, full scroll-through): Ícone do pipe (icon picker dropdown) + Nome do pipe (text input, pre-filled 'Purchase Requests'); Tags do pipe (multi-select, up to 3, 'Novo' badge); Item do pipe (placeholder '\"Cards\" é o padrão' — lets an org rename the 'Cards' noun pipe-wide); Texto do botão de criar cards (text input, default 'Criar novo card'); a 'Visual' section with a default-view chip picker (Kanban shown selected) and 'Título do card' — a field-picker dropdown (this is the title_field_id config confirmed cross-referentially in feature-004's correction, currently set to 'Nome do solicitante'); 'Campos a serem exibidos nos cards do kanban' (empty multi-select — lets extra fields render on Kanban card faces); 'Campos a serem exibidos nos cards conectados' (chip list, default 'Criado em' + 'Fase atual', removable, with a clear-all X); 'Alerta de expirado' — Tempo (numeric stepper) + Unidade (dropdown, default 'minutos') + a toggle 'Os alertas serão contados de segunda a sexta-feira' (business-days-only option) — this is a PIPE-WIDE overdue alert, distinct from feature-002's per-phase SLA 'Alerta de atraso'; 'Permissões' > 'Privacidade e visibilidade' (chip dropdown, observed value 'Aberto para <org name>' with helper text 'Qualquer pessoa em <org> pode visualizar e ingressar como Membro deste pipe'); 'Ferramentas de IA' (2 toggles: 'Permitir Agentes de IA neste pipe' / 'Permitir Copilot de IA neste pipe', both on by default); 3 edit-permission toggles ('Permitir que membros do pipe executem ações em massa' / 'As pessoas neste pipe só podem editar os cards atribuídos a elas' / 'Somente administradores do pipe podem excluir cards', all off by default); 'Clonar pipe' section with a 'Clonar pipe para' button (copies fields/phases/settings to another org); and a destructive red banner 'Excluir o pipe. Essa é uma ação permanente e não pode ser desfeita.' with an 'Excluir pipe' button (not clicked, to avoid an irreversible action).",
-    "behavior": "Every field on this page maps 1:1 to a pipes-table column; the 'Título do card' field's change was independently confirmed via the Atividades > Alterações de configuração log (see feature-004). The two overdue-alert mechanisms (this page's pipe-wide 'Alerta de expirado' vs. feature-002's per-phase 'Alerta de atraso') are separate features that likely compose (a card can be late for its current phase AND expired for the whole pipe) — not yet tested which fires first or whether both can be true simultaneously.",
-    "data_model": "pipes: icon, tags (jsonb array, max 3), item_name (text, default 'Cards'), create_card_button_label (text, default 'Criar novo card'), default_view (enum: kanban|list|...), title_field_id (fk, nullable — see feature-004), kanban_preview_field_ids (jsonb array), connected_card_field_ids (jsonb array, default ['created_at','current_phase']), expiration_alert_time (int, default 0), expiration_alert_unit (enum: minutes|hours|days), expiration_alert_business_days_only (bool), visibility (enum: org_open|invite_only), ai_agents_enabled (bool, default true), ai_copilot_enabled (bool, default true), allow_bulk_actions (bool, default false), restrict_edit_to_assignee (bool, default false), restrict_delete_to_admin (bool, default false)",
+    "page": "Gerenciar > Configura\u00e7\u00f5es do pipe \u2014 /pipes/:id/settings/general-settings",
+    "ui_details": "Confirmed (Iteration 2, live test, full scroll-through): \u00cdcone do pipe (icon picker dropdown) + Nome do pipe (text input, pre-filled 'Purchase Requests'); Tags do pipe (multi-select, up to 3, 'Novo' badge); Item do pipe (placeholder '\"Cards\" \u00e9 o padr\u00e3o' \u2014 lets an org rename the 'Cards' noun pipe-wide); Texto do bot\u00e3o de criar cards (text input, default 'Criar novo card'); a 'Visual' section with a default-view chip picker (Kanban shown selected) and 'T\u00edtulo do card' \u2014 a field-picker dropdown (this is the title_field_id config confirmed cross-referentially in feature-004's correction, currently set to 'Nome do solicitante'); 'Campos a serem exibidos nos cards do kanban' (empty multi-select \u2014 lets extra fields render on Kanban card faces); 'Campos a serem exibidos nos cards conectados' (chip list, default 'Criado em' + 'Fase atual', removable, with a clear-all X); 'Alerta de expirado' \u2014 Tempo (numeric stepper) + Unidade (dropdown, default 'minutos') + a toggle 'Os alertas ser\u00e3o contados de segunda a sexta-feira' (business-days-only option) \u2014 this is a PIPE-WIDE overdue alert, distinct from feature-002's per-phase SLA 'Alerta de atraso'; 'Permiss\u00f5es' > 'Privacidade e visibilidade' (chip dropdown, observed value 'Aberto para <org name>' with helper text 'Qualquer pessoa em <org> pode visualizar e ingressar como Membro deste pipe'); 'Ferramentas de IA' (2 toggles: 'Permitir Agentes de IA neste pipe' / 'Permitir Copilot de IA neste pipe', both on by default); 3 edit-permission toggles ('Permitir que membros do pipe executem a\u00e7\u00f5es em massa' / 'As pessoas neste pipe s\u00f3 podem editar os cards atribu\u00eddos a elas' / 'Somente administradores do pipe podem excluir cards', all off by default); 'Clonar pipe' section with a 'Clonar pipe para' button (copies fields/phases/settings to another org); and a destructive red banner 'Excluir o pipe. Essa \u00e9 uma a\u00e7\u00e3o permanente e n\u00e3o pode ser desfeita.' with an 'Excluir pipe' button (not clicked, to avoid an irreversible action).",
+    "behavior": "Every field on this page maps 1:1 to a pipes-table column; the 'T\u00edtulo do card' field's change was independently confirmed via the Atividades > Altera\u00e7\u00f5es de configura\u00e7\u00e3o log (see feature-004). The two overdue-alert mechanisms (this page's pipe-wide 'Alerta de expirado' vs. feature-002's per-phase 'Alerta de atraso') are separate features that likely compose (a card can be late for its current phase AND expired for the whole pipe) \u2014 not yet tested which fires first or whether both can be true simultaneously.",
+    "data_model": "pipes: icon, tags (jsonb array, max 3), item_name (text, default 'Cards'), create_card_button_label (text, default 'Criar novo card'), default_view (enum: kanban|list|...), title_field_id (fk, nullable \u2014 see feature-004), kanban_preview_field_ids (jsonb array), connected_card_field_ids (jsonb array, default ['created_at','current_phase']), expiration_alert_time (int, default 0), expiration_alert_unit (enum: minutes|hours|days), expiration_alert_business_days_only (bool), visibility (enum: org_open|invite_only), ai_agents_enabled (bool, default true), ai_copilot_enabled (bool, default true), allow_bulk_actions (bool, default false), restrict_edit_to_assignee (bool, default false), restrict_delete_to_admin (bool, default false)",
     "priority": 11,
     "core": false,
     "passes": true,
@@ -770,7 +770,7 @@
         {
           "name": "toggle 'Somente administradores do pipe podem excluir cards' and verify enforcement",
           "steps": [
-            "Navigate to Gerenciar > Configurações do pipe",
+            "Navigate to Gerenciar > Configura\u00e7\u00f5es do pipe",
             "Enable 'Somente administradores do pipe podem excluir cards'",
             "Attempt to delete a card as a non-admin pipe member"
           ],
@@ -783,7 +783,7 @@
           "steps": [
             "Leave 'Alerta de expirado' Tempo at its default value 0"
           ],
-          "expected": "No expiration alert ever fires (0 is treated as disabled, not an instant-expire threshold) — verify against real UI in a follow-up pass"
+          "expected": "No expiration alert ever fires (0 is treated as disabled, not an instant-expire threshold) \u2014 verify against real UI in a follow-up pass"
         }
       ]
     }
@@ -792,9 +792,9 @@
     "id": "feature-015",
     "category": "data",
     "description": "Pipe-scoped audit log: card-activity timeline + configuration-change timeline, searchable and exportable",
-    "page": "Gerenciar > Atividades — modal (no dedicated URL; opens over whatever pipe page is current)",
-    "ui_details": "Confirmed (Iteration 2, live test): two tabs — 'Atividade de cards' and 'Alterações de configuração' — plus 'Enviar feedback', an 'Exportar logs' download icon, and a 'Buscar por autor' search input. Header subtext: 'Rastreie as ações deste pipe e seus responsáveis. Acesse via API ou saiba mais.' (implies a public read API for this log exists — worth mirroring as a REST endpoint). Table columns: Data e hora (sortable, newest first observed), Executado por (avatar + name + email), Tipo de recurso (a chip: Card / Automação / Pipe / Campo, etc.), Detalhes (a server-rendered sentence describing exactly what changed, e.g. 'Moveu o card \"João Silva\" de \"Concluído\" para \"Fazendo\"', 'Criou a automação \"Sync requester name on move to Fazendo\" com o gatilho \"Um card entrar em uma fase\" e a ação \"Atualize um campo no card ou registro\"', 'Atualizou a configuração do título do card de \"—\" para \"Nome do solicitante\"', 'Criou este pipe').",
-    "behavior": "Confirmed live: every mutating action performed across this run's prior iterations (pipe creation, field creation on two different phases, card create/move/complete, automation creation) shows up as its own row in the correct tab, newest-first, with no manual refresh needed — this is a real-time/live-query log, same live-recompute pattern already confirmed for feature-011/012.",
+    "page": "Gerenciar > Atividades \u2014 modal (no dedicated URL; opens over whatever pipe page is current)",
+    "ui_details": "Confirmed (Iteration 2, live test): two tabs \u2014 'Atividade de cards' and 'Altera\u00e7\u00f5es de configura\u00e7\u00e3o' \u2014 plus 'Enviar feedback', an 'Exportar logs' download icon, and a 'Buscar por autor' search input. Header subtext: 'Rastreie as a\u00e7\u00f5es deste pipe e seus respons\u00e1veis. Acesse via API ou saiba mais.' (implies a public read API for this log exists \u2014 worth mirroring as a REST endpoint). Table columns: Data e hora (sortable, newest first observed), Executado por (avatar + name + email), Tipo de recurso (a chip: Card / Automa\u00e7\u00e3o / Pipe / Campo, etc.), Detalhes (a server-rendered sentence describing exactly what changed, e.g. 'Moveu o card \"Jo\u00e3o Silva\" de \"Conclu\u00eddo\" para \"Fazendo\"', 'Criou a automa\u00e7\u00e3o \"Sync requester name on move to Fazendo\" com o gatilho \"Um card entrar em uma fase\" e a a\u00e7\u00e3o \"Atualize um campo no card ou registro\"', 'Atualizou a configura\u00e7\u00e3o do t\u00edtulo do card de \"\u2014\" para \"Nome do solicitante\"', 'Criou este pipe').",
+    "behavior": "Confirmed live: every mutating action performed across this run's prior iterations (pipe creation, field creation on two different phases, card create/move/complete, automation creation) shows up as its own row in the correct tab, newest-first, with no manual refresh needed \u2014 this is a real-time/live-query log, same live-recompute pattern already confirmed for feature-011/012.",
     "data_model": "audit_log_entries: id, pipe_id (fk), actor_user_id (fk), category (enum: card_activity|config_change), resource_type (enum: card|automation|pipe|field|phase|table|...), message (text, server-rendered human-readable sentence), occurred_at",
     "priority": 9,
     "core": false,
@@ -804,8 +804,8 @@
         {
           "name": "card move is logged under card_activity with both phase names in the message",
           "description": "moveCardToPhase produces an audit_log_entries row in the correct category with a human-readable message",
-          "input": "moveCardToPhase(cardId, 'Fazendo', 'Concluído')",
-          "expected_output": "New row: category='card_activity', resource_type='card', message contains both 'Fazendo' and 'Concluído'"
+          "input": "moveCardToPhase(cardId, 'Fazendo', 'Conclu\u00eddo')",
+          "expected_output": "New row: category='card_activity', resource_type='card', message contains both 'Fazendo' and 'Conclu\u00eddo'"
         },
         {
           "name": "a pipe settings change is logged under config_change",
@@ -830,7 +830,7 @@
           "steps": [
             "Open Atividades immediately after creating a pipe with zero further actions taken"
           ],
-          "expected": "At minimum a single 'Criou este pipe' row exists — verify whether a truly empty state is reachable at all"
+          "expected": "At minimum a single 'Criou este pipe' row exists \u2014 verify whether a truly empty state is reachable at all"
         }
       ]
     }
@@ -839,9 +839,9 @@
     "id": "feature-016",
     "category": "data",
     "description": "Pipe-scoped Labels (Etiquetas): name + color, used to categorize/filter cards",
-    "page": "Gerenciar (top nav) > Ferramentas > Etiquetas — modal",
-    "ui_details": "Confirmed (Iteration 2, live test — created a real label): empty state shows an icon, 'Crie etiquetas para filtrar e identificar cards conforme o critério desejado.' + 'Saiba mais' link, and a 'Criar etiqueta' CTA. The creation form is exactly 2 fields: 'Nome da etiqueta' (text input) and 'Cor' (a swatch preview + hex value, defaulted to '#35FFDD' with no color picker interaction attempted this pass) plus Cancelar/Salvar buttons. After saving, the modal shows the non-empty list state: each label as a color-dot + name row with a trailing kebab (⋮, presumably edit/delete — not opened this pass) and a 'Criar uma nova etiqueta' button below the list.",
-    "behavior": "Created label 'Urgente' with the default teal color — it persisted and appeared in the list immediately on next open, no reload needed (unlike the Kanban/Database staleness quirks in feature-004/005). This confirms and supersedes feature-001's original 'labels: {id, name, color}' placeholder, now UI-verified end to end.",
+    "page": "Gerenciar (top nav) > Ferramentas > Etiquetas \u2014 modal",
+    "ui_details": "Confirmed (Iteration 2, live test \u2014 created a real label): empty state shows an icon, 'Crie etiquetas para filtrar e identificar cards conforme o crit\u00e9rio desejado.' + 'Saiba mais' link, and a 'Criar etiqueta' CTA. The creation form is exactly 2 fields: 'Nome da etiqueta' (text input) and 'Cor' (a swatch preview + hex value, defaulted to '#35FFDD' with no color picker interaction attempted this pass) plus Cancelar/Salvar buttons. After saving, the modal shows the non-empty list state: each label as a color-dot + name row with a trailing kebab (\u22ee, presumably edit/delete \u2014 not opened this pass) and a 'Criar uma nova etiqueta' button below the list.",
+    "behavior": "Created label 'Urgente' with the default teal color \u2014 it persisted and appeared in the list immediately on next open, no reload needed (unlike the Kanban/Database staleness quirks in feature-004/005). This confirms and supersedes feature-001's original 'labels: {id, name, color}' placeholder, now UI-verified end to end.",
     "data_model": "labels: id, pipe_id (fk), name, color (hex string, e.g. '#35FFDD'), created_at",
     "priority": 6,
     "core": false,
@@ -879,7 +879,7 @@
           "steps": [
             "Create a label named 'Urgente', then attempt to create a second label also named 'Urgente'"
           ],
-          "expected": "Either rejected as duplicate, or both are allowed to coexist — verify against real UI in a follow-up pass"
+          "expected": "Either rejected as duplicate, or both are allowed to coexist \u2014 verify against real UI in a follow-up pass"
         }
       ]
     }
@@ -888,10 +888,10 @@
     "id": "feature-017",
     "category": "data",
     "description": "Pipe-scoped card trash (Lixeira): deleted cards are retained for 15 days before permanent purge",
-    "page": "Gerenciar (top nav) > Ferramentas > Lixeira — modal, tagged 'Beta'",
-    "ui_details": "Confirmed (Iteration 2 + Iteration 10, live test): header 'Lixeira' + a 'Beta' tag, subtext 'Os cards ficam aqui por 15 dias. Depois disso, não podem ser restaurados.', a single 'Cards' tab, an 'Enviar feedback' link. Empty state: 'A lixeira está vazia. Os cards excluídos aparecerão aqui.' Populated state (Iteration 10): each row shows the card title, a relative timestamp, 'De <phase name>' (the phase it was deleted from), and a 'Restaurar' action on the right. The card-detail delete entry point is a '⋮' kebab menu item labelled 'Mover card para a lixeira' (not 'Excluir') — its confirmation dialog reads 'Admins do pipe podem restaurar o card \"<title>\" da lixeira em até 15 dias', confirming restore is an Admin-do-Pipe-only permission, not available to all pipe members.",
-    "behavior": "Confirmed end-to-end (Iteration 10, live test): created a disposable 'Throwaway Test Card' in Caixa de entrada, opened it, used the card-detail kebab menu → 'Mover card para a lixeira', confirmed the dialog → toast 'Card movido para a lixeira', card instantly disappeared from the Kanban board (phase count decremented immediately — this delete step is synchronous). Lixeira modal then listed it with a working 'Restaurar' control. Clicking 'Restaurar' showed toast 'Restaurando o card. Atualize em instantes para vê-lo.' — confirming restore itself is ASYNCHRONOUS (a background job), unlike the delete step. The Lixeira list emptied immediately (optimistic UI) while the restore was still pending. After ~15-20s and a page reload, the card reappeared on the Kanban board back in its original phase (Caixa de entrada) — confirming restore re-inserts into the phase the card was deleted from, not a default/first phase. Permanent-purge timing (background job vs. lazy-on-view after the 15-day window) remains unconfirmed — would require waiting out the retention window to observe.",
-    "data_model": "cards gains: deleted_at (timestamp, nullable), purge_at (timestamp, nullable — computed as deleted_at + 15 days)",
+    "page": "Gerenciar (top nav) > Ferramentas > Lixeira \u2014 modal, tagged 'Beta'",
+    "ui_details": "Confirmed (Iteration 2 + Iteration 10, live test): header 'Lixeira' + a 'Beta' tag, subtext 'Os cards ficam aqui por 15 dias. Depois disso, n\u00e3o podem ser restaurados.', a single 'Cards' tab, an 'Enviar feedback' link. Empty state: 'A lixeira est\u00e1 vazia. Os cards exclu\u00eddos aparecer\u00e3o aqui.' Populated state (Iteration 10): each row shows the card title, a relative timestamp, 'De <phase name>' (the phase it was deleted from), and a 'Restaurar' action on the right. The card-detail delete entry point is a '\u22ee' kebab menu item labelled 'Mover card para a lixeira' (not 'Excluir') \u2014 its confirmation dialog reads 'Admins do pipe podem restaurar o card \"<title>\" da lixeira em at\u00e9 15 dias', confirming restore is an Admin-do-Pipe-only permission, not available to all pipe members.",
+    "behavior": "Confirmed end-to-end (Iteration 10, live test): created a disposable 'Throwaway Test Card' in Caixa de entrada, opened it, used the card-detail kebab menu \u2192 'Mover card para a lixeira', confirmed the dialog \u2192 toast 'Card movido para a lixeira', card instantly disappeared from the Kanban board (phase count decremented immediately \u2014 this delete step is synchronous). Lixeira modal then listed it with a working 'Restaurar' control. Clicking 'Restaurar' showed toast 'Restaurando o card. Atualize em instantes para v\u00ea-lo.' \u2014 confirming restore itself is ASYNCHRONOUS (a background job), unlike the delete step. The Lixeira list emptied immediately (optimistic UI) while the restore was still pending. After ~15-20s and a page reload, the card reappeared on the Kanban board back in its original phase (Caixa de entrada) \u2014 confirming restore re-inserts into the phase the card was deleted from, not a default/first phase. Permanent-purge timing (background job vs. lazy-on-view after the 15-day window) remains unconfirmed \u2014 would require waiting out the retention window to observe.",
+    "data_model": "cards gains: deleted_at (timestamp, nullable), purge_at (timestamp, nullable \u2014 computed as deleted_at + 15 days)",
     "priority": 12,
     "core": false,
     "passes": true,
@@ -915,7 +915,7 @@
           "name": "delete a card and restore it from Lixeira",
           "steps": [
             "Create a card via 'Criar novo card' on the Kanban board",
-            "Open the card, click the '⋮' kebab menu, click 'Mover card para a lixeira'",
+            "Open the card, click the '\u22ee' kebab menu, click 'Mover card para a lixeira'",
             "Confirm the 'Mover card para a lixeira' dialog",
             "Navigate to Gerenciar > Ferramentas > Lixeira",
             "Click 'Restaurar' on the card's row",
@@ -930,7 +930,7 @@
           "steps": [
             "Navigate to Gerenciar > Ferramentas > Lixeira on a pipe with zero deleted cards"
           ],
-          "expected": "Empty state 'A lixeira está vazia. Os cards excluídos aparecerão aqui.' shown, no error"
+          "expected": "Empty state 'A lixeira est\u00e1 vazia. Os cards exclu\u00eddos aparecer\u00e3o aqui.' shown, no error"
         },
         {
           "name": "restore is gated to pipe admins",
@@ -938,7 +938,7 @@
             "Delete a card as a pipe admin",
             "View the Lixeira confirmation copy shown before deleting"
           ],
-          "expected": "Dialog text reads 'Admins do pipe podem restaurar o card ... da lixeira em até 15 dias' — the clone should gate the Restaurar action to the Admin do Pipe role, matching feature-013's role model, not expose it to all pipe members"
+          "expected": "Dialog text reads 'Admins do pipe podem restaurar o card ... da lixeira em at\u00e9 15 dias' \u2014 the clone should gate the Restaurar action to the Admin do Pipe role, matching feature-013's role model, not expose it to all pipe members"
         }
       ]
     }
@@ -946,11 +946,11 @@
   {
     "id": "feature-018",
     "category": "ui",
-    "description": "Emails: card-scoped shared team inbox — compose/reply to a card's email thread, per-pipe inbound forwarding alias, reusable email templates with dynamic-content tokens",
+    "description": "Emails: card-scoped shared team inbox \u2014 compose/reply to a card's email thread, per-pipe inbound forwarding alias, reusable email templates with dynamic-content tokens",
     "page": "Pipe > Emails tab (/pipes/:id/emails[/:threadId]); settings surfaced at Gerenciar > Email (/pipes/:id/settings/email)",
-    "ui_details": "Confirmed (Iteration 4, live test). Emails tab layout: left rail (Compor email button, Todas as mensagens / Mensagens não lidas / Atribuídas a mim / Sem responsável filters, then Automações de email / Templates de email / Configurações de email links, then a 'Redirecione seus emails para esse endereço' box showing the pipe's inbound alias `pipe{pipeId}@mail.pipefy.com` — greyed out with 'Essa funcionalidade está desabilitada no momento. Clique aqui para habilitá-la.' since the toggle is off by default), a middle thread list (empty state: 'Nenhum email encontrado nessa seleção.', has a 'Todas as fases' phase filter dropdown + reload icon), and a right-hand detail/compose pane. 'Compor email' first opens a small popover: 'Selecione um card para escrever uma mensagem' with a searchable card picker (mandatory — email is always attached to a card, there is no freeform/cardless compose). Picking a card navigates to /emails/:threadId and opens 'Novo email': Nome (free-text sender display name, prefilled to the logged-in member's name), De (a per-CARD auto-generated alias button, observed format `pipe{pipeId}+{randomToken}@mail.pipefy.com` — distinct from the pipe-level inbound alias), Para (tokenizes each typed address into a removable chip, plus CC/CCO toggles), Assunto (subject), a rich-text body editor (font-size, bold, text-color, alignment, list, link, image, '⋮ more'), 'Adicionar assinatura' link, and a footer bar: Enviar (primary), anexar arquivos (paperclip), 'Respostas salvas' (saved-replies icon), 'Aplicar template' (apply a saved EmailTemplate), Cancelar, delete/trash icon. A right-side card mini-panel mirrors the card detail view: card title, Fase atual read-only badge, 'Mover a fase' one-click buttons for the adjacent phases (same component as feature-004's quick-mover), and a Comentários box. Top toolbar above the thread (icons only): Adicionar responsável (assignee), Vencimento (due date), Adicionar etiquetas (labels), Marcar como não lido, 'Imprimir tudo' (print, links to /emails/:threadId/print) — these are thread-level metadata actions, independent of the card's own fields. Card-scoped empty state (before composing) reads 'Centralize a comunicação ao reunir seus emails em um único lugar.' with two CTAs: 'Criar email' and 'Use um template'. Settings modal (Gerenciar > Email) has 5 cards: 'Endereço de email do pipe' (toggle, off by default, shows the pipe-level inbound alias + disabled 'Opções avançadas' while off), 'Templates de email' (Meus templates / Template de email padrão links), 'Envie emails via Pipefy' (connect a custom SMTP business address), 'Automação de email' (external link into the Automations builder, feature-010, pre-scoped to email triggers), 'Receber emails e solicitações no Pipefy' (external link, same concept as the inbound-alias toggle). 'Meus templates' > 'Criar um novo template' opens a template editor: Nome do template, Nome do remetente (+ 'Endereço de email customizado' toggle), Email do remetente ('Pipefy utiliza como respondar para a menos que...'), Email do destinatário (multi-address, + CC/CCO), Assunto, and a body editor with a 'Conteúdo dinâmico' pill (the same categorized field/token picker component confirmed in feature-010 Automations and feature-011 Reports — a third confirmed reuse of that component) plus a fuller toolbar (bold/italic/underline/strikethrough/font-color/align/lists/link/image/embed/quote/table/code-view). Screenshots: screenshots/inspect/emails-inbox.jpg, screenshots/inspect/emails-compose.jpg.",
-    "behavior": "Live-tested: clicking 'Compor email' with zero cards would presumably show an empty picker (this pipe has 1 card, 'João Silva', so the picker showed exactly that one row); selecting it navigates straight to a per-card compose view and provisions/reuses that card's unique alias inline (no extra confirmation step). Filled out a full test message (Para: teste@example.com — tokenized into a chip on blur/comma, Assunto: 'Teste de assunto', body text) to confirm field behavior, then clicked Cancelar to discard rather than Enviar — sending a real outbound email was intentionally not triggered during inspection (same policy as feature-011's un-triggered Email/Download export actions). Creating a new email template and clicking Cancelar correctly discarded it with no persisted row (re-opening 'Meus templates' showed the same empty state). Toggling 'Endereço de email do pipe' was not exercised (left at its default-off state) since enabling inbound routing has an external side effect (a real address becomes live for mail forwarding) beyond this inspection's scope.",
-    "data_model": "EmailThread: id, card_id (FK cards, NOT NULL — every thread is card-scoped), pipe_id (FK), created_at. EmailMessage: id, thread_id (FK), direction (enum: inbound|outbound), from_name, from_address (per-thread generated alias `pipe{pipeId}+{token}@mail.pipefy.com` for outbound; the sender's real address for inbound), to[] (string[]), cc[] (string[]), bcc[] (string[]), subject, body_html, sent_at, read (bool), assignee_id (FK members, nullable), due_date (date, nullable), label_ids (FK labels, many-to-many). Pipe gains: inbound_email_enabled (bool, default false), inbound_email_alias (string, `pipe{pipeId}@mail.pipefy.com`, server-generated at pipe creation regardless of enabled state). EmailTemplate: id, pipe_id (FK), name, sender_name, sender_email (nullable — falls back to a Pipefy-branded reply-to when unset), use_custom_sender_address (bool), default_to[] (string[]), default_cc[] (string[]), default_bcc[] (string[]), default_subject (string, supports token interpolation), body_html (supports token interpolation via the shared 'Conteúdo dinâmico' field-token picker — same token scheme as feature-010's automation variable picker and feature-011's report filters).",
+    "ui_details": "Confirmed (Iteration 4, live test). Emails tab layout: left rail (Compor email button, Todas as mensagens / Mensagens n\u00e3o lidas / Atribu\u00eddas a mim / Sem respons\u00e1vel filters, then Automa\u00e7\u00f5es de email / Templates de email / Configura\u00e7\u00f5es de email links, then a 'Redirecione seus emails para esse endere\u00e7o' box showing the pipe's inbound alias `pipe{pipeId}@mail.pipefy.com` \u2014 greyed out with 'Essa funcionalidade est\u00e1 desabilitada no momento. Clique aqui para habilit\u00e1-la.' since the toggle is off by default), a middle thread list (empty state: 'Nenhum email encontrado nessa sele\u00e7\u00e3o.', has a 'Todas as fases' phase filter dropdown + reload icon), and a right-hand detail/compose pane. 'Compor email' first opens a small popover: 'Selecione um card para escrever uma mensagem' with a searchable card picker (mandatory \u2014 email is always attached to a card, there is no freeform/cardless compose). Picking a card navigates to /emails/:threadId and opens 'Novo email': Nome (free-text sender display name, prefilled to the logged-in member's name), De (a per-CARD auto-generated alias button, observed format `pipe{pipeId}+{randomToken}@mail.pipefy.com` \u2014 distinct from the pipe-level inbound alias), Para (tokenizes each typed address into a removable chip, plus CC/CCO toggles), Assunto (subject), a rich-text body editor (font-size, bold, text-color, alignment, list, link, image, '\u22ee more'), 'Adicionar assinatura' link, and a footer bar: Enviar (primary), anexar arquivos (paperclip), 'Respostas salvas' (saved-replies icon), 'Aplicar template' (apply a saved EmailTemplate), Cancelar, delete/trash icon. A right-side card mini-panel mirrors the card detail view: card title, Fase atual read-only badge, 'Mover a fase' one-click buttons for the adjacent phases (same component as feature-004's quick-mover), and a Coment\u00e1rios box. Top toolbar above the thread (icons only): Adicionar respons\u00e1vel (assignee), Vencimento (due date), Adicionar etiquetas (labels), Marcar como n\u00e3o lido, 'Imprimir tudo' (print, links to /emails/:threadId/print) \u2014 these are thread-level metadata actions, independent of the card's own fields. Card-scoped empty state (before composing) reads 'Centralize a comunica\u00e7\u00e3o ao reunir seus emails em um \u00fanico lugar.' with two CTAs: 'Criar email' and 'Use um template'. Settings modal (Gerenciar > Email) has 5 cards: 'Endere\u00e7o de email do pipe' (toggle, off by default, shows the pipe-level inbound alias + disabled 'Op\u00e7\u00f5es avan\u00e7adas' while off), 'Templates de email' (Meus templates / Template de email padr\u00e3o links), 'Envie emails via Pipefy' (connect a custom SMTP business address), 'Automa\u00e7\u00e3o de email' (external link into the Automations builder, feature-010, pre-scoped to email triggers), 'Receber emails e solicita\u00e7\u00f5es no Pipefy' (external link, same concept as the inbound-alias toggle). 'Meus templates' > 'Criar um novo template' opens a template editor: Nome do template, Nome do remetente (+ 'Endere\u00e7o de email customizado' toggle), Email do remetente ('Pipefy utiliza como respondar para a menos que...'), Email do destinat\u00e1rio (multi-address, + CC/CCO), Assunto, and a body editor with a 'Conte\u00fado din\u00e2mico' pill (the same categorized field/token picker component confirmed in feature-010 Automations and feature-011 Reports \u2014 a third confirmed reuse of that component) plus a fuller toolbar (bold/italic/underline/strikethrough/font-color/align/lists/link/image/embed/quote/table/code-view). Screenshots: screenshots/inspect/emails-inbox.jpg, screenshots/inspect/emails-compose.jpg.",
+    "behavior": "Live-tested: clicking 'Compor email' with zero cards would presumably show an empty picker (this pipe has 1 card, 'Jo\u00e3o Silva', so the picker showed exactly that one row); selecting it navigates straight to a per-card compose view and provisions/reuses that card's unique alias inline (no extra confirmation step). Filled out a full test message (Para: teste@example.com \u2014 tokenized into a chip on blur/comma, Assunto: 'Teste de assunto', body text) to confirm field behavior, then clicked Cancelar to discard rather than Enviar \u2014 sending a real outbound email was intentionally not triggered during inspection (same policy as feature-011's un-triggered Email/Download export actions). Creating a new email template and clicking Cancelar correctly discarded it with no persisted row (re-opening 'Meus templates' showed the same empty state). Toggling 'Endere\u00e7o de email do pipe' was not exercised (left at its default-off state) since enabling inbound routing has an external side effect (a real address becomes live for mail forwarding) beyond this inspection's scope.",
+    "data_model": "EmailThread: id, card_id (FK cards, NOT NULL \u2014 every thread is card-scoped), pipe_id (FK), created_at. EmailMessage: id, thread_id (FK), direction (enum: inbound|outbound), from_name, from_address (per-thread generated alias `pipe{pipeId}+{token}@mail.pipefy.com` for outbound; the sender's real address for inbound), to[] (string[]), cc[] (string[]), bcc[] (string[]), subject, body_html, sent_at, read (bool), assignee_id (FK members, nullable), due_date (date, nullable), label_ids (FK labels, many-to-many). Pipe gains: inbound_email_enabled (bool, default false), inbound_email_alias (string, `pipe{pipeId}@mail.pipefy.com`, server-generated at pipe creation regardless of enabled state). EmailTemplate: id, pipe_id (FK), name, sender_name, sender_email (nullable \u2014 falls back to a Pipefy-branded reply-to when unset), use_custom_sender_address (bool), default_to[] (string[]), default_cc[] (string[]), default_bcc[] (string[]), default_subject (string, supports token interpolation), body_html (supports token interpolation via the shared 'Conte\u00fado din\u00e2mico' field-token picker \u2014 same token scheme as feature-010's automation variable picker and feature-011's report filters).",
     "priority": 10,
     "core": false,
     "passes": true,
@@ -970,9 +970,9 @@
         },
         {
           "name": "email template subject/body interpolate dynamic-content tokens at send time",
-          "description": "A token like {{card.title}} inserted via 'Conteúdo dinâmico' resolves against the target card when the template is applied",
+          "description": "A token like {{card.title}} inserted via 'Conte\u00fado din\u00e2mico' resolves against the target card when the template is applied",
           "input": "applyTemplate(templateId, {cardId}) where template.default_subject === 'Re: {{card.title}}'",
-          "expected_output": "resolved subject === 'Re: João Silva'"
+          "expected_output": "resolved subject === 'Re: Jo\u00e3o Silva'"
         }
       ],
       "e2e": [
@@ -982,7 +982,7 @@
             "Navigate to /pipes/:id/emails",
             "Click 'Compor email'",
             "Verify a card-picker popover appears with a search box and no message fields yet",
-            "Click a card row (e.g. 'João Silva')"
+            "Click a card row (e.g. 'Jo\u00e3o Silva')"
           ],
           "expected": "Navigates to /pipes/:id/emails/:threadId showing a 'Novo email' form pre-filled with De = the thread's generated alias, and a right-hand card mini-panel showing that card's title and current phase"
         },
@@ -1009,9 +1009,9 @@
           "name": "empty inbox filters",
           "steps": [
             "Navigate to /pipes/:id/emails with zero email threads",
-            "Click each left-rail filter (Todas as mensagens, Mensagens não lidas, Atribuídas a mim, Sem responsável)"
+            "Click each left-rail filter (Todas as mensagens, Mensagens n\u00e3o lidas, Atribu\u00eddas a mim, Sem respons\u00e1vel)"
           ],
-          "expected": "Each filter shows 'Nenhum email encontrado nessa seleção.' with no error, and the right pane keeps showing the generic 'Centralize a comunicação...' promo (no card selected)"
+          "expected": "Each filter shows 'Nenhum email encontrado nessa sele\u00e7\u00e3o.' with no error, and the right pane keeps showing the generic 'Centralize a comunica\u00e7\u00e3o...' promo (no card selected)"
         }
       ]
     }
@@ -1019,11 +1019,11 @@
   {
     "id": "feature-019",
     "category": "data",
-    "description": "AI Agents: pipe-scoped autonomous agents with a 3-step builder (identity, knowledge/RAG sources, behaviors), each behavior being its own trigger→instructions rule with a model/skills/effort picker",
-    "page": "Gerenciar (pipe top nav) > Agentes de IA — /pipes/:id/ai_agents (list), /pipes/:id/ai_agents/agent_builder/:uuid/{basic_info|knowledge|behaviors} (builder), /pipes/:id/ai_agents/logs (run history), /pipes/:id/ai_agents/templates (gallery), /pipes/:id/ai_agents_mcp (MCP tool connections)",
-    "ui_details": "Confirmed (iteration 5, live test). Empty state: illustration + 'Vamos criar seu primeiro agente!' + 'Criar novo agente' CTA. Clicking it immediately creates a server-side draft (visible afterward in the list with a 'Rascunho' status badge) and opens a 3-step left-rail wizard: (1) Geral — 'Nome' text input + 'Descreva o papel e os objetivos do Agente' textarea, with quick-link chips to help docs ('Como criar um Agente de IA', 'Escrevendo instruções eficazes', 'Governança de IA'); (2) Conhecimento — 'Adicionar conhecimento' dropdown offers 3 source types: 'Pipe ou base de dados' (use cards/records from a pipe as context), 'Documento' (upload files), 'Texto simples' (Novo) — a modal with Nome + 'Quando usar este conhecimento' (a free-text RAG-retrieval-trigger description) + Conteúdo (raw text) fields; a 'Dados neste pipe' section separately lists pipe-native fields already available as context; (3) Comportamentos — the core builder, one card per behavior with an editable title, 'Testar' button, active/inactive toggle, and a kebab menu (only 'Deletar'). Each behavior card has 'Adicionar um gatilho' opening a 'Sempre que...' modal: an event-type combobox with the SAME 9 trigger types as Automations (feature-010) minus the recurring-activity trigger ('Um card entrar em uma fase', 'Um campo é atualizado', 'Um card for criado', 'Um alerta é acionado', 'Um card sair de uma fase', 'Um e-mail for recebido', 'Todos os cards conectados forem movidos para uma fase', 'Uma resposta HTTP é recebida', 'Um botão da interface é clicado'); choosing a phase-based trigger reveals a 'Para fase' dropdown (populated with the pipe's real phases) plus a collapsed 'Adicionar condições' expander, and a 'Adicionar gatilho' submit — but selecting a value in the phase dropdown visually closes the modal without an explicit save unless 'Adicionar gatilho' is clicked (a UI quirk to reproduce carefully, not fight). Below the trigger, 'Detalhe as instruções' is a free-text instructions box (placeholder example: 'Analisar [Relatório de despesas] para verificar a conformidade... Se o relatório exceder os limites, então [Mover card para Revisão Financeira]') supporting a '/' slash-command palette identical in structure to the Automations/Reports/Email-templates token picker: an 'Ações' group (Atualizar campos do card, Criar um card, Criar um card conectado, Criar um registro, Enviar template de email, Mover card) followed by an 'Atributos do card' group (A última fase em que o card estava, Comentários, Criado em, Criador, Data de vencimento, Emails, Etiquetas, Fase atual, Finalizado em, [ID], Responsáveis, Título) then one group per phase name (e.g. 'Start form', 'Caixa de entrada') listing that phase's own fields. A bottom toolbar has 3 dropdowns: model picker ('Modelo Padrão da Organização' + a 'Pipefy AI' section with Classic [banner: deprecated 2026-10-01, auto-migrates to Standard at the same per-execution cost], Lite ['Rápido para tarefas simples em grande volume'], Pro [shows live credit cost, e.g. '2 créditos até 8 de out', 'Mais capaz para comportamentos complexos'], Standard ['Equilíbrio entre qualidade e custo para o dia a dia']); a Skills toggle-list (Análise de documentos — lê PDFs/imagens; Pesquisa na Web — pesquisa dados em tempo real; Cálculos e análises — executa código); and an Esforço toggle ('Máximo', tagged Beta, gated behind Pipefy AI Pro + reasoning skills, 'Racionaliza mais profundamente em trabalhos complexos e documentos grandes antes de agir'). A 'Melhorar instruções' link and '+ Adicionar novo comportamento' let a single agent hold multiple independent behavior cards. Leaving the builder without saving triggers an in-app 'Sair sem salvar?' confirm modal (not a native beforeunload dialog). Deleting a saved agent from the list's kebab (Editar/Duplicar/Excluir) requires typing the literal word 'deletar' into a confirm input before the red 'Deletar agente' button activates. Sub-tabs: 'Logs' — a run-history table (Agente, Comportamento, Card processado, Status, Horário de início columns; a date-range display; 'Filtrar por: Todos' dropdown; 'Atualizar logs' button; empty state 'Ainda não há dados de execução disponíveis...'); 'Templates' — a 2-section gallery, 'por função' (Extrair dados de documentos, Resumir conteúdo, Analisar sentimento) and 'por área' (Análise de documentos/Conformidade, Triagem de candidatos de RH/RH, Análise de contrato/Jurídico, Validação da fatura/Contas a pagar, Controle de qualidade/Operações, Seleção de fornecedores/Compras), each card has a colored category tag + title + description + 'Editar agente' button; 'MCP' (tagged 'Novo' in the tab strip) — an empty state ('Dê aos seus agentes acesso a tools externas, fontes de dados e ações através de conexões compatíveis com MCP') + 'Adicionar conexões' CTA (did not open a working modal in this trial org — likely plan-gated). Screenshots: screenshots/inspect/ai-agents-empty.jpg, ai-agents-behaviors-builder.jpg, ai-agents-templates.jpg.",
-    "behavior": "Confirmed via live interaction (not a full run, since firing an agent has real AI-cost side effects out of this project's inspection scope): opening 'Criar novo agente' persists a draft agent server-side immediately — even after explicitly discarding via 'Sair sem salvar?', the agent reappears in the list with status 'Rascunho' and must be separately deleted (type-to-confirm 'deletar'). This means agent creation is NOT a client-only draft-until-save flow like most other builders in this product (contrast with the Automations/Database-table create modals) — every 'Criar novo agente' click has a server side-effect. The trigger-selection modal for phase-based events auto-populates the phase dropdown from the pipe's real phase list (Caixa de entrada/Fazendo/Concluido in this org) and reuses the exact same grouped instructions-token-picker component confirmed independently in Automations (feature-010), Reports (feature-011), and Email templates (feature-018) — now a 4th confirmed reuse, meaning the clone should build this token picker once as a shared component parameterized by {actions[], cardAttributes[], phaseFieldGroups[]}. Model tier selection shows live credit-cost text for the Pro tier scoped to a rolling date window ('2 créditos até 8 de out'), implying usage-based billing tracked per-org — the clone should stub a flat per-tier cost model rather than real billing. Not yet tested: actually firing a saved+enabled behavior end-to-end and confirming a Logs row and a card mutation (deferred — same category as the un-triggered Automations HTTP/email actions); the 'Pipe ou base de dados' and 'Documento' knowledge-source flows (opened the type picker but did not complete either, consistent with this pass's focus on the Comportamentos step); and the MCP 'Adicionar conexões' flow, which did not visibly open.",
-    "data_model": "ai_agents: id, pipe_id (fk), name, description, status (enum: draft|active|inactive), created_at, updated_at. ai_agent_knowledge_sources: id, agent_id (fk), type (enum: pipe_database|document|plain_text), name, usage_description (text, for plain_text — the 'Quando usar este conhecimento' trigger hint), content (text, for plain_text) | file_ref (for document) | source_pipe_id (for pipe_database). ai_agent_behaviors: id, agent_id (fk), title, enabled (bool), trigger_type (enum, 9 values — same enum as automations.trigger_type minus 'recurring_activity'), trigger_config (jsonb — e.g. {phaseId, conditions[]}), instructions (text, with embedded slash-inserted action/field tokens), model_tier (enum: org_default|classic|lite|pro|standard), skills (jsonb — {documentAnalysis: bool, webSearch: bool, codeExecution: bool}), effort (enum: standard|maximum), created_at, updated_at. ai_agent_runs: id, agent_id (fk), behavior_id (fk), card_id (fk), status (enum: success|error|running), started_at, finished_at, message (text) — same shape as automation_runs (feature-010), surfaced in the Logs tab.",
+    "description": "AI Agents: pipe-scoped autonomous agents with a 3-step builder (identity, knowledge/RAG sources, behaviors), each behavior being its own trigger\u2192instructions rule with a model/skills/effort picker",
+    "page": "Gerenciar (pipe top nav) > Agentes de IA \u2014 /pipes/:id/ai_agents (list), /pipes/:id/ai_agents/agent_builder/:uuid/{basic_info|knowledge|behaviors} (builder), /pipes/:id/ai_agents/logs (run history), /pipes/:id/ai_agents/templates (gallery), /pipes/:id/ai_agents_mcp (MCP tool connections)",
+    "ui_details": "Confirmed (iteration 5, live test). Empty state: illustration + 'Vamos criar seu primeiro agente!' + 'Criar novo agente' CTA. Clicking it immediately creates a server-side draft (visible afterward in the list with a 'Rascunho' status badge) and opens a 3-step left-rail wizard: (1) Geral \u2014 'Nome' text input + 'Descreva o papel e os objetivos do Agente' textarea, with quick-link chips to help docs ('Como criar um Agente de IA', 'Escrevendo instru\u00e7\u00f5es eficazes', 'Governan\u00e7a de IA'); (2) Conhecimento \u2014 'Adicionar conhecimento' dropdown offers 3 source types: 'Pipe ou base de dados' (use cards/records from a pipe as context), 'Documento' (upload files), 'Texto simples' (Novo) \u2014 a modal with Nome + 'Quando usar este conhecimento' (a free-text RAG-retrieval-trigger description) + Conte\u00fado (raw text) fields; a 'Dados neste pipe' section separately lists pipe-native fields already available as context; (3) Comportamentos \u2014 the core builder, one card per behavior with an editable title, 'Testar' button, active/inactive toggle, and a kebab menu (only 'Deletar'). Each behavior card has 'Adicionar um gatilho' opening a 'Sempre que...' modal: an event-type combobox with the SAME 9 trigger types as Automations (feature-010) minus the recurring-activity trigger ('Um card entrar em uma fase', 'Um campo \u00e9 atualizado', 'Um card for criado', 'Um alerta \u00e9 acionado', 'Um card sair de uma fase', 'Um e-mail for recebido', 'Todos os cards conectados forem movidos para uma fase', 'Uma resposta HTTP \u00e9 recebida', 'Um bot\u00e3o da interface \u00e9 clicado'); choosing a phase-based trigger reveals a 'Para fase' dropdown (populated with the pipe's real phases) plus a collapsed 'Adicionar condi\u00e7\u00f5es' expander, and a 'Adicionar gatilho' submit \u2014 but selecting a value in the phase dropdown visually closes the modal without an explicit save unless 'Adicionar gatilho' is clicked (a UI quirk to reproduce carefully, not fight). Below the trigger, 'Detalhe as instru\u00e7\u00f5es' is a free-text instructions box (placeholder example: 'Analisar [Relat\u00f3rio de despesas] para verificar a conformidade... Se o relat\u00f3rio exceder os limites, ent\u00e3o [Mover card para Revis\u00e3o Financeira]') supporting a '/' slash-command palette identical in structure to the Automations/Reports/Email-templates token picker: an 'A\u00e7\u00f5es' group (Atualizar campos do card, Criar um card, Criar um card conectado, Criar um registro, Enviar template de email, Mover card) followed by an 'Atributos do card' group (A \u00faltima fase em que o card estava, Coment\u00e1rios, Criado em, Criador, Data de vencimento, Emails, Etiquetas, Fase atual, Finalizado em, [ID], Respons\u00e1veis, T\u00edtulo) then one group per phase name (e.g. 'Start form', 'Caixa de entrada') listing that phase's own fields. A bottom toolbar has 3 dropdowns: model picker ('Modelo Padr\u00e3o da Organiza\u00e7\u00e3o' + a 'Pipefy AI' section with Classic [banner: deprecated 2026-10-01, auto-migrates to Standard at the same per-execution cost], Lite ['R\u00e1pido para tarefas simples em grande volume'], Pro [shows live credit cost, e.g. '2 cr\u00e9ditos at\u00e9 8 de out', 'Mais capaz para comportamentos complexos'], Standard ['Equil\u00edbrio entre qualidade e custo para o dia a dia']); a Skills toggle-list (An\u00e1lise de documentos \u2014 l\u00ea PDFs/imagens; Pesquisa na Web \u2014 pesquisa dados em tempo real; C\u00e1lculos e an\u00e1lises \u2014 executa c\u00f3digo); and an Esfor\u00e7o toggle ('M\u00e1ximo', tagged Beta, gated behind Pipefy AI Pro + reasoning skills, 'Racionaliza mais profundamente em trabalhos complexos e documentos grandes antes de agir'). A 'Melhorar instru\u00e7\u00f5es' link and '+ Adicionar novo comportamento' let a single agent hold multiple independent behavior cards. Leaving the builder without saving triggers an in-app 'Sair sem salvar?' confirm modal (not a native beforeunload dialog). Deleting a saved agent from the list's kebab (Editar/Duplicar/Excluir) requires typing the literal word 'deletar' into a confirm input before the red 'Deletar agente' button activates. Sub-tabs: 'Logs' \u2014 a run-history table (Agente, Comportamento, Card processado, Status, Hor\u00e1rio de in\u00edcio columns; a date-range display; 'Filtrar por: Todos' dropdown; 'Atualizar logs' button; empty state 'Ainda n\u00e3o h\u00e1 dados de execu\u00e7\u00e3o dispon\u00edveis...'); 'Templates' \u2014 a 2-section gallery, 'por fun\u00e7\u00e3o' (Extrair dados de documentos, Resumir conte\u00fado, Analisar sentimento) and 'por \u00e1rea' (An\u00e1lise de documentos/Conformidade, Triagem de candidatos de RH/RH, An\u00e1lise de contrato/Jur\u00eddico, Valida\u00e7\u00e3o da fatura/Contas a pagar, Controle de qualidade/Opera\u00e7\u00f5es, Sele\u00e7\u00e3o de fornecedores/Compras), each card has a colored category tag + title + description + 'Editar agente' button; 'MCP' (tagged 'Novo' in the tab strip) \u2014 an empty state ('D\u00ea aos seus agentes acesso a tools externas, fontes de dados e a\u00e7\u00f5es atrav\u00e9s de conex\u00f5es compat\u00edveis com MCP') + 'Adicionar conex\u00f5es' CTA (did not open a working modal in this trial org \u2014 likely plan-gated). Screenshots: screenshots/inspect/ai-agents-empty.jpg, ai-agents-behaviors-builder.jpg, ai-agents-templates.jpg.",
+    "behavior": "Confirmed via live interaction (not a full run, since firing an agent has real AI-cost side effects out of this project's inspection scope): opening 'Criar novo agente' persists a draft agent server-side immediately \u2014 even after explicitly discarding via 'Sair sem salvar?', the agent reappears in the list with status 'Rascunho' and must be separately deleted (type-to-confirm 'deletar'). This means agent creation is NOT a client-only draft-until-save flow like most other builders in this product (contrast with the Automations/Database-table create modals) \u2014 every 'Criar novo agente' click has a server side-effect. The trigger-selection modal for phase-based events auto-populates the phase dropdown from the pipe's real phase list (Caixa de entrada/Fazendo/Concluido in this org) and reuses the exact same grouped instructions-token-picker component confirmed independently in Automations (feature-010), Reports (feature-011), and Email templates (feature-018) \u2014 now a 4th confirmed reuse, meaning the clone should build this token picker once as a shared component parameterized by {actions[], cardAttributes[], phaseFieldGroups[]}. Model tier selection shows live credit-cost text for the Pro tier scoped to a rolling date window ('2 cr\u00e9ditos at\u00e9 8 de out'), implying usage-based billing tracked per-org \u2014 the clone should stub a flat per-tier cost model rather than real billing. Not yet tested: actually firing a saved+enabled behavior end-to-end and confirming a Logs row and a card mutation (deferred \u2014 same category as the un-triggered Automations HTTP/email actions); the 'Pipe ou base de dados' and 'Documento' knowledge-source flows (opened the type picker but did not complete either, consistent with this pass's focus on the Comportamentos step); and the MCP 'Adicionar conex\u00f5es' flow, which did not visibly open.",
+    "data_model": "ai_agents: id, pipe_id (fk), name, description, status (enum: draft|active|inactive), created_at, updated_at. ai_agent_knowledge_sources: id, agent_id (fk), type (enum: pipe_database|document|plain_text), name, usage_description (text, for plain_text \u2014 the 'Quando usar este conhecimento' trigger hint), content (text, for plain_text) | file_ref (for document) | source_pipe_id (for pipe_database). ai_agent_behaviors: id, agent_id (fk), title, enabled (bool), trigger_type (enum, 9 values \u2014 same enum as automations.trigger_type minus 'recurring_activity'), trigger_config (jsonb \u2014 e.g. {phaseId, conditions[]}), instructions (text, with embedded slash-inserted action/field tokens), model_tier (enum: org_default|classic|lite|pro|standard), skills (jsonb \u2014 {documentAnalysis: bool, webSearch: bool, codeExecution: bool}), effort (enum: standard|maximum), created_at, updated_at. ai_agent_runs: id, agent_id (fk), behavior_id (fk), card_id (fk), status (enum: success|error|running), started_at, finished_at, message (text) \u2014 same shape as automation_runs (feature-010), surfaced in the Logs tab.",
     "priority": 6,
     "core": false,
     "passes": true,
@@ -1033,7 +1033,7 @@
           "name": "creating an agent persists a draft immediately, independent of wizard completion",
           "description": "Opening the create-agent wizard must create a server-side ai_agents row with status='draft' before any field is filled in, matching the observed 'Rascunho' row left behind after an unsaved exit",
           "input": "createAgent(pipeId) called on 'Criar novo agente' click, before any basic_info/knowledge/behaviors data is submitted",
-          "expected_output": "An ai_agents row exists with status='draft', name='Agente sem título' (the observed default placeholder), and no behaviors"
+          "expected_output": "An ai_agents row exists with status='draft', name='Agente sem t\u00edtulo' (the observed default placeholder), and no behaviors"
         },
         {
           "name": "behavior trigger_type enum matches automations minus recurring_activity",
@@ -1057,7 +1057,7 @@
             "Go to step 3 Comportamentos, click 'Quando isso acontecer...', select 'Um card entrar em uma fase', pick a phase from 'Para fase'",
             "Click the 'Agentes de IA' breadcrumb to leave, click 'Sair sem salvar' in the confirm modal"
           ],
-          "expected": "Redirected to the Agentes de IA list; a row appears with the typed name (or 'Agente sem título' if the name never committed) and a 'Rascunho' status badge"
+          "expected": "Redirected to the Agentes de IA list; a row appears with the typed name (or 'Agente sem t\u00edtulo' if the name never committed) and a 'Rascunho' status badge"
         },
         {
           "name": "delete a draft agent via the type-to-confirm flow",
@@ -1067,7 +1067,7 @@
             "Type 'deletar' into the confirmation input",
             "Click 'Deletar agente'"
           ],
-          "expected": "A success toast appears ('Agente de IA excluído com sucesso'), the row disappears, and the list returns to its empty state if it was the only agent"
+          "expected": "A success toast appears ('Agente de IA exclu\u00eddo com sucesso'), the row disappears, and the list returns to its empty state if it was the only agent"
         }
       ],
       "edge_cases": [
@@ -1084,7 +1084,7 @@
           "steps": [
             "Navigate to a pipe's Agentes de IA > Logs sub-tab with zero prior executions"
           ],
-          "expected": "Table headers render (Agente, Comportamento, Card processado, Status, Horário de início) with the empty-state message 'Ainda não há dados de execução disponíveis...' and no rows"
+          "expected": "Table headers render (Agente, Comportamento, Card processado, Status, Hor\u00e1rio de in\u00edcio) with the empty-state message 'Ainda n\u00e3o h\u00e1 dados de execu\u00e7\u00e3o dispon\u00edveis...' and no rows"
         }
       ]
     }
@@ -1142,10 +1142,10 @@
   {
     "id": "feature-021",
     "category": "crud",
-    "description": "Connections (Conexões): named pipe-scoped links to another pipe or Database Table, configuring search/create permission, cardinality, and phase-advance gating, surfaced as a card-level tab for creating/searching connected records",
-    "page": "Gerenciar (top nav) > Ferramentas > Conexões — modal, list, and creation form; connected records surface as a pill tab on the card detail view (/open-cards/:cardId)",
-    "ui_details": "CONFIRMED live iteration 7. Empty state: illustration + single 'Criar conexão' CTA. Creation form fields: 'Nome da conexão' (free text), 'Selecione um pipe ou database para conectar' (single-select dropdown grouped into 'Pipes' and 'Tabelas' sections), 'Escolha o que as pessoas podem fazer com a conexão' (3-way radio: search-only / create-only / search-and-create), 'Número de cards ou registros que podem ser conectados' (2-way radio: single vs multiple), and an 'Opções avançadas' expandable section with 5 toggles (require connected-record creation to advance to next/final phase; block phase advance until all connected records reach final phase, ×2; auto-fill card fields from the connected record). Saved connections list in a 'Gerenciar conexões' modal (search box, one row per connection with a delete icon) and, if targeting a database, as a shortcut in the pipe's top-nav 'Conexões' dropdown.",
-    "behavior": "Created a real connection 'Fornecedores' -> Suppliers database. It immediately appeared (a) in the top-nav Conexões dropdown as a named shortcut plus a permanent 'Gerenciar conexões' item, (b) in the Gerenciar-conexões list with a caption noting only database-target connections show in the top nav, and (c) as a new 'Fornecedores' pill tab on an existing card, titled with the target object's name ('Suppliers') and showing an empty state with a 'Criar novo <connection name>' button that lets the user create/attach a connected record directly from the card. Behavior of the 5 advanced toggles (phase-advance gating, auto-fill) was configured but not exercised end-to-end (would require completing a connected record and attempting a phase move).",
+    "description": "Connections (Conex\u00f5es): named pipe-scoped links to another pipe or Database Table, configuring search/create permission, cardinality, and phase-advance gating, surfaced as a card-level tab for creating/searching connected records",
+    "page": "Gerenciar (top nav) > Ferramentas > Conex\u00f5es \u2014 modal, list, and creation form; connected records surface as a pill tab on the card detail view (/open-cards/:cardId)",
+    "ui_details": "CONFIRMED live iteration 7. Empty state: illustration + single 'Criar conex\u00e3o' CTA. Creation form fields: 'Nome da conex\u00e3o' (free text), 'Selecione um pipe ou database para conectar' (single-select dropdown grouped into 'Pipes' and 'Tabelas' sections), 'Escolha o que as pessoas podem fazer com a conex\u00e3o' (3-way radio: search-only / create-only / search-and-create), 'N\u00famero de cards ou registros que podem ser conectados' (2-way radio: single vs multiple), and an 'Op\u00e7\u00f5es avan\u00e7adas' expandable section with 5 toggles (require connected-record creation to advance to next/final phase; block phase advance until all connected records reach final phase, \u00d72; auto-fill card fields from the connected record). Saved connections list in a 'Gerenciar conex\u00f5es' modal (search box, one row per connection with a delete icon) and, if targeting a database, as a shortcut in the pipe's top-nav 'Conex\u00f5es' dropdown.",
+    "behavior": "Created a real connection 'Fornecedores' -> Suppliers database. It immediately appeared (a) in the top-nav Conex\u00f5es dropdown as a named shortcut plus a permanent 'Gerenciar conex\u00f5es' item, (b) in the Gerenciar-conex\u00f5es list with a caption noting only database-target connections show in the top nav, and (c) as a new 'Fornecedores' pill tab on an existing card, titled with the target object's name ('Suppliers') and showing an empty state with a 'Criar novo <connection name>' button that lets the user create/attach a connected record directly from the card. Behavior of the 5 advanced toggles (phase-advance gating, auto-fill) was configured but not exercised end-to-end (would require completing a connected record and attempting a phase move).",
     "data_model": "Connection: id, pipe_id (fk), name, target_type ('pipe'|'database'), target_id, permission ('search'|'create'|'both'), cardinality ('single'|'multiple'), require_for_next_phase (bool), require_for_final_phase (bool), block_next_phase_until_target_done (bool), block_final_phase_until_target_done (bool), autofill_from_target (bool). ConnectedRecord: id, connection_id (fk), source_card_id (fk), target_card_id/target_record_id (fk), created_at.",
     "priority": 9,
     "core": false,
@@ -1160,7 +1160,7 @@
         },
         {
           "name": "only database-target connections are returned for the top-nav dropdown",
-          "description": "The top-nav Conexões dropdown query must filter out pipe-target connections per the observed UI caption",
+          "description": "The top-nav Conex\u00f5es dropdown query must filter out pipe-target connections per the observed UI caption",
           "input": "listNavConnections(pipeId) with 2 connections, one target_type='pipe' and one target_type='database'",
           "expected_output": "returns only the target_type='database' connection"
         }
@@ -1169,9 +1169,9 @@
         {
           "name": "creating a connection surfaces a new tab on an existing card",
           "steps": [
-            "Navigate to a pipe, Gerenciar > Ferramentas > Conexões",
-            "Click 'Criar conexão', fill name 'Fornecedores', select the Suppliers database, keep defaults",
-            "Click 'Salvar conexão'",
+            "Navigate to a pipe, Gerenciar > Ferramentas > Conex\u00f5es",
+            "Click 'Criar conex\u00e3o', fill name 'Fornecedores', select the Suppliers database, keep defaults",
+            "Click 'Salvar conex\u00e3o'",
             "Open an existing card"
           ],
           "expected": "A 'Fornecedores' pill tab appears in the card's tab row; clicking it shows an empty state titled 'Suppliers' with a 'Criar novo Fornecedores' button"
@@ -1181,7 +1181,7 @@
         {
           "name": "deleting a connection removes its card-level tab",
           "steps": [
-            "Open 'Gerenciar conexões', click the delete icon on the 'Fornecedores' connection",
+            "Open 'Gerenciar conex\u00f5es', click the delete icon on the 'Fornecedores' connection",
             "Reopen the previously-tabbed card"
           ],
           "expected": "The 'Fornecedores' pill tab no longer appears on the card"
@@ -1193,9 +1193,9 @@
     "id": "feature-022",
     "category": "data",
     "description": "PDF Generator (Gerador de PDF): pipe-scoped rich-text document templates with embedded dynamic-field tokens, rendered per-card into a downloadable PDF",
-    "page": "Gerenciar (top nav) > Ferramentas > Gerador de PDF — template list modal (/pipes/:id/pdf_templates), template editor (/pipes/:id/pdf_templates/new), per-card preview (/pipes/:id/cards/:cardId/pdf_templates/:templateId/preview); triggered from the card detail's 'PDF' tab",
-    "ui_details": "CONFIRMED live iteration 7. Template list modal shows existing templates as toggle rows (2 pre-seeded 'Introdução (exemplo)' rows, enabled by default) plus a 'Criar novo modelo' button; new templates default to disabled until toggled on. The editor is a full-page WYSIWYG: editable title top-left, Cancelar/Salvar top-right, and a toolbar with 'Campo dinâmico' (the same grouped/searchable/phase-grouped dynamic-field token picker reused across Automations, Reports, Emails, and AI Agents), text color, Bold, Italic, H1, H2, Underline, align left/center/right, link, bulleted/numbered list, image, table, and page-break. Inserted tokens render as inline chips in a paper-styled document canvas.",
-    "behavior": "Created a real template 'Recibo de Compra' with one inserted 'Nome do solicitante' token and saved it. It appeared in the template list (toggle off by default) and, after toggling on, in an existing card's 'PDF' tab menu under a 'Modelos' list alongside the 2 seeded examples (plus an 'Opções > Criar ou Editar seus modelos de Pdf's' shortcut back to the list). Selecting the template from the card ('João Silva') navigated to a live preview page that resolved the token to the card's real field value ('João Silva'), with 'Fechar' and 'Baixar PDF' actions — confirming server-side merge of the template body with that card's field data, downloadable as an actual PDF.",
+    "page": "Gerenciar (top nav) > Ferramentas > Gerador de PDF \u2014 template list modal (/pipes/:id/pdf_templates), template editor (/pipes/:id/pdf_templates/new), per-card preview (/pipes/:id/cards/:cardId/pdf_templates/:templateId/preview); triggered from the card detail's 'PDF' tab",
+    "ui_details": "CONFIRMED live iteration 7. Template list modal shows existing templates as toggle rows (2 pre-seeded 'Introdu\u00e7\u00e3o (exemplo)' rows, enabled by default) plus a 'Criar novo modelo' button; new templates default to disabled until toggled on. The editor is a full-page WYSIWYG: editable title top-left, Cancelar/Salvar top-right, and a toolbar with 'Campo din\u00e2mico' (the same grouped/searchable/phase-grouped dynamic-field token picker reused across Automations, Reports, Emails, and AI Agents), text color, Bold, Italic, H1, H2, Underline, align left/center/right, link, bulleted/numbered list, image, table, and page-break. Inserted tokens render as inline chips in a paper-styled document canvas.",
+    "behavior": "Created a real template 'Recibo de Compra' with one inserted 'Nome do solicitante' token and saved it. It appeared in the template list (toggle off by default) and, after toggling on, in an existing card's 'PDF' tab menu under a 'Modelos' list alongside the 2 seeded examples (plus an 'Op\u00e7\u00f5es > Criar ou Editar seus modelos de Pdf's' shortcut back to the list). Selecting the template from the card ('Jo\u00e3o Silva') navigated to a live preview page that resolved the token to the card's real field value ('Jo\u00e3o Silva'), with 'Fechar' and 'Baixar PDF' actions \u2014 confirming server-side merge of the template body with that card's field data, downloadable as an actual PDF.",
     "data_model": "PdfTemplate: id, pipe_id (fk), title, enabled (bool), body (rich-text/HTML with embedded field-token placeholders e.g. {{field:field_id}}), created_at, updated_at. Rendering: given a card_id and template_id, resolve every token against that card's field values and produce a PDF (e.g. via a headless HTML-to-PDF render step).",
     "priority": 9,
     "core": false,
@@ -1205,8 +1205,8 @@
         {
           "name": "token resolution substitutes real card field values",
           "description": "Rendering a template body containing a field token must replace it with that specific card's value for the referenced field",
-          "input": "renderTemplateBody('<p>{{field:solicitante_nome}}</p>', {solicitante_nome:'João Silva'})",
-          "expected_output": "'<p>João Silva</p>'"
+          "input": "renderTemplateBody('<p>{{field:solicitante_nome}}</p>', {solicitante_nome:'Jo\u00e3o Silva'})",
+          "expected_output": "'<p>Jo\u00e3o Silva</p>'"
         },
         {
           "name": "new template defaults to disabled",
@@ -1243,8 +1243,8 @@
     "id": "feature-023",
     "category": "ui",
     "description": "Interfaces builder content elements: Texto (rich text with dynamic-content token picker), Link (external link card), Divisor (visual separator)",
-    "page": "Interfaces builder, 'Layout e conteúdo' palette group (/interfaces/:interfaceId/pages/:pageId/edit)",
-    "ui_details": "CONFIRMED live iteration 8. Texto has NO side config panel — the placed block is an inline, focused WYSIWYG editor; selecting/focusing it surfaces a floating toolbar with '+ Conteúdo dinâmico' (the dynamic-field token picker shared with Automations/Reports/Emails/AI Agents/PDF Generator — 7th confirmed reuse), a 'Texto normal' block-style dropdown, Bold/Italic/Underline/Strikethrough/text-color, bullet/numbered list, link insert, blockquote. Link opens a side panel with just 'Nome' + 'URL' text fields; the canvas block live-updates while typing, rendering as a card (link icon, entered name as title, fixed 'Site' subtitle, external-link icon once a URL is present). Divisor has zero configuration — dragging it onto the canvas immediately renders a full-width horizontal rule, no side panel opens at all. All 3 (like every element tested this iteration) insert at the top of the canvas regardless of drop coordinate, not at the literal drop position — see spec-build.md §21.",
+    "page": "Interfaces builder, 'Layout e conte\u00fado' palette group (/interfaces/:interfaceId/pages/:pageId/edit)",
+    "ui_details": "CONFIRMED live iteration 8. Texto has NO side config panel \u2014 the placed block is an inline, focused WYSIWYG editor; selecting/focusing it surfaces a floating toolbar with '+ Conte\u00fado din\u00e2mico' (the dynamic-field token picker shared with Automations/Reports/Emails/AI Agents/PDF Generator \u2014 7th confirmed reuse), a 'Texto normal' block-style dropdown, Bold/Italic/Underline/Strikethrough/text-color, bullet/numbered list, link insert, blockquote. Link opens a side panel with just 'Nome' + 'URL' text fields; the canvas block live-updates while typing, rendering as a card (link icon, entered name as title, fixed 'Site' subtitle, external-link icon once a URL is present). Divisor has zero configuration \u2014 dragging it onto the canvas immediately renders a full-width horizontal rule, no side panel opens at all. All 3 (like every element tested this iteration) insert at the top of the canvas regardless of drop coordinate, not at the literal drop position \u2014 see spec-build.md \u00a721.",
     "behavior": "CONFIRMED live iteration 8. Texto content persists as structured rich text (bold/lists/links survive), not a plain string. Link's canvas preview updates live, field-by-field, with no save button. Divisor is purely presentational with no data beyond its existence/order in the page.",
     "data_model": "interface_page_elements (see feature-008) rows with type='text': config={content: richTextJSON} (richTextJSON supports bold/italic/underline/strike/color/lists/links/blockquote plus embedded dynamic-content tokens). type='link': config={name, url}. type='divider': config={} (no fields).",
     "priority": 10,
@@ -1295,7 +1295,7 @@
             "Fill only Nome, leave URL blank",
             "Click 'Ver ao vivo'"
           ],
-          "expected": "The live page does not render a broken/dead link — either the element is hidden or shows a clearly non-clickable placeholder state"
+          "expected": "The live page does not render a broken/dead link \u2014 either the element is hidden or shows a clearly non-clickable placeholder state"
         },
         {
           "name": "very long Texto content",
@@ -1311,10 +1311,10 @@
   {
     "id": "feature-024",
     "category": "ui",
-    "description": "Interfaces builder media elements: Imagem (image with Unsplash/upload/URL sources), Vídeo (YouTube/Vimeo embed), Incorporar (generic iframe embed)",
-    "page": "Interfaces builder, 'Mídia' palette group (/interfaces/:interfaceId/pages/:pageId/edit)",
-    "ui_details": "CONFIRMED live iteration 8. Imagem's side panel opens a 3-tab picker on click: 'Imagens do Unsplash' (search-by-topic/color grid of real stock photos, paginated via 'Ver mais'), 'Carregar imagem' (direct upload), 'From URL' (paste an external image URL) — plus a 'Texto alternativo' (alt text) field and a 'Cantos arredondados' (rounded corners) toggle below the picker. Vídeo has a single URL field with hint text 'Somente vídeos do YouTube, Vimeo são suportados por enquanto' and a 'Mostrar Controles' toggle. Incorporar has a single URL field with warning text 'Alguns sites podem afetar o desempenho da sua interface' plus 'Mostrar controles de navegação' and 'Mostrar título/url' toggles (both default ON).",
-    "behavior": "CONFIRMED live iteration 8, all 3 render REAL external content, not placeholders. Imagem: picked a real Unsplash photo and clicked 'Aplicar' — it rendered full-width in the canvas immediately (real Unsplash search API integration). Vídeo: pasted a real public YouTube URL — it live-embedded the actual video thumbnail + player (real oEmbed-style integration). Incorporar: pasted a plain URL — it rendered a real live iframe of that page with a header bar (URL text + refresh icon + open-in-new-tab icon) above the embedded content.",
+    "description": "Interfaces builder media elements: Imagem (image with Unsplash/upload/URL sources), V\u00eddeo (YouTube/Vimeo embed), Incorporar (generic iframe embed)",
+    "page": "Interfaces builder, 'M\u00eddia' palette group (/interfaces/:interfaceId/pages/:pageId/edit)",
+    "ui_details": "CONFIRMED live iteration 8. Imagem's side panel opens a 3-tab picker on click: 'Imagens do Unsplash' (search-by-topic/color grid of real stock photos, paginated via 'Ver mais'), 'Carregar imagem' (direct upload), 'From URL' (paste an external image URL) \u2014 plus a 'Texto alternativo' (alt text) field and a 'Cantos arredondados' (rounded corners) toggle below the picker. V\u00eddeo has a single URL field with hint text 'Somente v\u00eddeos do YouTube, Vimeo s\u00e3o suportados por enquanto' and a 'Mostrar Controles' toggle. Incorporar has a single URL field with warning text 'Alguns sites podem afetar o desempenho da sua interface' plus 'Mostrar controles de navega\u00e7\u00e3o' and 'Mostrar t\u00edtulo/url' toggles (both default ON).",
+    "behavior": "CONFIRMED live iteration 8, all 3 render REAL external content, not placeholders. Imagem: picked a real Unsplash photo and clicked 'Aplicar' \u2014 it rendered full-width in the canvas immediately (real Unsplash search API integration). V\u00eddeo: pasted a real public YouTube URL \u2014 it live-embedded the actual video thumbnail + player (real oEmbed-style integration). Incorporar: pasted a plain URL \u2014 it rendered a real live iframe of that page with a header bar (URL text + refresh icon + open-in-new-tab icon) above the embedded content.",
     "data_model": "interface_page_elements (see feature-008) rows with type='image': config={source_type: unsplash|upload|url, source_ref (unsplash photo id, upload file_id, or raw URL), alt_text, rounded_corners: bool}. type='video': config={url, platform: youtube|vimeo (derived from url), show_controls: bool}. type='embed': config={url, show_nav_controls: bool, show_title_bar: bool}.",
     "priority": 10,
     "core": false,
@@ -1329,7 +1329,7 @@
         },
         {
           "name": "embed element extracts a display title/domain from an arbitrary URL",
-          "description": "The 'Mostrar título/url' toggle needs a display string derived from the raw embed URL",
+          "description": "The 'Mostrar t\u00edtulo/url' toggle needs a display string derived from the raw embed URL",
           "input": "extractEmbedTitle('https://example.com/some/deep/path?x=1')",
           "expected_output": "returns 'example.com' (or the page's og:title if fetchable), not the full raw URL with query string"
         }
@@ -1346,9 +1346,9 @@
           "expected": "The live page shows the selected photo rendered full-width"
         },
         {
-          "name": "add a Vídeo element with a YouTube URL and confirm it embeds",
+          "name": "add a V\u00eddeo element with a YouTube URL and confirm it embeds",
           "steps": [
-            "Drag 'Vídeo' onto the canvas",
+            "Drag 'V\u00eddeo' onto the canvas",
             "Paste a valid YouTube watch URL into the URL field",
             "Click 'Ver ao vivo'"
           ],
@@ -1365,12 +1365,12 @@
           "expected": "The embed area shows a graceful 'couldn't load this content' fallback message, not a blank/broken iframe"
         },
         {
-          "name": "Vídeo element given an unsupported host URL",
+          "name": "V\u00eddeo element given an unsupported host URL",
           "steps": [
-            "Drag 'Vídeo' onto the canvas",
+            "Drag 'V\u00eddeo' onto the canvas",
             "Paste a non-YouTube/Vimeo URL (e.g. a direct .mp4 link)"
           ],
-          "expected": "An inline validation error appears ('Somente vídeos do YouTube, Vimeo são suportados'); no broken embed is rendered"
+          "expected": "An inline validation error appears ('Somente v\u00eddeos do YouTube, Vimeo s\u00e3o suportados'); no broken embed is rendered"
         }
       ]
     }
@@ -1380,9 +1380,9 @@
     "category": "ai",
     "description": "Interfaces builder Documento element: uploads a PDF as a knowledge source for the page's AI Assistant (feature-020)",
     "page": "Interfaces builder, 'Elementos principais' palette group (/interfaces/:interfaceId/pages/:pageId/edit)",
-    "ui_details": "CONFIRMED live iteration 8. Palette entry tagged 'Novo' with the same AI-assist sparkle badge as Formulários/Dados. Side panel shows a pink/purple banner ('O Assistente de IA aprende com este elemento para responder perguntas dos usuários' — identical copy/pattern to Dados/Formulários), an 'Adicionar documento' upload control restricted to PDF files ≤5MB ('Selecione o documento' button), a 'Título do documento' text field, and a 'Descrição' textarea.",
-    "behavior": "CONFIRMED live iteration 8: the 'Título do documento' and 'Descrição' fields are visually present and appear editable, but do NOT accept typed input until a real file has been selected via 'Selecione o documento' — metadata entry is gated behind the upload, unlike Link's freely-editable 'Nome' field (feature-023). Did not upload a real file (no disposable test PDF on hand), so post-upload behavior (does the title auto-populate from the filename? is a text preview generated?) is UNCONFIRMED — treat as TBD, default to leaving both fields blank/optional post-upload for the clone. This element is the same underlying 'knowledge source' concept as AI Agents' (feature-019) Documento knowledge-source type in its Conhecimento step (Nome + 'Quando usar' + RAG-trigger content) — model both as one shared document/RAG entity, referenced at the agent level (feature-019) and the interface-page level (feature-020's AI Assistant scope).",
-    "data_model": "interface_page_elements (see feature-008) rows with type='document': config={file_id (fk to an uploads table storing the PDF, ≤5MB, bytea per project storage convention), title, description}. The same uploads table/shape should back AI Agents' Documento knowledge-source type (feature-019) since both are the same underlying primitive.",
+    "ui_details": "CONFIRMED live iteration 8. Palette entry tagged 'Novo' with the same AI-assist sparkle badge as Formul\u00e1rios/Dados. Side panel shows a pink/purple banner ('O Assistente de IA aprende com este elemento para responder perguntas dos usu\u00e1rios' \u2014 identical copy/pattern to Dados/Formul\u00e1rios), an 'Adicionar documento' upload control restricted to PDF files \u22645MB ('Selecione o documento' button), a 'T\u00edtulo do documento' text field, and a 'Descri\u00e7\u00e3o' textarea.",
+    "behavior": "CONFIRMED live iteration 8: the 'T\u00edtulo do documento' and 'Descri\u00e7\u00e3o' fields are visually present and appear editable, but do NOT accept typed input until a real file has been selected via 'Selecione o documento' \u2014 metadata entry is gated behind the upload, unlike Link's freely-editable 'Nome' field (feature-023). Did not upload a real file (no disposable test PDF on hand), so post-upload behavior (does the title auto-populate from the filename? is a text preview generated?) is UNCONFIRMED \u2014 treat as TBD, default to leaving both fields blank/optional post-upload for the clone. This element is the same underlying 'knowledge source' concept as AI Agents' (feature-019) Documento knowledge-source type in its Conhecimento step (Nome + 'Quando usar' + RAG-trigger content) \u2014 model both as one shared document/RAG entity, referenced at the agent level (feature-019) and the interface-page level (feature-020's AI Assistant scope).",
+    "data_model": "interface_page_elements (see feature-008) rows with type='document': config={file_id (fk to an uploads table storing the PDF, \u22645MB, bytea per project storage convention), title, description}. The same uploads table/shape should back AI Agents' Documento knowledge-source type (feature-019) since both are the same underlying primitive.",
     "priority": 10,
     "core": false,
     "passes": true,
@@ -1407,7 +1407,7 @@
           "steps": [
             "Drag 'Documento' onto the canvas",
             "Click 'Selecione o documento' and upload a PDF under 5MB",
-            "Fill 'Título do documento' and 'Descrição'",
+            "Fill 'T\u00edtulo do documento' and 'Descri\u00e7\u00e3o'",
             "Click 'Ver ao vivo'"
           ],
           "expected": "The live page shows a document card with the entered title, downloadable/viewable"
@@ -1416,7 +1416,7 @@
           "name": "title field stays disabled before any file is selected",
           "steps": [
             "Drag 'Documento' onto the canvas",
-            "Without uploading anything, click into 'Título do documento' and attempt to type"
+            "Without uploading anything, click into 'T\u00edtulo do documento' and attempt to type"
           ],
           "expected": "No text appears in the field; it remains visually disabled/read-only"
         }
@@ -1444,10 +1444,10 @@
   {
     "id": "feature-026",
     "category": "settings",
-    "description": "Interfaces Compartilhar modal — Gerenciar pessoas tab: per-interface people/group access with a 2-tier role model",
+    "description": "Interfaces Compartilhar modal \u2014 Gerenciar pessoas tab: per-interface people/group access with a 2-tier role model",
     "page": "Interfaces builder, Compartilhar modal, 'Gerenciar pessoas' tab (/interfaces/:interfaceId/pages/:pageId/edit)",
-    "ui_details": "CONFIRMED live iteration 8. Second tab of the Compartilhar modal (first tab 'Visibilidade' covered by feature-008). An 'Adicionar pessoas ou grupos' search input (matches by name/group/email) sits above a list of already-granted people/groups — this trial org's own admin user is pre-listed, tagged 'É você!'. Each row has a role dropdown with 3 options: 'Admin da Interface' (checked/current — 'Possui acesso total à Interface. Pode adicionar pipes e databases aos quais tiver acesso.'), 'Membro da Interface' (tagged 'Upgrade', gated in this trial org — 'Pode visualizar as páginas da Interface. Só pode atualizar campos editáveis.'), and 'Remover acesso' (red, destructive, at the bottom of the dropdown).",
-    "behavior": "CONFIRMED live iteration 8: this is a simpler 2-tier version of the same person-permission gating pattern already seen on Pipe > Pessoas' 4-tier role picker (feature-013), where non-default tiers are also Upgrade-gated in this trial org (the clone should not gate them). Did not test adding a real second person or changing a role — this trial org has only one seat, so the add-flow and role-change persistence are unconfirmed beyond the UI affordances shown.",
+    "ui_details": "CONFIRMED live iteration 8. Second tab of the Compartilhar modal (first tab 'Visibilidade' covered by feature-008). An 'Adicionar pessoas ou grupos' search input (matches by name/group/email) sits above a list of already-granted people/groups \u2014 this trial org's own admin user is pre-listed, tagged '\u00c9 voc\u00ea!'. Each row has a role dropdown with 3 options: 'Admin da Interface' (checked/current \u2014 'Possui acesso total \u00e0 Interface. Pode adicionar pipes e databases aos quais tiver acesso.'), 'Membro da Interface' (tagged 'Upgrade', gated in this trial org \u2014 'Pode visualizar as p\u00e1ginas da Interface. S\u00f3 pode atualizar campos edit\u00e1veis.'), and 'Remover acesso' (red, destructive, at the bottom of the dropdown).",
+    "behavior": "CONFIRMED live iteration 8: this is a simpler 2-tier version of the same person-permission gating pattern already seen on Pipe > Pessoas' 4-tier role picker (feature-013), where non-default tiers are also Upgrade-gated in this trial org (the clone should not gate them). Did not test adding a real second person or changing a role \u2014 this trial org has only one seat, so the add-flow and role-change persistence are unconfirmed beyond the UI affordances shown.",
     "data_model": "Extends feature-008's interface_shares: id, interface_id (fk), shared_with_type (enum: person | group), shared_with_id, role (enum: admin | member).",
     "priority": 10,
     "core": false,
@@ -1462,7 +1462,7 @@
         },
         {
           "name": "member role can still submit values into editable widget fields on a live page",
-          "description": "Per the UI copy 'Só pode atualizar campos editáveis', a member should retain write access to end-user-facing editable fields even without builder access",
+          "description": "Per the UI copy 'S\u00f3 pode atualizar campos edit\u00e1veis', a member should retain write access to end-user-facing editable fields even without builder access",
           "input": "canUpdateEditableField({role: 'member'}, fieldIsEditable: true)",
           "expected_output": "returns true"
         }
@@ -1510,11 +1510,11 @@
   {
     "id": "feature-027",
     "category": "ui",
-    "description": "Meu trabalho (\"My work\") — org-level card assignment inbox: cards assigned to the current user across all pipes, filtered by due-date state, plus the notification system that surfaces overdue cards",
-    "page": "Meu trabalho — /my-tasks (redirects to /my-work)",
-    "ui_details": "CONFIRMED live iteration 9. Header 'Meu trabalho' with subtitle 'Visualize e gerencie os cards atribuídos a você.' + a help-doc link. 6 filter tabs, each with a live count badge: 'Todos os cards', 'Cards prestes a vencer' (tooltip on hover: 'Cards que estão a 7 dias da data de vencimento'), 'Vencidos', 'Atrasados', 'Expirados', 'Concluídos'. Below the tabs, a sortable table (every column header is a sort button) with 6 columns: Título, Data de vencimento (renamed 'Vencidos em' while the Vencidos tab is active), Pipe, Fase atual, Criado em, Designado em. Standard pagination footer ('Anterior'/'Próximo', '1 - 1 de 1 resultados'). Empty state (shown per-tab, independently, even when other tabs have rows): 'Parece que ainda não há tarefas atribuídas a você. Que tal criar um card e atribuí-lo a si mesmo? Saiba mais.'",
-    "behavior": "CONFIRMED live: assigned an existing card ('João Silva' in the Purchase Requests pipe) to the current user via the card detail's 'Adicionar responsável' control, then set its Vencimento (due date) to the previous day via the date-picker calendar (defaults to today's date/time when first opened). Both changes reflected on Meu trabalho within one page load: 'Todos os cards' and 'Vencidos' both went from 0 to 1, while 'Cards prestes a vencer' (due within 7 days but not yet passed) and 'Atrasados' stayed at 0 — confirming 'Vencidos' (due date already passed) and 'Atrasados' are DISTINCT states: Atrasados tracks phase/SLA time-in-phase expiration (the pipe-wide expiration alert from feature-014's Configurações do pipe), not the card's own Vencimento field. Each tab's empty state is independent — switching to a 0-count tab (e.g. 'Atrasados') shows the full empty-state block even though 'Todos os cards' has a row. The overdue transition auto-generated a real-time in-app notification ('O card \"João Silva\" está vencido') without any manual trigger — confirmed in both the header bell's popover (title 'Notificações', 'Marcar todas como lidas' link, unread items shown with a red badge count on the bell) and the dedicated /notifications page (each entry has a type-specific icon — a red overdue-clock glyph for this case — plus relative timestamp, e.g. 'há 2 minutos'). The bell's unread badge cleared automatically after visiting /notifications (read-state is a simple 'has the user opened the list' flag, not per-item until clicked). The top-right avatar button ('Conta e recursos', tied to the org's Tiago Vasconselos account) did not render a visible dropdown across 3 click attempts — account/profile management is explicitly out of scope per this project's spec, so not pursued further; the clone should still render the button as a stub even if it needs no working menu.",
-    "data_model": "Meu trabalho is a computed, cross-pipe VIEW over the existing Card entity (feature-004) — no new persisted entity. Query: cards where assignee_ids CONTAINS current_user_id, joined to their pipe for the Pipe/Fase atual columns. Tab filters (computed booleans over the Card row, all relative to now()): 'Cards prestes a vencer' = due_date BETWEEN now() AND now()+7d; 'Vencidos' = due_date < now(); 'Atrasados' = phase_entered_at + phase.sla_duration < now() (references feature-014's per-phase SLA/expiration config, independent of due_date); 'Expirados' = a separate pipe-level expiration rule from Configurações do pipe firing; 'Concluídos' = card.phase.is_final (Concluído-type phase). Notification entity: id, user_id (fk), card_id (fk), type (enum, at least 'card_overdue'), message, created_at, read_at (nullable — set on any /notifications page visit, not per-item).",
+    "description": "Meu trabalho (\"My work\") \u2014 org-level card assignment inbox: cards assigned to the current user across all pipes, filtered by due-date state, plus the notification system that surfaces overdue cards",
+    "page": "Meu trabalho \u2014 /my-tasks (redirects to /my-work)",
+    "ui_details": "CONFIRMED live iteration 9. Header 'Meu trabalho' with subtitle 'Visualize e gerencie os cards atribu\u00eddos a voc\u00ea.' + a help-doc link. 6 filter tabs, each with a live count badge: 'Todos os cards', 'Cards prestes a vencer' (tooltip on hover: 'Cards que est\u00e3o a 7 dias da data de vencimento'), 'Vencidos', 'Atrasados', 'Expirados', 'Conclu\u00eddos'. Below the tabs, a sortable table (every column header is a sort button) with 6 columns: T\u00edtulo, Data de vencimento (renamed 'Vencidos em' while the Vencidos tab is active), Pipe, Fase atual, Criado em, Designado em. Standard pagination footer ('Anterior'/'Pr\u00f3ximo', '1 - 1 de 1 resultados'). Empty state (shown per-tab, independently, even when other tabs have rows): 'Parece que ainda n\u00e3o h\u00e1 tarefas atribu\u00eddas a voc\u00ea. Que tal criar um card e atribu\u00ed-lo a si mesmo? Saiba mais.'",
+    "behavior": "CONFIRMED live: assigned an existing card ('Jo\u00e3o Silva' in the Purchase Requests pipe) to the current user via the card detail's 'Adicionar respons\u00e1vel' control, then set its Vencimento (due date) to the previous day via the date-picker calendar (defaults to today's date/time when first opened). Both changes reflected on Meu trabalho within one page load: 'Todos os cards' and 'Vencidos' both went from 0 to 1, while 'Cards prestes a vencer' (due within 7 days but not yet passed) and 'Atrasados' stayed at 0 \u2014 confirming 'Vencidos' (due date already passed) and 'Atrasados' are DISTINCT states: Atrasados tracks phase/SLA time-in-phase expiration (the pipe-wide expiration alert from feature-014's Configura\u00e7\u00f5es do pipe), not the card's own Vencimento field. Each tab's empty state is independent \u2014 switching to a 0-count tab (e.g. 'Atrasados') shows the full empty-state block even though 'Todos os cards' has a row. The overdue transition auto-generated a real-time in-app notification ('O card \"Jo\u00e3o Silva\" est\u00e1 vencido') without any manual trigger \u2014 confirmed in both the header bell's popover (title 'Notifica\u00e7\u00f5es', 'Marcar todas como lidas' link, unread items shown with a red badge count on the bell) and the dedicated /notifications page (each entry has a type-specific icon \u2014 a red overdue-clock glyph for this case \u2014 plus relative timestamp, e.g. 'h\u00e1 2 minutos'). The bell's unread badge cleared automatically after visiting /notifications (read-state is a simple 'has the user opened the list' flag, not per-item until clicked). The top-right avatar button ('Conta e recursos', tied to the org's Tiago Vasconselos account) did not render a visible dropdown across 3 click attempts \u2014 account/profile management is explicitly out of scope per this project's spec, so not pursued further; the clone should still render the button as a stub even if it needs no working menu.",
+    "data_model": "Meu trabalho is a computed, cross-pipe VIEW over the existing Card entity (feature-004) \u2014 no new persisted entity. Query: cards where assignee_ids CONTAINS current_user_id, joined to their pipe for the Pipe/Fase atual columns. Tab filters (computed booleans over the Card row, all relative to now()): 'Cards prestes a vencer' = due_date BETWEEN now() AND now()+7d; 'Vencidos' = due_date < now(); 'Atrasados' = phase_entered_at + phase.sla_duration < now() (references feature-014's per-phase SLA/expiration config, independent of due_date); 'Expirados' = a separate pipe-level expiration rule from Configura\u00e7\u00f5es do pipe firing; 'Conclu\u00eddos' = card.phase.is_final (Conclu\u00eddo-type phase). Notification entity: id, user_id (fk), card_id (fk), type (enum, at least 'card_overdue'), message, created_at, read_at (nullable \u2014 set on any /notifications page visit, not per-item).",
     "priority": 12,
     "core": false,
     "passes": true,
@@ -1543,19 +1543,19 @@
         {
           "name": "assigning a card to self and setting a past due date surfaces it on Meu trabalho and generates a notification",
           "steps": [
-            "Open a card, click 'Adicionar responsável', select the current user",
+            "Open a card, click 'Adicionar respons\u00e1vel', select the current user",
             "Click 'Vencimento', pick a date before today",
             "Navigate to /my-tasks (or /my-work)",
             "Click the 'Vencidos' tab"
           ],
-          "expected": "The card appears in 'Todos os cards' and 'Vencidos' (both counts incremented by 1), and a new 'O card ... está vencido' notification appears in the bell popover with an unread badge"
+          "expected": "The card appears in 'Todos os cards' and 'Vencidos' (both counts incremented by 1), and a new 'O card ... est\u00e1 vencido' notification appears in the bell popover with an unread badge"
         },
         {
           "name": "each Meu trabalho tab shows its own empty state independent of other tabs' data",
           "steps": [
             "With at least one card assigned and overdue (non-zero 'Vencidos'), click the 'Atrasados' tab"
           ],
-          "expected": "Atrasados shows the 'Parece que ainda não há tarefas atribuídas a você...' empty-state message even though other tabs are non-empty"
+          "expected": "Atrasados shows the 'Parece que ainda n\u00e3o h\u00e1 tarefas atribu\u00eddas a voc\u00ea...' empty-state message even though other tabs are non-empty"
         }
       ],
       "edge_cases": [
@@ -1573,7 +1573,7 @@
             "Open the bell popover only (don't navigate to /notifications)",
             "Reload the page"
           ],
-          "expected": "Behavior should be verified against the live product — record whether opening the popover alone is sufficient to clear the badge, or whether only visiting the full page does (observed behavior only confirmed the full-page case)"
+          "expected": "Behavior should be verified against the live product \u2014 record whether opening the popover alone is sufficient to clear the badge, or whether only visiting the full page does (observed behavior only confirmed the full-page case)"
         }
       ]
     }
@@ -1581,11 +1581,11 @@
   {
     "id": "feature-028",
     "category": "search",
-    "description": "Pipe-scoped card search (\"Procurar cards\" box in the Kanban top nav) — client-side substring filter over already-loaded card titles, no server round-trip",
+    "description": "Pipe-scoped card search (\"Procurar cards\" box in the Kanban top nav) \u2014 client-side substring filter over already-loaded card titles, no server round-trip",
     "page": "Kanban board (/pipes/:id)",
-    "ui_details": "CONFIRMED live iteration 11. A single search input top-right of the Kanban phase-column strip, placeholder 'Procurar cards', with a search-glyph prefix icon and a clear ('x') button that appears once text is entered. A separate filter (funnel) icon sits immediately to its right — distinct control, not tested this pass. The search box has no dropdown/autocomplete affordance; it is a plain text input.",
-    "behavior": "CONFIRMED live: typed 'João' into the box. Read `read_network_requests` immediately after — zero API/GraphQL calls fired (only an unrelated Intercom beacon), confirming the filter runs entirely client-side over cards already loaded into the Kanban board's in-memory state, not a server-side search endpoint. The filtered result did not appear instantly on keystroke: it applied a couple of seconds after the last keystroke (observed after pressing Return, but Return itself is not required — a follow-up screenshot with no Return press also showed the same debounce-then-filter behavior), consistent with a debounced client-side re-render rather than an Enter-triggered submit. Once applied, each phase column's card list is filtered independently by substring match against card title only (a 'Throwaway Test Card' did not match 'João' and was hidden; 'João Silva' did). The column's card-count badge updates to reflect the filtered count, and a phase with zero matches falls back to displaying that phase's normal empty-state copy (e.g. 'Aqui chegam os cards criados para este pipe') rather than a distinct 'no search results' message — the empty state is not search-aware. Clearing the box (the 'x' button) restores the full unfiltered board immediately.",
-    "data_model": "No new entity — a pure client-side derived view. searchQuery: string (component-local UI state, not persisted, not part of the Card entity or any URL param observed). Filter predicate: card.title.toLowerCase().includes(searchQuery.toLowerCase()), applied independently within each phase's already-fetched card array.",
+    "ui_details": "CONFIRMED live iteration 11. A single search input top-right of the Kanban phase-column strip, placeholder 'Procurar cards', with a search-glyph prefix icon and a clear ('x') button that appears once text is entered. A separate filter (funnel) icon sits immediately to its right \u2014 distinct control, not tested this pass. The search box has no dropdown/autocomplete affordance; it is a plain text input.",
+    "behavior": "CONFIRMED live: typed 'Jo\u00e3o' into the box. Read `read_network_requests` immediately after \u2014 zero API/GraphQL calls fired (only an unrelated Intercom beacon), confirming the filter runs entirely client-side over cards already loaded into the Kanban board's in-memory state, not a server-side search endpoint. The filtered result did not appear instantly on keystroke: it applied a couple of seconds after the last keystroke (observed after pressing Return, but Return itself is not required \u2014 a follow-up screenshot with no Return press also showed the same debounce-then-filter behavior), consistent with a debounced client-side re-render rather than an Enter-triggered submit. Once applied, each phase column's card list is filtered independently by substring match against card title only (a 'Throwaway Test Card' did not match 'Jo\u00e3o' and was hidden; 'Jo\u00e3o Silva' did). The column's card-count badge updates to reflect the filtered count, and a phase with zero matches falls back to displaying that phase's normal empty-state copy (e.g. 'Aqui chegam os cards criados para este pipe') rather than a distinct 'no search results' message \u2014 the empty state is not search-aware. Clearing the box (the 'x' button) restores the full unfiltered board immediately.",
+    "data_model": "No new entity \u2014 a pure client-side derived view. searchQuery: string (component-local UI state, not persisted, not part of the Card entity or any URL param observed). Filter predicate: card.title.toLowerCase().includes(searchQuery.toLowerCase()), applied independently within each phase's already-fetched card array.",
     "priority": 15,
     "core": false,
     "passes": true,
@@ -1593,9 +1593,9 @@
       "unit": [
         {
           "name": "search filter is a case-insensitive substring match on card title only",
-          "description": "Matches the observed behavior of matching 'João Silva' but not a card whose title lacks the substring",
-          "input": "filterCardsByTitle([{title: 'João Silva'}, {title: 'Throwaway Test Card'}], 'joão')",
-          "expected_output": "returns only the 'João Silva' card (case-insensitive match)"
+          "description": "Matches the observed behavior of matching 'Jo\u00e3o Silva' but not a card whose title lacks the substring",
+          "input": "filterCardsByTitle([{title: 'Jo\u00e3o Silva'}, {title: 'Throwaway Test Card'}], 'jo\u00e3o')",
+          "expected_output": "returns only the 'Jo\u00e3o Silva' card (case-insensitive match)"
         },
         {
           "name": "empty search query returns all cards unfiltered",
@@ -1642,11 +1642,11 @@
   {
     "id": "feature-029",
     "category": "settings",
-    "description": "Start form (Formulário inicial) editor as a dedicated deep-dive: the pipe's public card-intake form — internal builder view, public-facing branding customization ('Modo Público'), and start-form-specific Opções Avançadas",
-    "page": "Gerenciar > Formulário inicial (/pipes/:id/settings/form); public-facing summary also surfaced at the pipe's own Formulário tab (/pipes/:id/form)",
-    "ui_details": "CONFIRMED live iteration 11. The pipe-level 'Formulário' tab (distinct from the settings modal) shows a summary: a card-preview of the form, 'Visualizar'/'Editar' buttons, a live '{N} solicitações' counter with 'Ver no pipe' link, and a 'Próximos passos' tips panel (3 static suggestion cards: 'Habilite o rastreio de solicitações', 'Crie emails padronizados', 'Analise e exporte relatórios' — the latter two link to the Emails (feature-018) and Relatórios (feature-011) features respectively, confirming this panel is a cross-feature upsell surface, not a start-form-specific tool). Clicking 'Editar' opens the SAME 'Configurações do pipe' modal as Fases (feature-002) — tab 'Formulário inicial' is simply another tab alongside Fases/Pessoas/Email/Configurações do pipe, confirming the start form is modeled as phase-zero of the pipe rather than a separate entity. Within that tab: a top toggle between 'Editar formulário' (default) and 'Modo Público'. 'Editar formulário' reuses the identical field-type palette + per-field config side-panel already documented for Fases (feature-002/003) — same 23 field types, same toggles (Descrição/Texto de ajuda/obrigatório/Validação customizada/Visualização compacta/editável em outras fases/valor único), same 'Dependências do campo' link (feature-009's Condicionais). Distinct default for start-form fields: 'Este campo é editável em outras fases' defaults ON (phase fields default this OFF), since start-form answers typically need to stay editable downstream. 'Modo Público' is a start-form-exclusive sub-view not present on phase editors: a left config column (Editar logo — JPG/GIF/PNG, max 2MB; Título do formulário; Descrição do formulário; Texto do botão de envio, default 'Enviar'; Cor ou imagem de fundo; Cor da marca — a 10-swatch brand-color picker, same palette family as the pipe-icon-color picker from feature-014) and a live right-side preview of the actual public form exactly as an anonymous visitor sees it, including real legal/safety boilerplate ('Nunca envie senhas ou dados confidenciais...', 'Denunciar abuso', 'Termos e condições' links) and a 'Powered by Pipefy' footer badge. A separate top-level 'Opções Avançadas' link opens a small modal with 3 start-form-specific fields distinct from the public-mode fields: 'Título do formulário inicial' (the INTERNAL name shown on the Kanban/pipe nav, separate from the public-facing 'Título do formulário'), 'Texto do botão de criar cards' (default 'Criar novo card' — the internal submit-button label, distinct from the public form's 'Texto do botão de envio'/'Enviar'), and 'Título do card' (a field-picker dropdown selecting which start-form field drives card.title — same mechanism independently confirmed in feature-014's Configurações do pipe general settings).",
-    "behavior": "CONFIRMED live: added a new required 'Texto curto' field ('Departamento') via the field-type palette — it inserted instantly with an autosave toast ('Configurações atualizadas.') and no explicit Save click needed, appearing simultaneously in the internal preview, the public Formulário tab summary, and the 'Modo Público' live preview. Toggling to 'Modo Público' requires an explicit 'Salvar' click per the visual design (Salvar button present, greyed until a change is made) — unlike the field-palette side, which autosaves per-field. Opções Avançadas is a True separate save action ('Salvar opções' button) scoped only to its own 3 fields.",
-    "data_model": "StartForm is not a separate entity — it is Phase id=0 (or a phase-like row flagged is_start_form=True) of the Pipe's ordered Phase list (feature-002), sharing the Field entity/type system (feature-003) and Field Conditionals (feature-009). Additional start-form-only attributes beyond the base Phase model: public_title (string, shown to anonymous visitors, defaults to pipe name), public_description (text, nullable), public_logo (nullable file ref, JPG/GIF/PNG ≤2MB), public_submit_button_text (string, default 'Enviar'), public_background (color hex or image ref), public_brand_color (enum from the shared 10-color pipe palette), internal_title (string, shown on the pipe's internal nav, defaults to pipe name — distinct from public_title), internal_create_button_text (string, default 'Criar novo card'), title_field_id (fk to a Field on this phase, drives card.title — same mechanism as feature-014).",
+    "description": "Start form (Formul\u00e1rio inicial) editor as a dedicated deep-dive: the pipe's public card-intake form \u2014 internal builder view, public-facing branding customization ('Modo P\u00fablico'), and start-form-specific Op\u00e7\u00f5es Avan\u00e7adas",
+    "page": "Gerenciar > Formul\u00e1rio inicial (/pipes/:id/settings/form); public-facing summary also surfaced at the pipe's own Formul\u00e1rio tab (/pipes/:id/form)",
+    "ui_details": "CONFIRMED live iteration 11. The pipe-level 'Formul\u00e1rio' tab (distinct from the settings modal) shows a summary: a card-preview of the form, 'Visualizar'/'Editar' buttons, a live '{N} solicita\u00e7\u00f5es' counter with 'Ver no pipe' link, and a 'Pr\u00f3ximos passos' tips panel (3 static suggestion cards: 'Habilite o rastreio de solicita\u00e7\u00f5es', 'Crie emails padronizados', 'Analise e exporte relat\u00f3rios' \u2014 the latter two link to the Emails (feature-018) and Relat\u00f3rios (feature-011) features respectively, confirming this panel is a cross-feature upsell surface, not a start-form-specific tool). Clicking 'Editar' opens the SAME 'Configura\u00e7\u00f5es do pipe' modal as Fases (feature-002) \u2014 tab 'Formul\u00e1rio inicial' is simply another tab alongside Fases/Pessoas/Email/Configura\u00e7\u00f5es do pipe, confirming the start form is modeled as phase-zero of the pipe rather than a separate entity. Within that tab: a top toggle between 'Editar formul\u00e1rio' (default) and 'Modo P\u00fablico'. 'Editar formul\u00e1rio' reuses the identical field-type palette + per-field config side-panel already documented for Fases (feature-002/003) \u2014 same 23 field types, same toggles (Descri\u00e7\u00e3o/Texto de ajuda/obrigat\u00f3rio/Valida\u00e7\u00e3o customizada/Visualiza\u00e7\u00e3o compacta/edit\u00e1vel em outras fases/valor \u00fanico), same 'Depend\u00eancias do campo' link (feature-009's Condicionais). Distinct default for start-form fields: 'Este campo \u00e9 edit\u00e1vel em outras fases' defaults ON (phase fields default this OFF), since start-form answers typically need to stay editable downstream. 'Modo P\u00fablico' is a start-form-exclusive sub-view not present on phase editors: a left config column (Editar logo \u2014 JPG/GIF/PNG, max 2MB; T\u00edtulo do formul\u00e1rio; Descri\u00e7\u00e3o do formul\u00e1rio; Texto do bot\u00e3o de envio, default 'Enviar'; Cor ou imagem de fundo; Cor da marca \u2014 a 10-swatch brand-color picker, same palette family as the pipe-icon-color picker from feature-014) and a live right-side preview of the actual public form exactly as an anonymous visitor sees it, including real legal/safety boilerplate ('Nunca envie senhas ou dados confidenciais...', 'Denunciar abuso', 'Termos e condi\u00e7\u00f5es' links) and a 'Powered by Pipefy' footer badge. A separate top-level 'Op\u00e7\u00f5es Avan\u00e7adas' link opens a small modal with 3 start-form-specific fields distinct from the public-mode fields: 'T\u00edtulo do formul\u00e1rio inicial' (the INTERNAL name shown on the Kanban/pipe nav, separate from the public-facing 'T\u00edtulo do formul\u00e1rio'), 'Texto do bot\u00e3o de criar cards' (default 'Criar novo card' \u2014 the internal submit-button label, distinct from the public form's 'Texto do bot\u00e3o de envio'/'Enviar'), and 'T\u00edtulo do card' (a field-picker dropdown selecting which start-form field drives card.title \u2014 same mechanism independently confirmed in feature-014's Configura\u00e7\u00f5es do pipe general settings).",
+    "behavior": "CONFIRMED live: added a new required 'Texto curto' field ('Departamento') via the field-type palette \u2014 it inserted instantly with an autosave toast ('Configura\u00e7\u00f5es atualizadas.') and no explicit Save click needed, appearing simultaneously in the internal preview, the public Formul\u00e1rio tab summary, and the 'Modo P\u00fablico' live preview. Toggling to 'Modo P\u00fablico' requires an explicit 'Salvar' click per the visual design (Salvar button present, greyed until a change is made) \u2014 unlike the field-palette side, which autosaves per-field. Op\u00e7\u00f5es Avan\u00e7adas is a True separate save action ('Salvar op\u00e7\u00f5es' button) scoped only to its own 3 fields.",
+    "data_model": "StartForm is not a separate entity \u2014 it is Phase id=0 (or a phase-like row flagged is_start_form=True) of the Pipe's ordered Phase list (feature-002), sharing the Field entity/type system (feature-003) and Field Conditionals (feature-009). Additional start-form-only attributes beyond the base Phase model: public_title (string, shown to anonymous visitors, defaults to pipe name), public_description (text, nullable), public_logo (nullable file ref, JPG/GIF/PNG \u22642MB), public_submit_button_text (string, default 'Enviar'), public_background (color hex or image ref), public_brand_color (enum from the shared 10-color pipe palette), internal_title (string, shown on the pipe's internal nav, defaults to pipe name \u2014 distinct from public_title), internal_create_button_text (string, default 'Criar novo card'), title_field_id (fk to a Field on this phase, drives card.title \u2014 same mechanism as feature-014).",
     "priority": 6,
     "core": true,
     "passes": true,
@@ -1669,35 +1669,35 @@
         {
           "name": "adding a field to the start form autosaves and appears everywhere the form is rendered",
           "steps": [
-            "Open Gerenciar > Formulário inicial",
+            "Open Gerenciar > Formul\u00e1rio inicial",
             "Click a field type in the palette (e.g. 'Texto curto')",
-            "Type a field title, toggle 'Este campo é obrigatório' on, click Salvar"
+            "Type a field title, toggle 'Este campo \u00e9 obrigat\u00f3rio' on, click Salvar"
           ],
-          "expected": "A 'Configurações atualizadas.' toast appears with no page reload; the new required field appears in the internal preview, the pipe's Formulário tab summary, and the public Modo Público preview"
+          "expected": "A 'Configura\u00e7\u00f5es atualizadas.' toast appears with no page reload; the new required field appears in the internal preview, the pipe's Formul\u00e1rio tab summary, and the public Modo P\u00fablico preview"
         },
         {
-          "name": "Modo Público branding changes only affect the public-facing form",
+          "name": "Modo P\u00fablico branding changes only affect the public-facing form",
           "steps": [
-            "Switch to 'Modo Público'",
-            "Change 'Texto do botão de envio' from 'Enviar' to a custom label, click Salvar"
+            "Switch to 'Modo P\u00fablico'",
+            "Change 'Texto do bot\u00e3o de envio' from 'Enviar' to a custom label, click Salvar"
           ],
-          "expected": "The public preview's submit button reflects the new label; the internal 'Editar formulário' view's Kanban-side 'Criar novo card' button (governed separately by Opções Avançadas) is unaffected"
+          "expected": "The public preview's submit button reflects the new label; the internal 'Editar formul\u00e1rio' view's Kanban-side 'Criar novo card' button (governed separately by Op\u00e7\u00f5es Avan\u00e7adas) is unaffected"
         }
       ],
       "edge_cases": [
         {
           "name": "start form with only the default required field",
           "steps": [
-            "Open a freshly created pipe's Formulário inicial with no custom fields added"
+            "Open a freshly created pipe's Formul\u00e1rio inicial with no custom fields added"
           ],
           "expected": "Only the default 'Nome do solicitante' (or equivalent) required field is present; 'Criar novo card' on the Kanban remains gated/disabled behavior should match feature-001's documented gating-on-empty-form quirk"
         },
         {
           "name": "uploading a logo file over the 2MB limit",
           "steps": [
-            "In Modo Público, attempt to upload a logo file larger than 2MB"
+            "In Modo P\u00fablico, attempt to upload a logo file larger than 2MB"
           ],
-          "expected": "Upload is rejected with a size-limit validation message; no logo is saved (behavior to be confirmed against the live product if a large test file becomes available — not tested this pass, no disposable oversized image on hand)"
+          "expected": "Upload is rejected with a size-limit validation message; no logo is saved (behavior to be confirmed against the live product if a large test file becomes available \u2014 not tested this pass, no disposable oversized image on hand)"
         }
       ]
     }

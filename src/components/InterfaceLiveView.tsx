@@ -1,7 +1,7 @@
 "use client";
 
 import { getAssistantScope } from "@/lib/ai-assistant";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type {
   DataTableConfig,
   FormLinkConfig,

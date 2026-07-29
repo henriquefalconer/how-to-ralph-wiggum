@@ -1,7 +1,7 @@
 "use client";
 
 import { resolveCannedPrompt } from "@/lib/ai-assistant";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { useEffect, useState } from "react";
 
 const VIEWER_ID = "anonymous";

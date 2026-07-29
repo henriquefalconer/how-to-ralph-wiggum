@@ -1,4 +1,4 @@
-import { getDictionary } from "@/lib/i18n";
+import { getDictionary } from "@/lib/i18n/server";
 import { defaultLocale, isLocale } from "@/lib/i18n/locales";
 import { createPipe, getDefaultOrgId, listPipes } from "@/lib/pipes";
 import { NextResponse } from "next/server";

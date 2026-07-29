@@ -2,7 +2,7 @@ import { ManageTabs } from "@/components/ManageTabs";
 import { ReportBuilder } from "@/components/ReportBuilder";
 import { TopNav } from "@/components/TopNav";
 import { listFields } from "@/lib/fields";
-import { getTranslations } from "@/lib/i18n";
+import { getTranslations } from "@/lib/i18n/server";
 import { getPipeWithPhases } from "@/lib/pipes";
 import { getReport, getReportResults } from "@/lib/reports";
 import { notFound } from "next/navigation";

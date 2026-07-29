@@ -1,7 +1,7 @@
 import { ManageTabs } from "@/components/ManageTabs";
 import { TopNav } from "@/components/TopNav";
 import { listAutomationRuns } from "@/lib/automations";
-import { getTranslations } from "@/lib/i18n";
+import { getTranslations } from "@/lib/i18n/server";
 import { getPipeWithPhases } from "@/lib/pipes";
 import Link from "next/link";
 import { notFound } from "next/navigation";

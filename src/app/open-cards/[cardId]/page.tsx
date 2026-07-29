@@ -1,7 +1,7 @@
 import { CardDetailView } from "@/components/CardDetailView";
 import { TopNav } from "@/components/TopNav";
 import { getCardDetail } from "@/lib/cards";
-import { getTranslations } from "@/lib/i18n";
+import { getTranslations } from "@/lib/i18n/server";
 import { notFound } from "next/navigation";
 
 export default async function CardDetailPage({

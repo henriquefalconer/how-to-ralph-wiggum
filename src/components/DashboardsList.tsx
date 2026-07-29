@@ -1,7 +1,7 @@
 "use client";
 
 import type { DashboardWithChartCount } from "@/lib/dashboards";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

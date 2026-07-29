@@ -2,7 +2,7 @@
 
 import { isChoiceFieldType } from "@/lib/field-types";
 import type { Field } from "@/lib/fields";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { useState } from "react";
 
 function htmlInputType(type: Field["type"]): string {

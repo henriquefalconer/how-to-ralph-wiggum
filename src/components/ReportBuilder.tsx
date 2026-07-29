@@ -1,7 +1,7 @@
 "use client";
 
 import type { Field } from "@/lib/fields";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Phase } from "@/lib/phases";
 import {
   CARD_ATTRIBUTE_FIELD_IDS,

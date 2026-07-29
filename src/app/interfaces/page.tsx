@@ -1,6 +1,6 @@
 import { InterfacesList } from "@/components/InterfacesList";
 import { TopNav } from "@/components/TopNav";
-import { getTranslations } from "@/lib/i18n";
+import { getTranslations } from "@/lib/i18n/server";
 import { listInterfacesWithFirstPage } from "@/lib/interfaces";
 import { getDefaultOrgId } from "@/lib/pipes";
 

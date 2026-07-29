@@ -199,5 +199,32 @@
       "Verified role change persisted in table"
     ],
     "bugs_found": []
+  },
+  {
+    "feature_id": "feature-014",
+    "status": "pass",
+    "tested_steps": [
+      "Fixed build error: separated i18n server-only functions from client-safe exports",
+      "Navigated to pipe general settings page: /pipes/[id]/settings/general-settings",
+      "Verified Pipe icon dropdown with icon options (Layout, Briefcase, etc.)",
+      "Verified Pipe name text field displaying 'Dashboards Pipe'",
+      "Verified Pipe tags field with 'Up to 3 tags' note",
+      "Verified Item name field with placeholder '\"Cards\" is the default'",
+      "Verified Create card button text field",
+      "Verified Visual section with Default view toggle (Kanban/List) - Kanban selected",
+      "Verified Card title field picker dropdown showing 'Select a field' and 'Title' option",
+      "Verified Fields shown on kanban cards checkbox for 'Title'",
+      "Verified Fields shown on connected cards section with default chips: 'Created at' and 'Current phase' with 'Clear all' option",
+      "Verified Expiration alert section with Time (number input showing 0) and Unit dropdown (minutes/hours/days)",
+      "Verified 'Alerts will only count Monday through Friday' business days checkbox",
+      "Verified Permissions section with Privacy and visibility dropdown (currently 'Open to Test Org')",
+      "Verified AI tools toggles: 'Allow AI Agents' and 'Allow AI Copilot' both checked",
+      "Verified edit permission checkboxes: bulk actions, edit-assigned-only, delete-admin-only (all unchecked)",
+      "Verified Save button present and functional",
+      "Tested changing Item name from placeholder to 'Tickets' and successfully saved",
+      "Verified Clone pipe section with 'Clone pipe to' button",
+      "Verified Delete pipe section with red warning banner and delete button"
+    ],
+    "bugs_found": []
   }
 ]

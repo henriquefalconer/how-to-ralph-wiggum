@@ -1,6 +1,6 @@
 import { InterfaceLiveView } from "@/components/InterfaceLiveView";
 import { TopNav } from "@/components/TopNav";
-import { getTranslations } from "@/lib/i18n";
+import { getTranslations } from "@/lib/i18n/server";
 import { getInterface, getPage, listElements } from "@/lib/interfaces";
 import { notFound } from "next/navigation";
 

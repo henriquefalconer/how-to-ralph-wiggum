@@ -8,7 +8,7 @@ import {
   isChoiceFieldType,
 } from "@/lib/field-types";
 import type { Field } from "@/lib/fields";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Phase } from "@/lib/phases";
 import * as Dialog from "@radix-ui/react-dialog";
 import Link from "next/link";

@@ -7,7 +7,7 @@ import {
 } from "@/lib/automation-types";
 import type { Automation } from "@/lib/automations";
 import type { Field } from "@/lib/fields";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Phase } from "@/lib/phases";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useRouter } from "next/navigation";

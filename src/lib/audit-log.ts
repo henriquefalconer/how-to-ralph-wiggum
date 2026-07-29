@@ -7,8 +7,8 @@ import {
 } from "@/lib/audit-message";
 import { db } from "@/lib/db";
 import { auditLogEntries, pipes } from "@/lib/db/schema";
-import type { Dictionary } from "@/lib/i18n";
-import { getDictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/server";
+import { getDictionary } from "@/lib/i18n/server";
 import { defaultLocale } from "@/lib/i18n/locales";
 import { getOrCreateSelfUser } from "@/lib/pipe-members";
 import { and, desc, eq } from "drizzle-orm";

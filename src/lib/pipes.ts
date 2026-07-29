@@ -11,7 +11,7 @@ import {
   pipes,
 } from "@/lib/db/schema";
 import { listFields } from "@/lib/fields";
-import { type Dictionary, getDictionary } from "@/lib/i18n";
+import { type Dictionary, getDictionary } from "@/lib/i18n/server";
 import { defaultLocale } from "@/lib/i18n/locales";
 import { and, asc, count, eq } from "drizzle-orm";
 

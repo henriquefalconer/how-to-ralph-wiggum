@@ -4,7 +4,7 @@ import { TopNav } from "@/components/TopNav";
 import { listStartFormFields } from "@/lib/cards";
 import { db } from "@/lib/db";
 import { organizations } from "@/lib/db/schema";
-import { getTranslations } from "@/lib/i18n";
+import { getTranslations } from "@/lib/i18n/server";
 import { getPipe } from "@/lib/pipes";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";

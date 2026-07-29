@@ -1,7 +1,7 @@
 "use client";
 
 import type { ChartData, Dashboard, DashboardChart } from "@/lib/dashboards";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

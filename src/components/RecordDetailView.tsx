@@ -2,7 +2,7 @@
 
 import { formatCurrencyInput, isChoiceFieldType } from "@/lib/field-types";
 import type { Field } from "@/lib/fields";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import Link from "next/link";
 import { useState } from "react";
 

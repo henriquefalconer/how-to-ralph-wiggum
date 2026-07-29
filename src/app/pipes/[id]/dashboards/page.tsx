@@ -2,7 +2,7 @@ import { DashboardsList } from "@/components/DashboardsList";
 import { ManageTabs } from "@/components/ManageTabs";
 import { TopNav } from "@/components/TopNav";
 import { listDashboardsWithChartCounts } from "@/lib/dashboards";
-import { getTranslations } from "@/lib/i18n";
+import { getTranslations } from "@/lib/i18n/server";
 import { getPipeWithPhases } from "@/lib/pipes";
 import { notFound } from "next/navigation";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import type { ChartData } from "@/lib/dashboards";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 const PALETTE = [
   "#2563eb",

@@ -1,4 +1,4 @@
-import { getDictionary } from "@/lib/i18n";
+import { getDictionary } from "@/lib/i18n/server";
 import { defaultLocale, isLocale } from "@/lib/i18n/locales";
 import {
   INTERFACE_PRIVACY_TIERS,

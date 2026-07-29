@@ -1,7 +1,7 @@
 import { ManageTabs } from "@/components/ManageTabs";
 import { MembersPage as MembersPageContent } from "@/components/MembersPage";
 import { TopNav } from "@/components/TopNav";
-import { getTranslations } from "@/lib/i18n";
+import { getTranslations } from "@/lib/i18n/server";
 import { ensureSelfMembership, listMembers } from "@/lib/pipe-members";
 import { getPipeWithPhases } from "@/lib/pipes";
 import { notFound } from "next/navigation";

@@ -1,6 +1,6 @@
 import { DatabaseGrid } from "@/components/DatabaseGrid";
 import { TopNav } from "@/components/TopNav";
-import { getTranslations } from "@/lib/i18n";
+import { getTranslations } from "@/lib/i18n/server";
 import { getTable, listRecordsForTable, listTableFields } from "@/lib/tables";
 import { notFound } from "next/navigation";
 

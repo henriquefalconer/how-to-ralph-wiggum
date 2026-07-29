@@ -3,7 +3,7 @@ import { ManageTabs } from "@/components/ManageTabs";
 import { TopNav } from "@/components/TopNav";
 import { getAutomation } from "@/lib/automations";
 import { listFields } from "@/lib/fields";
-import { getTranslations } from "@/lib/i18n";
+import { getTranslations } from "@/lib/i18n/server";
 import { getPipeWithPhases } from "@/lib/pipes";
 import { notFound } from "next/navigation";
 

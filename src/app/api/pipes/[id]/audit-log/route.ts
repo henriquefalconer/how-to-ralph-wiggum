@@ -4,7 +4,7 @@ import {
   listAuditLog,
   renderAuditMessage,
 } from "@/lib/audit-log";
-import { getDictionary, getLocale, isLocale } from "@/lib/i18n";
+import { getDictionary, getLocale, isLocale } from "@/lib/i18n/server";
 import { getPipe } from "@/lib/pipes";
 import { NextResponse } from "next/server";
 

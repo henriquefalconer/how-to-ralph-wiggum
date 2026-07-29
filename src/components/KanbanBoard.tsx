@@ -4,7 +4,7 @@ import { CreateCardPopover } from "@/components/CreateCardPopover";
 import { filterCardsByTitle } from "@/lib/card-search";
 import type { Card } from "@/lib/cards";
 import type { Field } from "@/lib/fields";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Phase } from "@/lib/phases";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Popover from "@radix-ui/react-popover";

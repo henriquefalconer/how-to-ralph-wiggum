@@ -1,6 +1,6 @@
 "use client";
 
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { formatRecordsCount } from "@/lib/i18n/format";
 import type { TableSummary } from "@/lib/tables";
 import Link from "next/link";

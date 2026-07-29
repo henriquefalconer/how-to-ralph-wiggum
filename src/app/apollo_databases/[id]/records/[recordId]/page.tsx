@@ -1,6 +1,6 @@
 import { RecordDetailView } from "@/components/RecordDetailView";
 import { TopNav } from "@/components/TopNav";
-import { getTranslations } from "@/lib/i18n";
+import { getTranslations } from "@/lib/i18n/server";
 import { getRecordDetail } from "@/lib/tables";
 import { notFound } from "next/navigation";
 

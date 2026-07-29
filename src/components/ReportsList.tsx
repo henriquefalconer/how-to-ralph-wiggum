@@ -1,6 +1,6 @@
 "use client";
 
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { ReportWithCount } from "@/lib/reports";
 import Link from "next/link";
 import { useMemo, useState } from "react";

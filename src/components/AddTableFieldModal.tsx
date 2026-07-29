@@ -5,7 +5,7 @@ import {
   type FieldType,
   isChoiceFieldType,
 } from "@/lib/field-types";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
 

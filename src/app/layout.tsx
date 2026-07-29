@@ -1,4 +1,4 @@
-import { getLocale } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n/server";
 import { rtlLocales } from "@/lib/i18n/locales";
 import type { Metadata } from "next";
 import "./globals.css";

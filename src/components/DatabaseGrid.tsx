@@ -2,7 +2,7 @@
 
 import type { FieldType } from "@/lib/field-types";
 import type { Field } from "@/lib/fields";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { formatRecordsCount } from "@/lib/i18n/format";
 import type { RecordSummary, Table } from "@/lib/tables";
 import Link from "next/link";

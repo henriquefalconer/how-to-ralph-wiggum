@@ -3,7 +3,7 @@
 import type { CardDetail } from "@/lib/cards";
 import { evaluateConditionals } from "@/lib/field-conditional-types";
 import { isFieldValueEditable } from "@/lib/field-types";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";

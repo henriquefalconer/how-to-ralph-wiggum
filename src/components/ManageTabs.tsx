@@ -1,4 +1,4 @@
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import Link from "next/link";
 
 export function ManageTabs({

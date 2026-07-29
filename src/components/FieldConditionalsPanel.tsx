@@ -11,7 +11,7 @@ import {
 } from "@/lib/field-conditional-types";
 import type { FieldConditional } from "@/lib/field-conditionals";
 import type { Field } from "@/lib/fields";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
 

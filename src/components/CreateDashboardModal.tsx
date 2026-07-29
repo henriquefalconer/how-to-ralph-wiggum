@@ -1,6 +1,6 @@
 "use client";
 
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import * as Dialog from "@radix-ui/react-dialog";
 import { type FormEvent, useState } from "react";
 

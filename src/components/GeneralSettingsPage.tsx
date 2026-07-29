@@ -1,9 +1,9 @@
 "use client";
 
 import type { Field } from "@/lib/fields";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { PIPE_ICONS } from "@/lib/pipe-constants";
 import {
-  PIPE_ICONS,
   type Pipe,
   type PipeDefaultView,
   type PipeExpirationAlertUnit,

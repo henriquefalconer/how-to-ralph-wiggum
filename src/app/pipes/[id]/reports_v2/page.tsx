@@ -1,7 +1,7 @@
 import { ManageTabs } from "@/components/ManageTabs";
 import { ReportsList } from "@/components/ReportsList";
 import { TopNav } from "@/components/TopNav";
-import { getTranslations } from "@/lib/i18n";
+import { getTranslations } from "@/lib/i18n/server";
 import { getPipeWithPhases } from "@/lib/pipes";
 import { listReportsWithCounts } from "@/lib/reports";
 import { notFound } from "next/navigation";

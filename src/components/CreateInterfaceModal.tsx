@@ -1,6 +1,6 @@
 "use client";
 
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/locales";
 import type { InterfacePrivacyTier } from "@/lib/interfaces";
 import * as Dialog from "@radix-ui/react-dialog";

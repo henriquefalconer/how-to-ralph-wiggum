@@ -1,5 +1,5 @@
 import { InterfaceBuilder } from "@/components/InterfaceBuilder";
-import { getTranslations } from "@/lib/i18n";
+import { getTranslations } from "@/lib/i18n/server";
 import {
   getInterface,
   getPage,

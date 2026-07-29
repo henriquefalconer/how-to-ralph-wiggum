@@ -1,7 +1,7 @@
 import { KanbanBoard } from "@/components/KanbanBoard";
 import { TopNav } from "@/components/TopNav";
 import { listCardsForPipe, listStartFormFields } from "@/lib/cards";
-import { getTranslations } from "@/lib/i18n";
+import { getTranslations } from "@/lib/i18n/server";
 import { getPipeWithPhases, resolveCreateCardButtonLabel } from "@/lib/pipes";
 import Link from "next/link";
 import { notFound } from "next/navigation";
