@@ -40,7 +40,7 @@ export async function updateAgent(
   updates: {
     name?: string;
     description?: string;
-    status?: string;
+    status?: "draft" | "active" | "inactive";
   },
 ) {
   const result = await db
@@ -62,12 +62,12 @@ export async function createBehavior(
   agentId: string,
   data: {
     title: string;
-    triggerType: string;
+    triggerType: "card_entered_phase" | "field_updated" | "card_created" | "alert_triggered" | "card_exited_phase" | "email_received" | "connected_cards_moved_to_phase" | "http_response_received" | "interface_button_clicked";
     triggerConfig?: Record<string, unknown>;
     instructions?: string;
-    modelTier?: string;
+    modelTier?: "org_default" | "classic" | "lite" | "pro" | "standard";
     skills?: Record<string, boolean>;
-    effort?: string;
+    effort?: "standard" | "maximum";
   },
 ) {
   const behavior = await db
@@ -107,12 +107,12 @@ export async function updateBehavior(
   updates: {
     title?: string;
     enabled?: boolean;
-    triggerType?: string;
+    triggerType?: "card_entered_phase" | "field_updated" | "card_created" | "alert_triggered" | "card_exited_phase" | "email_received" | "connected_cards_moved_to_phase" | "http_response_received" | "interface_button_clicked";
     triggerConfig?: Record<string, unknown>;
     instructions?: string;
-    modelTier?: string;
+    modelTier?: "org_default" | "classic" | "lite" | "pro" | "standard";
     skills?: Record<string, boolean>;
-    effort?: string;
+    effort?: "standard" | "maximum";
   },
 ) {
   const result = await db
@@ -133,7 +133,7 @@ export async function deleteBehavior(behaviorId: string) {
 export async function createKnowledgeSource(
   agentId: string,
   data: {
-    type: string;
+    type: "document" | "pipe_database" | "plain_text";
     name: string;
     usageDescription?: string;
     content?: string;
@@ -173,7 +173,7 @@ export async function createAgentRun(
   agentId: string,
   behaviorId: string,
   cardId: string,
-  status: string,
+  status: "success" | "error" | "running",
   message?: string,
 ) {
   const run = await db
@@ -215,7 +215,7 @@ export async function listBehaviorRuns(behaviorId: string) {
 export async function updateAgentRun(
   runId: string,
   updates: {
-    status?: string;
+    status?: "success" | "error" | "running";
     message?: string;
     finishedAt?: Date;
   },

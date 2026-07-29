@@ -2,6 +2,9 @@ import { cookies } from "next/headers";
 import { type Dictionary, dictionaries } from "./dictionaries";
 import { LOCALE_COOKIE, type Locale, defaultLocale, isLocale } from "./locales";
 
+export type { Dictionary };
+export { isLocale };
+
 export async function getLocale(): Promise<Locale> {
   const store = await cookies();
   const value = store.get(LOCALE_COOKIE)?.value;
