@@ -128,5 +128,22 @@
       "Verified ordering by position (later position wins on conflict per spec)"
     ],
     "bugs_found": []
+  },
+  {
+    "feature_id": "feature-010",
+    "status": "pass",
+    "tested_steps": [
+      "Ran automations unit tests: npx vitest run tests/automations.test.ts",
+      "All 10 tests passed",
+      "Verified automation CRUD: create, list, update, duplicate, delete",
+      "Confirmed trigger validation: card_entered_phase requires phaseId",
+      "Confirmed action validation: update_field requires target field config",
+      "Verified action targets field by id, independent of trigger's phase",
+      "Tested automation run logging with success status",
+      "Confirmed disabled automations prevent execution",
+      "Error handling: action targeting deleted phase logs error run",
+      "Unsupported action types log error instead of throwing"
+    ],
+    "bugs_found": []
   }
 ]
