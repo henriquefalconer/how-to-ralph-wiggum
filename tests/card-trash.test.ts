@@ -109,7 +109,7 @@ describe("Card Trash (Lixeira)", () => {
 
     // Allow 1-minute window for test timing
     const diffMs = Math.abs(
-      expectedPurgeAt.getTime() - card.purgeAt!.getTime(),
+      expectedPurgeAt.getTime() - card.purgeAt?.getTime(),
     );
     expect(diffMs).toBeLessThan(60000);
   });

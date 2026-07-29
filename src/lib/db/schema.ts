@@ -109,6 +109,10 @@ export const pipes = pgTable("pipes", {
   restrictDeleteToAdmin: boolean("restrict_delete_to_admin")
     .notNull()
     .default(false),
+  inboundEmailEnabled: boolean("inbound_email_enabled")
+    .notNull()
+    .default(false),
+  inboundEmailAlias: text("inbound_email_alias"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -625,6 +629,71 @@ export const pdfTemplates = pgTable("pdf_templates", {
   title: text("title").notNull(),
   enabled: boolean("enabled").notNull().default(false),
   body: text("body").notNull().default(""),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const emailThreads = pgTable("email_threads", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  cardId: uuid("card_id")
+    .notNull()
+    .references(() => cards.id, { onDelete: "cascade" }),
+  pipeId: uuid("pipe_id")
+    .notNull()
+    .references(() => pipes.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const emailMessageDirections = ["inbound", "outbound"] as const;
+
+export const emailMessages = pgTable("email_messages", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  threadId: uuid("thread_id")
+    .notNull()
+    .references(() => emailThreads.id, { onDelete: "cascade" }),
+  direction: text("direction", { enum: emailMessageDirections }).notNull(),
+  fromName: text("from_name").notNull(),
+  fromAddress: text("from_address").notNull(),
+  toAddresses: jsonb("to_addresses").$type<string[]>().notNull().default([]),
+  ccAddresses: jsonb("cc_addresses").$type<string[]>().notNull().default([]),
+  bccAddresses: jsonb("bcc_addresses").$type<string[]>().notNull().default([]),
+  subject: text("subject").notNull(),
+  bodyHtml: text("body_html").notNull(),
+  sentAt: timestamp("sent_at"),
+  read: boolean("read").notNull().default(false),
+  assigneeId: uuid("assignee_id").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  dueDate: timestamp("due_date"),
+  labelIds: jsonb("label_ids").$type<string[]>().notNull().default([]),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const emailTemplates = pgTable("email_templates", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  pipeId: uuid("pipe_id")
+    .notNull()
+    .references(() => pipes.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  senderName: text("sender_name").notNull(),
+  senderEmail: text("sender_email"),
+  useCustomSenderAddress: boolean("use_custom_sender_address")
+    .notNull()
+    .default(false),
+  defaultToAddresses: jsonb("default_to_addresses")
+    .$type<string[]>()
+    .notNull()
+    .default([]),
+  defaultCcAddresses: jsonb("default_cc_addresses")
+    .$type<string[]>()
+    .notNull()
+    .default([]),
+  defaultBccAddresses: jsonb("default_bcc_addresses")
+    .$type<string[]>()
+    .notNull()
+    .default([]),
+  defaultSubject: text("default_subject").notNull(),
+  bodyHtml: text("body_html").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

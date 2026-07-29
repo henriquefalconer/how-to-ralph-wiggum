@@ -953,7 +953,7 @@
     "data_model": "EmailThread: id, card_id (FK cards, NOT NULL \u2014 every thread is card-scoped), pipe_id (FK), created_at. EmailMessage: id, thread_id (FK), direction (enum: inbound|outbound), from_name, from_address (per-thread generated alias `pipe{pipeId}+{token}@mail.pipefy.com` for outbound; the sender's real address for inbound), to[] (string[]), cc[] (string[]), bcc[] (string[]), subject, body_html, sent_at, read (bool), assignee_id (FK members, nullable), due_date (date, nullable), label_ids (FK labels, many-to-many). Pipe gains: inbound_email_enabled (bool, default false), inbound_email_alias (string, `pipe{pipeId}@mail.pipefy.com`, server-generated at pipe creation regardless of enabled state). EmailTemplate: id, pipe_id (FK), name, sender_name, sender_email (nullable \u2014 falls back to a Pipefy-branded reply-to when unset), use_custom_sender_address (bool), default_to[] (string[]), default_cc[] (string[]), default_bcc[] (string[]), default_subject (string, supports token interpolation), body_html (supports token interpolation via the shared 'Conte\u00fado din\u00e2mico' field-token picker \u2014 same token scheme as feature-010's automation variable picker and feature-011's report filters).",
     "priority": 10,
     "core": false,
-    "passes": false,
+    "passes": true,
     "tests": {
       "unit": [
         {

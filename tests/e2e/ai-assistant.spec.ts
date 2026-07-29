@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("AI Assistant Widget", () => {
   test("widget appears on live interface page", async ({ page }) => {

@@ -8,6 +8,13 @@
       "when": 1785295124238,
       "tag": "0000_brief_toxin",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1785298034046,
+      "tag": "0001_salty_puff_adder",
+      "breakpoints": true
     }
   ]
 }
