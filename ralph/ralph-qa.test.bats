@@ -1,7 +1,8 @@
 setup() {
   REPO="$BATS_TEST_TMPDIR/repo"
   mkdir -p "$REPO/ralph/.state" "$REPO/bin"
-  cp "$BATS_TEST_DIRNAME/ralph-qa.sh" "$BATS_TEST_DIRNAME/ralph-lib.sh" "$BATS_TEST_DIRNAME/ralph-resume.sh" "$REPO/ralph/"
+  cp "$BATS_TEST_DIRNAME/ralph-qa.sh" "$BATS_TEST_DIRNAME/ralph-lib.sh" \
+     "$BATS_TEST_DIRNAME/ralph-resume.sh" "$BATS_TEST_DIRNAME/ralph-gates.sh" "$REPO/ralph/"
 
   export RALPH_RUN_ID="TESTRUN"
   RUN_DIR="$REPO/ralph/.state/runs/TESTRUN"
@@ -102,8 +103,29 @@ STUB
   export CURL_RC=1
   run "$REPO/ralph/ralph-qa.sh" https://example.com 1
   [ "$status" -eq 1 ]
-  [[ "$output" == *"never became ready"* ]]
+  [[ "$output" == *"could not be repaired"* ]]
   [ ! -f "$SENTINEL" ]
+}
+
+@test "a dead dev server is handed to a repair agent before the phase gives up" {
+  export CURL_RC=1                 # never healthy, however many times it is fixed
+  run "$REPO/ralph/ralph-qa.sh" https://example.com 1
+  [ "$status" -eq 1 ]
+  # it tried to repair rather than exiting on the first failed poll...
+  grep -q "dev_server FAILED" "$PROGRESS_FILE"
+  grep -q "repairing dev_server (attempt 1/" "$PROGRESS_FILE"
+  # ...and the repair agent got its own prompt, not QA's
+  grep -q "prompt-repair.md" "$STUB_STDIN"
+  # ...and the phase abort is recorded where the run is actually read
+  grep -q "PHASE ABORTED" "$PROGRESS_FILE"
+}
+
+@test "a dev server that comes up needs no repair session at all" {
+  export STUB_OUT="<promise>QA_COMPLETE</promise>"
+  run "$REPO/ralph/ralph-qa.sh" https://example.com 1
+  [ "$status" -eq 0 ]
+  ! grep -q "dev_server FAILED" "$PROGRESS_FILE"
+  ! grep -q "prompt-repair.md" "$STUB_STDIN"
 }
 
 @test "seeds report-qa.json when missing" {

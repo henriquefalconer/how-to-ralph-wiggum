@@ -67,6 +67,22 @@ fmt_dur() { # <seconds>
 }
 note() { printf '\n%s\n' "$*" >> "$PROGRESS"; }
 
+# fail_phase <message...> — abort the phase, but say so in the run's progress
+# file on the way out.
+#
+# A phase that dies in its preconditions used to be invisible there: the guards
+# run before the first note(), so they could only echo to stdout, which lands in
+# the watchdog's log and nowhere else. A QA phase that never reached its own
+# narration was therefore indistinguishable, in the one file that documents the
+# run, from a QA phase that never started — and the watchdog's three retries
+# produced three identical silences. Every early exit goes through here instead,
+# so the progress file records what stopped the phase and why.
+fail_phase() {
+  note "[ralph] PHASE ABORTED — $*"
+  say "$*"
+  exit 1
+}
+
 # jsonfield <file> <dotted.path> — python3 stands in for jq, which is absent here.
 jsonfield() {
   python3 - "$1" "$2" <<'PY'
