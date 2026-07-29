@@ -12,12 +12,19 @@ setup() {
   cp "$BATS_TEST_DIRNAME/ralph-to-ralph.sh" "$BATS_TEST_DIRNAME/ralph-resume.sh" "$REPO/ralph/"
 
   export WATCHDOG_ARGS="$REPO/watchdog-args.txt"
+  # --model reaches the phases through the environment, not the argument list,
+  # so the stub records both.
+  export WATCHDOG_MODEL="$REPO/watchdog-model.txt"
   cat > "$REPO/ralph/ralph-watchdog.sh" <<'STUB'
 #!/bin/bash
 printf '%s\n' "$@" >> "$WATCHDOG_ARGS"
+printf '%s\n' "${MODEL-<unset>}" > "$WATCHDOG_MODEL"
 exit "${WATCHDOG_RC:-0}"
 STUB
   chmod +x "$REPO/ralph/ralph-watchdog.sh"
+
+  # A model inherited from the surrounding shell would mask what the flag does.
+  unset MODEL
 
   printf '#!/bin/bash\nexit 0\n' > "$REPO/bin/sleep"
   chmod +x "$REPO/bin/sleep"
@@ -232,4 +239,82 @@ seed_run() { # <id> <url> <sessions> <cost-lines...>
   run "$REPO/ralph/ralph-to-ralph.sh" --list
   [ "$status" -eq 0 ]
   [[ "$output" == *"No runs recorded"* ]]
+}
+
+# ── choosing the model ───────────────────────────────────────────────────────
+#
+# --model is exported, not forwarded as an argument: the watchdog and all three
+# phase scripts inherit it the way they inherit RALPH_RUN_ID. These assert on
+# the environment the watchdog is started with, which is what the phases see.
+
+@test "--model hands the chosen model to the phases through the environment" {
+  run "$REPO/ralph/ralph-to-ralph.sh" --model claude-opus-5 https://example.com
+  [ "$status" -eq 0 ]
+  [ "$(cat "$REPO/watchdog-model.txt")" = "claude-opus-5" ]
+  # and the positional arguments are untouched by the flag
+  [ "$(sed -n 1p "$WATCHDOG_ARGS")" = "https://example.com" ]
+}
+
+@test "--model=<name> is accepted too" {
+  run "$REPO/ralph/ralph-to-ralph.sh" --model=claude-haiku-4-5 https://example.com
+  [ "$status" -eq 0 ]
+  [ "$(cat "$REPO/watchdog-model.txt")" = "claude-haiku-4-5" ]
+}
+
+@test "without --model nothing is exported, so the library default applies" {
+  run "$REPO/ralph/ralph-to-ralph.sh" https://example.com
+  [ "$status" -eq 0 ]
+  # NOT the literal default: the launcher must not pin a model the library owns
+  [ "$(cat "$REPO/watchdog-model.txt")" = "<unset>" ]
+}
+
+@test "the banner names the model so a launch is never ambiguous" {
+  run "$REPO/ralph/ralph-to-ralph.sh" --model claude-opus-5 https://example.com
+  [[ "$output" == *"Model:            claude-opus-5"* ]]
+
+  run "$REPO/ralph/ralph-to-ralph.sh" https://example.com
+  [[ "$output" == *"Model:            claude-sonnet-5 (default)"* ]]
+}
+
+@test "--model composes with --resume in either order" {
+  seed_run 20260202T000000Z https://new.example.com 7 2.5
+  run "$REPO/ralph/ralph-to-ralph.sh" --model claude-opus-5 --resume 20260202T000000Z
+  [ "$status" -eq 0 ]
+  [ "$(cat "$REPO/watchdog-model.txt")" = "claude-opus-5" ]
+  [[ "$output" == *"20260202T000000Z (RESUMING)"* ]]
+
+  run "$REPO/ralph/ralph-to-ralph.sh" --resume 20260202T000000Z --model claude-haiku-4-5
+  [ "$status" -eq 0 ]
+  [ "$(cat "$REPO/watchdog-model.txt")" = "claude-haiku-4-5" ]
+  [[ "$output" == *"20260202T000000Z (RESUMING)"* ]]
+}
+
+@test "--model still forwards the iteration budgets after it" {
+  run "$REPO/ralph/ralph-to-ralph.sh" --model claude-opus-5 https://example.com 3 4 5
+  [ "$(sed -n 2p "$WATCHDOG_ARGS")" = "3" ]
+  [ "$(sed -n 3p "$WATCHDOG_ARGS")" = "4" ]
+  [ "$(sed -n 4p "$WATCHDOG_ARGS")" = "5" ]
+}
+
+@test "--model with no value is refused rather than eating the target url" {
+  run "$REPO/ralph/ralph-to-ralph.sh" --model
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"--model needs a model name"* ]]
+  [ ! -f "$WATCHDOG_ARGS" ]
+
+  # the url must not be consumed as if it were the model name
+  run "$REPO/ralph/ralph-to-ralph.sh" --model --resume
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"--model needs a model name"* ]]
+  [ ! -f "$WATCHDOG_ARGS" ]
+}
+
+@test "usage text documents --model and prints no source code" {
+  run "$REPO/ralph/ralph-to-ralph.sh"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"--model"* ]]
+  # the header used to be printed by a fixed line range, which outgrew the
+  # comments and started emitting the script's own first statements
+  [[ "$output" != *"set -euo pipefail"* ]]
+  [[ "$output" != *"dirname"* ]]
 }

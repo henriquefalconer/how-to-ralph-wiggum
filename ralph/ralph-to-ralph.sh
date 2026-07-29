@@ -6,9 +6,13 @@
 # fail, and commits between phases.
 #
 # Usage:
-#   ./ralph/ralph-to-ralph.sh <target-url> [inspect-iters] [build-iters] [qa-iters]
-#   ./ralph/ralph-to-ralph.sh --resume [run-id] [target-url] [iters...]
+#   ./ralph/ralph-to-ralph.sh [--model <name>] <target-url> [inspect-iters] [build-iters] [qa-iters]
+#   ./ralph/ralph-to-ralph.sh [--model <name>] --resume [run-id] [target-url] [iters...]
 #   ./ralph/ralph-to-ralph.sh --list
+#
+# --model picks the model every session of this launch runs on (default
+# claude-sonnet-5). It applies to all three phases; the flags may be given in
+# either order.
 #
 # --resume continues an existing run rather than starting a new one: same run id,
 # same directory, same progress file appended to, same cost ledger, and session
@@ -41,7 +45,10 @@ if [ "$RESUMING" = 1 ] && [ -z "$TARGET_URL" ]; then
 fi
 
 if [ -z "$TARGET_URL" ]; then
-  sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//' >&2
+  # The leading comment block IS the usage text. Printing it by pattern rather
+  # than by a fixed line range keeps the two from drifting apart as the header
+  # is edited (a range outlives its comments and starts printing code).
+  awk 'NR == 1 { next } /^#/ { sub(/^# ?/, ""); print; next } { exit }' "$0" >&2
   exit 1
 fi
 
@@ -57,6 +64,10 @@ echo "========================================="
 echo "  RALPH-TO-RALPH: Product Cloner"
 echo "========================================="
 echo "Target:           $TARGET_URL"
+# Which model a launch is on is otherwise invisible until the first session's
+# ledger entry, which is a long way to go to notice you are not on the model you
+# meant. The default lives in ralph-lib.sh, which this launcher does not source.
+echo "Model:            ${MODEL:-claude-sonnet-5 (default)}"
 echo "Inspect iters:    $INSPECT_ITERS"
 echo "Build iters:      $BUILD_ITERS"
 echo "QA iters:         $QA_ITERS"
