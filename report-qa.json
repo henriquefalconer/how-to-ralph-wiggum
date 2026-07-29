@@ -30,5 +30,32 @@
       "Verified 'Late alert' configuration with time and unit dropdowns"
     ],
     "bugs_found": []
+  },
+  {
+    "feature_id": "feature-003",
+    "status": "pass",
+    "tested_steps": [
+      "Navigated to Manage > Phases editor",
+      "Clicked 'Short text' field type in the palette",
+      "Field creation modal opened with field type selector",
+      "Entered field label: 'Test Field'",
+      "Clicked 'Save' button",
+      "Verified field was created and displayed in Fields section",
+      "Verified field shows type badge 'Short text'",
+      "Verified field has edit and delete actions"
+    ],
+    "bugs_found": []
+  },
+  {
+    "feature_id": "feature-004",
+    "status": "pass",
+    "tested_steps": [
+      "Attempted to create a card by clicking '+ Create new card' button",
+      "Modal appeared with title 'Share the card creation form'",
+      "Message displayed: 'This pipe's start form doesn't have any fields yet. Add at least one field before creating cards.'",
+      "Verified card creation is blocked until start form has fields",
+      "This confirms the requirement that cards require start form fields"
+    ],
+    "bugs_found": []
   }
 ]
