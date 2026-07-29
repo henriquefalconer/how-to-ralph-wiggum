@@ -1,1 +1,34 @@
-[]
+[
+  {
+    "feature_id": "feature-001",
+    "status": "pass",
+    "tested_steps": [
+      "Clicked 'Create pipe' on home page",
+      "Selected 'Create pipe from scratch'",
+      "Entered pipe name 'QA Test Pipe'",
+      "Clicked 'Create pipe' button",
+      "Verified redirect to pipe's Kanban board",
+      "Confirmed 3 default phases: Inbox (0 cards), Doing (0 cards), Done (0 cards)",
+      "Verified auto-assigned color (yellow/gold)",
+      "Verified pipe title displayed in header"
+    ],
+    "bugs_found": []
+  },
+  {
+    "feature_id": "feature-002",
+    "status": "pass",
+    "tested_steps": [
+      "Navigated to pipe settings (Manage button)",
+      "Opened Phases editor",
+      "Clicked 'Advanced options' to view phase configuration",
+      "Verified phase name field: 'Inbox'",
+      "Verified color swatch (blue)",
+      "Verified description field",
+      "Verified checkboxes: 'Set as final phase', 'Allow creating cards in this phase'",
+      "Verified 'Manage tasks' radio options: 'Collect email addresses' / 'Do not collect'",
+      "Verified 'Add assignee' section",
+      "Verified 'Late alert' configuration with time and unit dropdowns"
+    ],
+    "bugs_found": []
+  }
+]
