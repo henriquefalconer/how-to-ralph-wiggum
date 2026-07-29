@@ -161,5 +161,23 @@
       "Confirmed live result-count badge updates per report"
     ],
     "bugs_found": []
+  },
+  {
+    "feature_id": "feature-012",
+    "status": "pass",
+    "tested_steps": [
+      "Ran dashboards unit tests: npx vitest run tests/dashboards.test.ts",
+      "All 11 tests passed",
+      "Verified dashboard CRUD: create, list, delete with name validation",
+      "Confirmed chart metric/visualization type validation",
+      "Verified viz_type='number' auto-clears time_grouping and updates title",
+      "Confirmed charts re-query live card data without re-saving",
+      "Tested zero-value metrics (returns 0, not error)",
+      "Verified lead_time computation (creation to done phase)",
+      "Confirmed bar chart grouping by dimension field value",
+      "Verified attachments_total, assignees_total, comments_total calculations",
+      "Tested chart listing and deletion on dashboards"
+    ],
+    "bugs_found": []
   }
 ]
