@@ -284,11 +284,11 @@ describe("pipe-members", () => {
     expect(values.find((v) => v.fieldId === field.id)?.value).toBe("hello");
 
     await deleteCard(card.id, admin.user.id);
-    const remaining = await db
+    const [deleted] = await db
       .select()
       .from(cards)
       .where(eq(cards.id, card.id));
-    expect(remaining.length).toBe(0);
+    expect(deleted.deletedAt).not.toBeNull();
   });
 
   it("removes a member", async () => {
@@ -328,10 +328,10 @@ describe("pipe-members", () => {
 
     const admin = await ensureSelfMembership(orgId, pipe.id);
     await deleteCard(card.id, admin.user.id);
-    const remaining = await db
+    const [deleted] = await db
       .select()
       .from(cards)
       .where(eq(cards.id, card.id));
-    expect(remaining.length).toBe(0);
+    expect(deleted.deletedAt).not.toBeNull();
   });
 });

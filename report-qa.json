@@ -107,7 +107,7 @@
     "feature_id": "feature-008",
     "status": "pass",
     "tested_steps": [
-      "Ran unit tests: npx vitest run tests/interfaces.test.ts — 29/29 passed",
+      "Ran unit tests: npx vitest run tests/interfaces.test.ts \u2014 29/29 passed",
       "Verified data table row querying with viewer-scoped filters",
       "Confirmed element reordering persists correct position values",
       "Verified empty pipe handling (zero cards returns zero rows, not error)",
@@ -177,6 +177,26 @@
       "Confirmed bar chart grouping by dimension field value",
       "Verified attachments_total, assignees_total, comments_total calculations",
       "Tested chart listing and deletion on dashboards"
+    ],
+    "bugs_found": []
+  },
+  {
+    "feature_id": "feature-013",
+    "status": "pass",
+    "tested_steps": [
+      "Navigated to pipe settings (People tab)",
+      "Verified page title: '2 people in QA Test Pipe'",
+      "Verified search by name input field",
+      "Verified member table with NAME and ROLE columns",
+      "Verified current member: 'You' (you@workspace.local) with 'Pipe admin' role",
+      "Clicked 'Invite people' button",
+      "Filled invite form: Name='QA Test Member', Email='qa-test-member@example.com', Role='Pipe member'",
+      "Clicked 'Invite' button",
+      "Verified new member appeared in list with correct email",
+      "Verified member count updated to '2 people'",
+      "Opened role dropdown for new member, verified 4 roles with descriptions: Pipe admin, Pipe member, Read only, Restricted view",
+      "Changed member role from 'Pipe member' to 'Pipe admin'",
+      "Verified role change persisted in table"
     ],
     "bugs_found": []
   }
