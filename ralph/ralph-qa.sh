@@ -72,6 +72,7 @@ stop_dev() {
   kill -- "-$DEV_PID" 2>/dev/null ||
     kill "$DEV_PID" 2>/dev/null || true      # in case setsid forked and $! is not the leader
   pkill -f "next dev --port $DEV_PORT" 2>/dev/null || true
+  announce_dev_down
 }
 
 DEV_LOG="$RUN_DIR/dev-server.log"
@@ -81,6 +82,30 @@ start_dev() {
   pkill -f "next dev --port $DEV_PORT" 2>/dev/null || true
   setsid npm run dev > "$DEV_LOG" 2>&1 &
   DEV_PID=$!
+}
+
+# The clone is only reachable while this phase is running: the server starts in
+# the gate below and dies with the phase, so a progress file that does not say
+# when leaves anyone reading it — or tailing it live — guessing whether the URL
+# they have is still worth opening. 127.0.0.1 rather than localhost because on
+# this machine localhost can resolve to ::1 first, where nothing is listening.
+DEV_URL="http://127.0.0.1:$DEV_PORT"
+
+# Announced strictly in pairs. The gate restarts the server on every repair
+# attempt, so keying the "down" note on whether an "up" was ever announced keeps
+# a repair cycle from filling the progress file with stop/start churn that says
+# nothing the gate has not already said.
+DEV_SERVING=0
+
+announce_dev_up() {
+  DEV_SERVING=1
+  note "[ralph] The clone is now being served — access through $DEV_URL (Next.js dev server on port $DEV_PORT). It stays up only for this QA phase."
+}
+
+announce_dev_down() {
+  [ "$DEV_SERVING" = 1 ] || return 0
+  DEV_SERVING=0
+  note "[ralph] The clone is no longer being served — $DEV_URL is down (dev server stopped with the QA phase)."
 }
 
 # `|| true` inside stop_dev because under `set -e` a failed kill (dev server
@@ -146,7 +171,10 @@ gate_dev_server_diag() {
 if ! run_gates qa dev_server; then
   fail_phase "the dev server never became usable on port $DEV_PORT and could not be repaired — QA cannot test a clone that does not serve."
 fi
-echo "Dev server ready on port $DEV_PORT"
+# Announced here rather than in start_dev: the gate has just proved the server
+# actually answers, and "being served" should mean served, not merely spawned.
+announce_dev_up
+echo "Dev server ready on port $DEV_PORT ($DEV_URL)"
 
 # Run Playwright regression suite first (fast, catches obvious bugs)
 if [ -f "playwright.config.ts" ] || [ -d "tests/e2e" ]; then
@@ -170,7 +198,73 @@ fi
 note "═══════════════════════════════════════════════════════"
 note "Phase 3 (QA) starting — target=${TARGET_URL:-none} model=$MODEL max-iter=$ITERATIONS"
 
+# qa_demote_untested — an untested feature is not a passing feature.
+#
+# QA_COMPLETE means "every feature has been tested", the sentinel it writes is
+# what makes the watchdog stop cycling, and the claim was never checked against
+# what QA actually recorded. It does not have to be true. Measured on a real run:
+# QA reported QA_COMPLETE after 6 iterations with 14 of 29 features in
+# report-qa.json and features 015-029 never tested at all. The watchdog printed
+# "ALL 29 FEATURES: PASSED + QA VERIFIED", broke out of cycle 1 of 5, and ended
+# the run — not because it skipped its Build↔QA cycling, but because nothing was
+# marked failing, so there was nothing left to send back.
+#
+# Untested is therefore demoted to passes:false. That is the honest state, and it
+# is also the state the rest of the orchestrator already knows how to act on:
+# all_passed goes false, so the watchdog cycles back to build on its own with no
+# special case anywhere. Coverage is checked here for the same reason
+# ralph-gates.sh re-runs a gate's check instead of believing an agent that said
+# FIXED — the claim is evidence, not proof.
+#
+# Prints the UNTESTED ids, space separated — not the demoted ones. The two
+# differ on the second pass: once an untested feature has been demoted there is
+# nothing left to demote, and keying the decision on "did I demote anything"
+# would then accept the very next QA_COMPLETE while the feature was still
+# untested. Coverage is a property of report-qa.json, so that is what is read.
+qa_untested() {
+  python3 <<'PY'
+import json, os
+
+try:
+    prd = json.load(open("prd.json"))
+    if not isinstance(prd, list):
+        raise ValueError
+except Exception:
+    print("")                        # a corrupt prd.json is require_prd's problem
+    raise SystemExit(0)
+
+tested = set()
+if os.path.exists("report-qa.json"):
+    try:
+        rep = json.load(open("report-qa.json"))
+        if isinstance(rep, list):
+            tested = {e.get("feature_id") for e in rep if isinstance(e, dict)}
+    except Exception:
+        pass
+
+untested, demoted = [], []
+for f in prd:
+    if not isinstance(f, dict):
+        continue
+    fid = f.get("id")
+    if not fid or fid in tested:
+        continue
+    untested.append(fid)
+    if f.get("passes"):          # only the ones still claiming to pass change
+        f["passes"] = False
+        demoted.append(fid)
+
+if demoted:
+    with open("prd.json", "w") as fh:
+        json.dump(prd, fh, indent=2)
+        fh.write("\n")
+print(" ".join(untested))
+PY
+}
+
 consecutive_failures=0
+false_completes=0
+MAX_FALSE_COMPLETES="${RALPH_MAX_FALSE_COMPLETES:-3}"
 
 for ((i=1; i<=ITERATIONS; i++)); do
   echo "--- QA iteration $i/$ITERATIONS ---"
@@ -201,12 +295,35 @@ PROMPT
   p="$ITER_PROMISE"
 
   if [ "$p" = "QA_COMPLETE" ]; then
+    # The claim is checked before it is acted on. Anything QA never recorded
+    # testing goes back to passes:false, which is both the honest state and the
+    # one that makes the watchdog resume cycling without a special case.
+    untested="$(qa_untested)"
+    if [ -n "$untested" ]; then
+      false_completes=$((false_completes + 1))
+      note "[ralph] QA said QA_COMPLETE, but report-qa.json has no entry for: $untested"
+      note "[ralph] An untested feature is not a passing feature — those are back to passes:false ($false_completes/$MAX_FALSE_COMPLETES). QA continues."
+      echo "WARNING: QA_COMPLETE rejected — $(wc -w <<<"$untested") feature(s) never tested. Demoted to passes:false."
+
+      # QA gets to finish its own job first; only once it keeps insisting it is
+      # done does the phase end and hand the still-false features to build.
+      if [ "$false_completes" -ge "$MAX_FALSE_COMPLETES" ]; then
+        note "[ralph] QA has claimed QA_COMPLETE $false_completes times with features still untested — ending the phase and letting the watchdog cycle back to build."
+        # The sentinel still goes out: a full pass DID run, and the watchdog
+        # needs to tell that from a QA that died on startup. The demoted features
+        # carry the real verdict — all_passed is now false, so it cycles.
+        printf '%s\n' "$(date '+%Y-%m-%d %H:%M:%S') after $i iterations, $false_completes incomplete QA_COMPLETE claim(s)" > "$QA_SENTINEL"
+        exit 0
+      fi
+      continue
+    fi
+
     echo ""
     echo "--- Running final Playwright regression suite ---"
     npx playwright test --reporter=list 2>&1 || echo "Some Playwright tests failed in final regression."
     echo ""
     echo "=== QA complete after $i iterations! ==="
-    note "[ralph] Phase 3 (QA) reported QA_COMPLETE after $i iterations."
+    note "[ralph] Phase 3 (QA) reported QA_COMPLETE after $i iterations, with every feature in prd.json covered by report-qa.json."
     # Positive proof for the watchdog that a full QA pass actually happened.
     # Without it the watchdog can only observe that prd.json is unchanged, which
     # looks identical whether QA approved every feature or died on startup.
