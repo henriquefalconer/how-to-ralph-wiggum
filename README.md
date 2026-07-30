@@ -10,7 +10,7 @@ Point it at the work, walk away, and check in.
 
 ## Be on the loop, not in it
 
-**In the loop (interactive Claude)**, you are a step in the work. Nothing moves
+**In the loop (interactive session)**, you are a step in the work. Nothing moves
 unless you move it, so it runs at exactly your speed and stops the moment you
 look away. Your attention is the bottleneck, and it fills up your context window.
 
@@ -81,8 +81,8 @@ instead, one page per pass, and what it writes down is the specs and the plan.
 Same loop, same short passes. The looking is the work.
 
 That only applies if you are copying something. If you are coming up with
-something new, describe it to Claude instead, have a discussion with it, and let
-it write the specs and the plan out of that conversation.
+something new, describe it to an Agent instead, have a discussion with it, and
+let it write the specs and the plan out of that conversation.
 
 ---
 
