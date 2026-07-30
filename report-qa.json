@@ -277,5 +277,19 @@
       "Verified deleted card phase_id is preserved for restore"
     ],
     "bugs_found": []
+  },
+  {
+    "feature_id": "feature-018",
+    "status": "pass",
+    "tested_steps": [
+      "Ran emails unit tests: npx vitest run tests/emails.test.ts",
+      "All 9 tests passed",
+      "Email thread creation and message handling verified",
+      "Card-scoped email threads confirmed",
+      "Dynamic recipient address generation verified",
+      "Template application with token interpolation confirmed",
+      "Email thread metadata (assignee, labels, due date) verified"
+    ],
+    "bugs_found": []
   }
 ]
