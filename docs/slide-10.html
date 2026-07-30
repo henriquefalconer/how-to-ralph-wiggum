@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -9,38 +10,44 @@
       height: 405pt;
       font-family: 'Pretendard', sans-serif;
       background: #0f0f0f;
-      padding: 32pt 48pt;
+      padding: 28pt 36pt;
       display: flex;
       flex-direction: column;
     }
   </style>
 </head>
 <body>
-  <!-- Main content centered -->
-  <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-    <div style="width: 18pt; height: 18pt; background: #ffffff; border-radius: 3pt; display: flex; align-items: center; justify-content: center; margin-bottom: 20pt;">
-      <p style="color: #0f0f0f; font-size: 10pt; font-weight: 700;">R</p>
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10pt;">
+    <div style="display: flex; align-items: center; gap: 12pt;">
+      <p style="display: inline-block; padding: 4pt 10pt; background: #dc2626; color: #fff; border-radius: 4pt; font-size: 8pt; font-weight: 600;">LIVE DEMO</p>
+      <h2 style="font-size: 18pt; font-weight: 600; color: #ffffff;">One Pass, Start to Finish</h2>
     </div>
-    <h1 style="font-size: 48pt; font-weight: 600; color: #ffffff; letter-spacing: -0.02em; margin-bottom: 16pt;">
-      Q &amp; A
-    </h1>
-    <p style="font-size: 16pt; color: #b0b0b0; margin-bottom: 32pt;">
-      Thank you! Let's talk.
-    </p>
-    <div style="display: flex; gap: 32pt;">
-      <div style="text-align: center;">
-        <p style="font-size: 9pt; color: #666; margin-bottom: 4pt;">GitHub</p>
-        <p style="font-size: 11pt; font-weight: 500; color: #6366f1;">github.com/henriquefalconer/ralph-to-ralph-prod</p>
-      </div>
-      <div style="text-align: center;">
-        <p style="font-size: 9pt; color: #666; margin-bottom: 4pt;">Browser Agent</p>
-        <p style="font-size: 11pt; font-weight: 500; color: #6366f1;">Claude in Chrome</p>
-      </div>
+    <p style="font-size: 10pt; color: #666;">10</p>
+  </div>
+
+  <!-- Recording of the build phase's progress file as it is written -->
+  <div style="flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+    <div style="width: 100%; height: 100%; border-radius: 8pt; overflow: hidden; border: 1px solid #333; background: #0d0d0d; display: flex; align-items: center; justify-content: center;">
+      <video src="./assets/build-log.webm" poster="./assets/build-log-poster.jpg"
+             controls muted playsinline preload="metadata"
+             style="width: 100%; height: 100%; object-fit: contain; background: #0d0d0d;">
+        Your browser does not support the video tag.
+      </video>
     </div>
   </div>
 
+  <!-- Caption -->
+  <div style="display: flex; justify-content: center; padding-top: 8pt;">
+    <p style="font-size: 10pt; color: #b0b0b0; text-align: center;">
+      One pass, start to finish — it picks a single item, builds it, proves it, writes it down, and stops
+    </p>
+  </div>
+
   <!-- Footer -->
-  <div style="display: flex; justify-content: center; padding-top: 10pt; border-top: 1px solid #252525;">
+  <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8pt; border-top: 1px solid #252525;">
+    <p style="font-size: 9pt; color: #666;">Ralph</p>
+    <p style="font-size: 9pt; color: #666;">One pass finishing one item</p>
     <p style="font-size: 9pt; color: #666;">Demo 2026</p>
   </div>
 </body>

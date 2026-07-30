@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -9,7 +10,7 @@
       height: 405pt;
       font-family: 'Pretendard', sans-serif;
       background: #0f0f0f;
-      padding: 32pt 48pt;
+      padding: 36pt 48pt;
       display: flex;
       flex-direction: column;
     }
@@ -17,100 +18,87 @@
 </head>
 <body>
   <!-- Header -->
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14pt;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20pt;">
     <div style="display: flex; align-items: center; gap: 12pt;">
-      <p style="display: inline-block; padding: 4pt 10pt; background: #f59e0b; color: #0f0f0f; border-radius: 4pt; font-size: 8pt; font-weight: 700;">OUR STACK</p>
-      <h2 style="font-size: 20pt; font-weight: 600; color: #ffffff;">What Powers It</h2>
+      <p style="display: inline-block; padding: 4pt 10pt; background: #6366f1; color: #fff; border-radius: 4pt; font-size: 8pt; font-weight: 600;">SOLUTION</p>
+      <h2 style="font-size: 22pt; font-weight: 600; color: #ffffff;">The Loop <span style="color: #6366f1;">IS</span> the Product</h2>
     </div>
     <p style="font-size: 10pt; color: #666;">06</p>
   </div>
 
-  <!-- Content -->
-  <div style="flex: 1; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 20pt; overflow: hidden;">
-    <!-- Left: Claude Extension hero -->
-    <div style="display: flex; flex-direction: column; gap: 10pt;">
-      <!-- Big brand -->
-      <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f0f0f 100%); border-radius: 8pt; padding: 18pt 16pt; border: 2px solid #3b82f6;">
-        <div style="display: flex; align-items: center; gap: 10pt; margin-bottom: 10pt;">
-          <div style="width: 28pt; height: 28pt; background: #3b82f6; border-radius: 6pt; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-            <p style="font-size: 14pt; color: #ffffff; font-weight: 700;">C</p>
-          </div>
-          <p style="font-size: 22pt; font-weight: 700; color: #ffffff;">Claude Extension</p>
-        </div>
-        <p style="font-size: 18pt; font-weight: 600; color: #3b82f6; margin-bottom: 6pt;">Drives the browser you already use</p>
-        <p style="font-size: 9pt; color: #93c5fd; margin-bottom: 10pt;">Anthropic · runs in your Chrome</p>
-        <p style="font-size: 10pt; color: #b0b0b0; line-height: 1.5;">
-          The Inspect loop sees the target product exactly as a signed-in user does — <span style="color: #ffffff; font-weight: 500;">no scraping, no second session</span>.
-        </p>
-      </div>
+  <!-- One-sentence definition -->
+  <div style="margin-bottom: 18pt; padding: 12pt 16pt; background: #1a1a1a; border-radius: 8pt; border-left: 3pt solid #6366f1;">
+    <p style="font-size: 13pt; color: #e0e0e0; line-height: 1.5;">
+      Our product isn't a tool — it's the <span style="color: #6366f1; font-weight: 600;">autonomous loop itself</span>. Give it a URL, and the loop inspects, plans, builds, tests, and deploys a production clone. <span style="color: #ffffff; font-weight: 500;">The loop does everything.</span>
+    </p>
+  </div>
 
-      <!-- Capabilities -->
-      <div style="display: flex; flex-direction: column; gap: 6pt;">
-        <div style="display: flex; align-items: center; gap: 8pt; background: #1a1a1a; border-radius: 5pt; padding: 7pt 10pt; border: 1px solid #333;">
-          <div style="width: 5pt; height: 5pt; background: #3b82f6; border-radius: 50%; flex-shrink: 0;"></div>
-          <p style="font-size: 9pt; color: #e0e0e0;"><span style="color: #ffffff; font-weight: 500;">Reads &amp; screenshots every page</span> to understand UI layout</p>
-        </div>
-        <div style="display: flex; align-items: center; gap: 8pt; background: #1a1a1a; border-radius: 5pt; padding: 7pt 10pt; border: 1px solid #333;">
-          <div style="width: 5pt; height: 5pt; background: #3b82f6; border-radius: 50%; flex-shrink: 0;"></div>
-          <p style="font-size: 9pt; color: #e0e0e0;"><span style="color: #ffffff; font-weight: 500;">Clicks, types &amp; submits</span> to test what the UI actually does</p>
-        </div>
-        <div style="display: flex; align-items: center; gap: 8pt; background: #1a1a1a; border-radius: 5pt; padding: 7pt 10pt; border: 1px solid #333;">
-          <div style="width: 5pt; height: 5pt; background: #3b82f6; border-radius: 50%; flex-shrink: 0;"></div>
-          <p style="font-size: 9pt; color: #e0e0e0;"><span style="color: #ffffff; font-weight: 500;">Reads console &amp; network traffic</span> — learns the product's real API shape</p>
-        </div>
+  <!-- 4-phase workflow -->
+  <div style="flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12pt;">
+    <!-- Phase 1: Inspect -->
+    <div style="background: #1a1a2e; border-radius: 8pt; padding: 14pt; display: flex; flex-direction: column; border-top: 2pt solid #818cf8;">
+      <p style="font-size: 8pt; font-weight: 600; color: #818cf8; letter-spacing: 0.08em; margin-bottom: 6pt;">PHASE 1</p>
+      <h3 style="font-size: 15pt; font-weight: 600; color: #ffffff; margin-bottom: 8pt;">Inspect</h3>
+      <p style="font-size: 9pt; color: #888; margin-bottom: 8pt;">Ralph Loop #1</p>
+      <div style="flex: 1;">
+        <p style="font-size: 10pt; color: #b0b0b0; line-height: 1.6;">Claude in Chrome + Claude Sonnet analyzes the target URL</p>
+      </div>
+      <div style="margin-top: 8pt; display: flex; flex-direction: column; gap: 3pt;">
+        <p style="font-size: 9pt; color: #818cf8;">→ PRD.json</p>
+        <p style="font-size: 9pt; color: #818cf8;">→ spec-build.md</p>
+        <p style="font-size: 9pt; color: #818cf8;">→ sitemap + screenshots</p>
       </div>
     </div>
 
-    <!-- Right: Watchdog + other agents -->
-    <div style="display: flex; flex-direction: column; gap: 10pt;">
-      <p style="font-size: 10pt; font-weight: 600; color: #888; letter-spacing: 0.05em;">ALSO POWERED BY</p>
-
-      <div style="background: #1a1a1a; border-radius: 6pt; padding: 8pt 12pt; border: 1px solid #333; display: flex; align-items: center; gap: 10pt;">
-        <div style="width: 20pt; height: 20pt; background: #3b1f2b; border-radius: 4pt; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-          <p style="font-size: 10pt; color: #f472b6; font-weight: 700;">C</p>
-        </div>
-        <p style="font-size: 10pt; color: #b0b0b0;"><span style="color: #ffffff; font-weight: 500;">Claude Sonnet</span> — Inspect + Build loops</p>
+    <!-- Phase 2: Plan -->
+    <div style="background: #1a1a2e; border-radius: 8pt; padding: 14pt; display: flex; flex-direction: column; border-top: 2pt solid #a78bfa;">
+      <p style="font-size: 8pt; font-weight: 600; color: #a78bfa; letter-spacing: 0.08em; margin-bottom: 6pt;">PHASE 1.5</p>
+      <h3 style="font-size: 15pt; font-weight: 600; color: #ffffff; margin-bottom: 8pt;">Plan</h3>
+      <p style="font-size: 9pt; color: #888; margin-bottom: 8pt;">Derived from Inspect</p>
+      <div style="flex: 1;">
+        <p style="font-size: 10pt; color: #b0b0b0; line-height: 1.6;">Structured spec becomes the build blueprint</p>
       </div>
-
-      <div style="background: #1a1a1a; border-radius: 6pt; padding: 8pt 12pt; border: 1px solid #333; display: flex; align-items: center; gap: 10pt;">
-        <div style="width: 20pt; height: 20pt; background: #1a2e1a; border-radius: 4pt; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-          <p style="font-size: 10pt; color: #22c55e; font-weight: 700;">X</p>
-        </div>
-        <p style="font-size: 10pt; color: #b0b0b0;"><span style="color: #ffffff; font-weight: 500;">Sonnet</span> — parallel QA agents</p>
+      <div style="margin-top: 8pt; display: flex; flex-direction: column; gap: 3pt;">
+        <p style="font-size: 9pt; color: #a78bfa;">→ PRD.json</p>
+        <p style="font-size: 9pt; color: #a78bfa;">→ spec.md</p>
       </div>
+    </div>
 
-      <p style="font-size: 10pt; font-weight: 600; color: #888; letter-spacing: 0.05em; margin-top: 4pt;">WATCHDOG</p>
+    <!-- Phase 3: Build -->
+    <div style="background: #1a1a2e; border-radius: 8pt; padding: 14pt; display: flex; flex-direction: column; border-top: 2pt solid #3b82f6;">
+      <p style="font-size: 8pt; font-weight: 600; color: #3b82f6; letter-spacing: 0.08em; margin-bottom: 6pt;">PHASE 2</p>
+      <h3 style="font-size: 15pt; font-weight: 600; color: #ffffff; margin-bottom: 8pt;">Build</h3>
+      <p style="font-size: 9pt; color: #888; margin-bottom: 8pt;">Ralph Loop #2</p>
+      <div style="flex: 1;">
+        <p style="font-size: 10pt; color: #b0b0b0; line-height: 1.6;">Claude Agent (Sonnet) builds the full stack</p>
+      </div>
+      <div style="margin-top: 8pt; display: flex; flex-direction: column; gap: 3pt;">
+        <p style="font-size: 9pt; color: #3b82f6;">→ API Routes + Components</p>
+        <p style="font-size: 9pt; color: #3b82f6;">→ Tests (Vitest)</p>
+        <p style="font-size: 9pt; color: #3b82f6;">→ Infra (Neon + Render)</p>
+      </div>
+    </div>
 
-      <div style="background: #1a1a1a; border-radius: 6pt; padding: 10pt 12pt; border: 1px solid #333; flex: 1; display: flex; flex-direction: column;">
-        <p style="font-size: 10pt; color: #b0b0b0; line-height: 1.5; margin-bottom: 8pt;">
-          Strict orchestrator — keeps the train on the tracks.
-        </p>
-        <div style="display: flex; flex-direction: column; gap: 5pt;">
-          <div style="display: flex; align-items: center; gap: 6pt;">
-            <div style="width: 4pt; height: 4pt; background: #22c55e; border-radius: 50%; flex-shrink: 0;"></div>
-            <p style="font-size: 8pt; color: #e0e0e0;">Auto-restart on failure</p>
-          </div>
-          <div style="display: flex; align-items: center; gap: 6pt;">
-            <div style="width: 4pt; height: 4pt; background: #22c55e; border-radius: 50%; flex-shrink: 0;"></div>
-            <p style="font-size: 8pt; color: #e0e0e0;">Git commit + push every milestone</p>
-          </div>
-          <div style="display: flex; align-items: center; gap: 6pt;">
-            <div style="width: 4pt; height: 4pt; background: #22c55e; border-radius: 50%; flex-shrink: 0;"></div>
-            <p style="font-size: 8pt; color: #e0e0e0;">Cron backup for safety</p>
-          </div>
-          <div style="display: flex; align-items: center; gap: 6pt;">
-            <div style="width: 4pt; height: 4pt; background: #f59e0b; border-radius: 50%; flex-shrink: 0;"></div>
-            <p style="font-size: 8pt; color: #e0e0e0;">Bug → Fix → Retest (up to 5 cycles)</p>
-          </div>
-        </div>
+    <!-- Phase 4: QA -->
+    <div style="background: #1a1a2e; border-radius: 8pt; padding: 14pt; display: flex; flex-direction: column; border-top: 2pt solid #22c55e;">
+      <p style="font-size: 8pt; font-weight: 600; color: #22c55e; letter-spacing: 0.08em; margin-bottom: 6pt;">PHASE 3</p>
+      <h3 style="font-size: 15pt; font-weight: 600; color: #ffffff; margin-bottom: 8pt;">QA</h3>
+      <p style="font-size: 9pt; color: #888; margin-bottom: 8pt;">Ralph Loop #3</p>
+      <div style="flex: 1;">
+        <p style="font-size: 10pt; color: #b0b0b0; line-height: 1.6;">Sonnet Agents run parallel verification</p>
+      </div>
+      <div style="margin-top: 8pt; display: flex; flex-direction: column; gap: 3pt;">
+        <p style="font-size: 9pt; color: #22c55e;">→ E2E via Claude in Chrome</p>
+        <p style="font-size: 9pt; color: #22c55e;">→ Bug Fixes + Screenshots</p>
+        <p style="font-size: 9pt; color: #22c55e;">→ Regression Tests</p>
       </div>
     </div>
   </div>
 
   <!-- Footer -->
-  <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10pt; border-top: 1px solid #252525;">
-    <p style="font-size: 9pt; color: #666;">Ralph-to-Ralph</p>
-    <p style="font-size: 9pt; color: #3b82f6; font-weight: 500;">Claude Extension — Anthropic</p>
+  <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 12pt; border-top: 1px solid #252525;">
+    <p style="font-size: 9pt; color: #666;">Ralph</p>
+    <p style="font-size: 9pt; color: #dc2626;">Bug Found → Fix → Retest (up to 5 cycles)</p>
     <p style="font-size: 9pt; color: #666;">Demo 2026</p>
   </div>
 </body>
