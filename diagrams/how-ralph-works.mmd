@@ -1,0 +1,25 @@
+%% How Ralph works. Source of truth for the loop diagram on the deck.
+%%
+%% Deliberately free of mechanism: the picture is about the shape of the cycle,
+%% not how any part of it is implemented.
+%%
+%% Laid out left-to-right on purpose. Stacking it made the return arrow render
+%% as a stub that did not read as a loop, and the loop closing is the whole
+%% point of the picture.
+flowchart LR
+    NEW["A fresh worker<br/>clean head, no baggage"]
+    PICK["Picks the one thing<br/>that matters most now"]
+    WORK["Does that<br/>one thing"]
+    CHECK{"Does it<br/>hold up?"}
+    WRITE["Writes down<br/>what changed"]
+    MORE{"Anything<br/>left?"}
+    DONE(["Finished"])
+    MEM[("What has been<br/>done so far")]
+
+    NEW --> PICK --> WORK --> CHECK
+    CHECK -- "no" --> WORK
+    CHECK -- "yes" --> WRITE --> MORE
+    MORE -- "yes, go again" --> NEW
+    MORE -- "no" --> DONE
+    MEM -. "says where things stand" .-> PICK
+    WRITE -. "adds to it" .-> MEM

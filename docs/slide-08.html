@@ -10,7 +10,7 @@
       height: 405pt;
       font-family: 'Pretendard', sans-serif;
       background: #0f0f0f;
-      padding: 28pt 36pt;
+      padding: 32pt 48pt;
       display: flex;
       flex-direction: column;
     }
@@ -18,50 +18,49 @@
 </head>
 <body>
   <!-- Header -->
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10pt;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20pt;">
     <div style="display: flex; align-items: center; gap: 12pt;">
-      <p style="display: inline-block; padding: 4pt 10pt; background: #22c55e; color: #0f0f0f; border-radius: 4pt; font-size: 8pt; font-weight: 600;">PROOF</p>
-      <h2 style="font-size: 18pt; font-weight: 600; color: #ffffff;">It Actually Works — End to End</h2>
+      <p style="display: inline-block; padding: 4pt 10pt; background: #22c55e; color: #0f0f0f; border-radius: 4pt; font-size: 8pt; font-weight: 700;">PROGRESS</p>
+      <h2 style="font-size: 20pt; font-weight: 600; color: #ffffff;">Current Status</h2>
     </div>
     <p style="font-size: 10pt; color: #666;">08</p>
   </div>
 
-  <!-- 2x2 grid — screenshots of the generated clone running against its own database -->
-  <div style="flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 8pt; overflow: hidden;">
-    <!-- Kanban board - hero proof -->
-    <div style="border-radius: 6pt; overflow: hidden; border: 2px solid #22c55e; position: relative;">
-      <img src="./assets/product-kanban-board.jpg" style="width: 103%; height: 100%; object-fit: cover; object-position: top left;" alt="Generated Kanban board with phases and cards">
-      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.72) 45%, rgba(0,0,0,0.93)); padding: 10pt 8pt 6pt;">
-        <p style="font-size: 8pt; color: #22c55e; font-weight: 600;">LIVE KANBAN — CARDS MOVE, STATE PERSISTS</p>
+  <!-- Hero stat -->
+  <div style="background: linear-gradient(135deg, #1a2e1a 0%, #1a1a2e 100%); border-radius: 10pt; padding: 22pt 28pt; border: 1px solid #333; display: flex; align-items: center; gap: 24pt; margin-bottom: 18pt;">
+    <div style="flex-shrink: 0;">
+      <div style="width: 48pt; height: 48pt; background: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+        <p style="font-size: 22pt; color: #0f0f0f; font-weight: 700;">✓</p>
       </div>
     </div>
-    <!-- Pipes home -->
-    <div style="border-radius: 6pt; overflow: hidden; border: 1px solid #333; position: relative;">
-      <img src="./assets/product-home-pipes.jpg" style="width: 103%; height: 100%; object-fit: cover; object-position: top left;" alt="Pipes and Databases home grid">
-      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.72) 45%, rgba(0,0,0,0.93)); padding: 10pt 8pt 6pt;">
-        <p style="font-size: 8pt; color: #b0b0b0;">Pipes + Databases home, served from Postgres</p>
-      </div>
+    <div>
+      <h3 style="font-size: 20pt; font-weight: 600; color: #ffffff; margin-bottom: 6pt;">Clone — Deployed to Production</h3>
+      <p style="font-size: 11pt; color: #b0b0b0; line-height: 1.5;">
+        Fully working clone built and deployed end-to-end by the loop. Real production infrastructure on Render.
+      </p>
     </div>
-    <!-- Phase editor -->
-    <div style="border-radius: 6pt; overflow: hidden; border: 1px solid #333; position: relative;">
-      <img src="./assets/product-phase-editor.jpg" style="width: 103%; height: 100%; object-fit: cover; object-position: top left;" alt="Phase editor with field type palette">
-      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.72) 45%, rgba(0,0,0,0.93)); padding: 10pt 8pt 6pt;">
-        <p style="font-size: 8pt; color: #b0b0b0;">Phase editor — 23 field types, 7 admin areas</p>
-      </div>
+  </div>
+
+  <!-- Stats -->
+  <div style="flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14pt;">
+    <div style="background: #1a1a1a; border-radius: 8pt; padding: 16pt; text-align: center; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+      <p style="font-size: 32pt; font-weight: 700; color: #6366f1;">184K</p>
+      <p style="font-size: 10pt; color: #888; margin-top: 6pt;">Lines of code generated</p>
     </div>
-    <!-- RTL locale -->
-    <div style="border-radius: 6pt; overflow: hidden; border: 1px solid #333; position: relative;">
-      <img src="./assets/product-i18n-rtl.jpg" style="width: 103%; height: 100%; object-fit: cover; object-position: top right;" alt="Same page rendered right-to-left in Arabic">
-      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.72) 45%, rgba(0,0,0,0.93)); padding: 10pt 8pt 6pt;">
-        <p style="font-size: 8pt; color: #b0b0b0;">10 locales — RTL layout mirrors automatically</p>
-      </div>
+    <div style="background: #1a1a1a; border-radius: 8pt; padding: 16pt; text-align: center; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+      <p style="font-size: 32pt; font-weight: 700; color: #3b82f6;">102</p>
+      <p style="font-size: 10pt; color: #888; margin-top: 6pt;">Commits — all autonomous</p>
+    </div>
+    <div style="background: #1a1a1a; border-radius: 8pt; padding: 16pt; text-align: center; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+      <p style="font-size: 32pt; font-weight: 700; color: #22c55e;">Live</p>
+      <p style="font-size: 10pt; color: #888; margin-top: 6pt;">Deployed on Render</p>
     </div>
   </div>
 
   <!-- Footer -->
-  <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8pt; border-top: 1px solid #252525;">
-    <p style="font-size: 9pt; color: #666;">Ralph-to-Ralph</p>
-    <p style="font-size: 9pt; color: #22c55e;">Real database · Real writes · Real deploy</p>
+  <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10pt; border-top: 1px solid #252525;">
+    <p style="font-size: 9pt; color: #666;">Ralph</p>
+    <p style="font-size: 9pt; color: #666;">One piece at a time, unattended</p>
     <p style="font-size: 9pt; color: #666;">Demo 2026</p>
   </div>
 </body>
