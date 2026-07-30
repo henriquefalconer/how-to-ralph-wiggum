@@ -87,7 +87,7 @@ for ((i=1; i<=ITERATIONS; i++)); do
   PROMPT_FILE="$RUN_DIR/prompt-inspect-$i.txt"
   {
     cat <<PROMPT
-@ralph/prompt-inspect.md @ralph/spec-inspect.md @claude-in-chrome-reference.md @prd.json
+@ralph/prompt-inspect.md @ralph/spec-inspect.md @prd.json
 
 TARGET URL: $TARGET_URL
 ITERATION: $i of $ITERATIONS

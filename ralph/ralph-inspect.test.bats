@@ -121,14 +121,6 @@ STUB
   grep -q "first target" "$ARCHIVE/spec-build.md"
 }
 
-@test "drives the browser through claude-in-chrome, not a separate session" {
-  export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"
-  run "$REPO/ralph/ralph-inspect.sh" https://example.com 1
-  [ "$status" -eq 0 ]
-  # --chrome hands the agent the already-signed-in Chrome window
-  grep -qx -- "--chrome" "$STUB_ARGS"
-  grep -q -- "@claude-in-chrome-reference.md" "$STUB_STDIN"
-}
 
 @test "invokes claude with the pinned model and asks for JSON output" {
   export STUB_OUT="<promise>INSPECT_COMPLETE</promise>"

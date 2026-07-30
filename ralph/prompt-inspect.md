@@ -6,7 +6,6 @@ This is a **generic product cloning system** — the target could be any SaaS st
 
 ## Your Inputs
 - `spec-inspect.md`: Your instructions — how to inspect, what to capture, what to output.
-- `claude-in-chrome-reference.md`: Claude in Chrome tool reference — use these to control the browser.
 - `prd.json`: Feature list you are building up (append new entries each iteration).
 - The run's progress file (path given as `PROGRESS:` in this iteration's prompt): ONE file for
   the whole run that every phase and every session appends to. Read its tail
