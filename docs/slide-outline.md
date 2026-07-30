@@ -2,7 +2,7 @@
 
 ## Slide 1: Title
 - **Ralph-to-Ralph** — Autonomous Product Cloning Loop
-- GitHub: github.com/henriquefalconer/ralph-to-ralph-prod
+- GitHub: github.com/henriquefalconer/how-to-ralph-wiggum
 
 ## Slide 2: Problem
 - **Who:** Non-technical founders who want to build/clone a SaaS product

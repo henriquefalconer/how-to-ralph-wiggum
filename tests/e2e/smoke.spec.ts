@@ -5,7 +5,7 @@ test.describe("smoke", () => {
     page,
   }) => {
     await page.goto("/");
-    await expect(page.getByText("pipefy")).toBeVisible();
+    await expect(page.getByText("fypipe")).toBeVisible();
     await expect(page.getByTestId("create-pipe-tile")).toBeVisible();
   });
 

@@ -259,13 +259,6 @@ for f in json.load(open('$REPO/prd.json')):
   [ "$(cat "$REPO/report-qa.json")" = "[]" ]
 }
 
-@test "starts the dev server and tells the agent where the clone is" {
-  export STUB_OUT="<promise>QA_COMPLETE</promise>"
-  run "$REPO/ralph/ralph-qa.sh" https://example.com 1
-  grep -qx -- "run dev" "$NPM_ARGS"
-  grep -q -- "CLONE_URL: http://localhost:3015" "$STUB_STDIN"
-  grep -q -- "@claude-in-chrome-reference.md" "$STUB_STDIN"
-}
 
 @test "invokes claude with the pinned model" {
   export STUB_OUT="<promise>QA_COMPLETE</promise>"

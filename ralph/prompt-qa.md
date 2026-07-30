@@ -41,7 +41,6 @@ The original product is your **source of truth**.
   (`tail -200 "$PROGRESS"`) — never read it whole. Your own narration goes in the same file.
   See "Progress Logging — Mandatory" below.
 - `report-qa.json`: Your test results (you create and maintain this).
-- `claude-in-chrome-reference.md`: Claude in Chrome tool reference.
 - `screenshots/inspect/`: Reference screenshots from the original.
 - `screenshots/qa/`: Save your QA screenshots here.
 - `clone-product-docs/`: Extracted docs for verifying API correctness.

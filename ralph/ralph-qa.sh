@@ -272,7 +272,7 @@ for ((i=1; i<=ITERATIONS; i++)); do
   PROMPT_FILE="$RUN_DIR/prompt-qa-$i.txt"
   {
     cat <<PROMPT
-@ralph/prompt-qa.md @pre-setup.md @spec-build.md @prd.json @report-qa.json @claude-in-chrome-reference.md
+@ralph/prompt-qa.md @pre-setup.md @spec-build.md @prd.json @report-qa.json
 
 ITERATION: $i of $ITERATIONS
 PROGRESS: $PROGRESS
