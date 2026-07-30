@@ -54,7 +54,7 @@ flowchart LR
     linkStyle 6,7 stroke:#38bdf8,color:#7dd3fc
 ```
 
-No pass ever lasts long enough to fill up the context window.
+Designed to not fill up your context window.
 
 ---
 
