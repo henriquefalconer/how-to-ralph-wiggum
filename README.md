@@ -10,15 +10,16 @@ Point it at the work, walk away, and check in.
 
 ## Be on the loop, not in it
 
-**In the loop**, you are a step in the work. Nothing moves unless you move it,
-so it runs at exactly your speed and stops the moment you look away. Your
-attention is the bottleneck, and it fills up your context window.
+**In the loop (interactive Claude)**, you are a step in the work. Nothing moves
+unless you move it, so it runs at exactly your speed and stops the moment you
+look away. Your attention is the bottleneck, and it fills up your context window.
 
-**On the loop**, it runs without you. You read what it is doing, decide whether
-it is going the right way, and change what it was asked for. You step in because
-you want to, not because it stalled.
+**On the loop (Ralph)**, it runs without you. You read what it is doing, decide
+whether it is going the right way, and change what it was asked for. You step in
+because you want to, with a closed loop.
 
-Ralph will not make you faster at the work. It gets you out of the middle of it.
+Ralph's job is not to make you faster at the work. It's to get you out of the
+middle of it and puts you above it.
 
 ---
 
