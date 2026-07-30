@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,34 +26,34 @@
     <p style="font-size: 10pt; color: #666;">08</p>
   </div>
 
-  <!-- 2x2 grid -->
+  <!-- 2x2 grid — screenshots of the generated clone running against its own database -->
   <div style="flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 8pt; overflow: hidden;">
-    <!-- API Keys - hero proof -->
+    <!-- Kanban board - hero proof -->
     <div style="border-radius: 6pt; overflow: hidden; border: 2px solid #22c55e; position: relative;">
-      <img src="./assets/screenshot-api-keys-page.jpg" style="width: 100%; height: 100%; object-fit: cover;" alt="API Keys page">
-      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.9)); padding: 6pt 8pt;">
-        <p style="font-size: 8pt; color: #22c55e; font-weight: 600;">REAL API KEYS CONFIGURED</p>
+      <img src="./assets/product-kanban-board.jpg" style="width: 103%; height: 100%; object-fit: cover; object-position: top left;" alt="Generated Kanban board with phases and cards">
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.72) 45%, rgba(0,0,0,0.93)); padding: 10pt 8pt 6pt;">
+        <p style="font-size: 8pt; color: #22c55e; font-weight: 600;">LIVE KANBAN — CARDS MOVE, STATE PERSISTS</p>
       </div>
     </div>
-    <!-- Dashboard -->
+    <!-- Pipes home -->
     <div style="border-radius: 6pt; overflow: hidden; border: 1px solid #333; position: relative;">
-      <img src="./assets/screenshot-dashboard.png" style="width: 100%; height: 100%; object-fit: cover;" alt="Dashboard">
-      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.9)); padding: 6pt 8pt;">
-        <p style="font-size: 8pt; color: #b0b0b0;">Full email dashboard</p>
+      <img src="./assets/product-home-pipes.jpg" style="width: 103%; height: 100%; object-fit: cover; object-position: top left;" alt="Pipes and Databases home grid">
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.72) 45%, rgba(0,0,0,0.93)); padding: 10pt 8pt 6pt;">
+        <p style="font-size: 8pt; color: #b0b0b0;">Pipes + Databases home, served from Postgres</p>
       </div>
     </div>
-    <!-- Welcome email -->
+    <!-- Phase editor -->
     <div style="border-radius: 6pt; overflow: hidden; border: 1px solid #333; position: relative;">
-      <img src="./assets/screenshot-welcome-email.png" style="width: 100%; height: 100%; object-fit: cover;" alt="Welcome email">
-      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.9)); padding: 6pt 8pt;">
-        <p style="font-size: 8pt; color: #b0b0b0;">React email components</p>
+      <img src="./assets/product-phase-editor.jpg" style="width: 103%; height: 100%; object-fit: cover; object-position: top left;" alt="Phase editor with field type palette">
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.72) 45%, rgba(0,0,0,0.93)); padding: 10pt 8pt 6pt;">
+        <p style="font-size: 8pt; color: #b0b0b0;">Phase editor — 23 field types, 7 admin areas</p>
       </div>
     </div>
-    <!-- Broadcast -->
+    <!-- RTL locale -->
     <div style="border-radius: 6pt; overflow: hidden; border: 1px solid #333; position: relative;">
-      <img src="./assets/screenshot-broadcast.png" style="width: 100%; height: 100%; object-fit: cover;" alt="Broadcast sent">
-      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.9)); padding: 6pt 8pt;">
-        <p style="font-size: 8pt; color: #b0b0b0;">Broadcast to 3,200 contacts</p>
+      <img src="./assets/product-i18n-rtl.jpg" style="width: 103%; height: 100%; object-fit: cover; object-position: top right;" alt="Same page rendered right-to-left in Arabic">
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.72) 45%, rgba(0,0,0,0.93)); padding: 10pt 8pt 6pt;">
+        <p style="font-size: 8pt; color: #b0b0b0;">10 locales — RTL layout mirrors automatically</p>
       </div>
     </div>
   </div>
@@ -60,7 +61,7 @@
   <!-- Footer -->
   <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8pt; border-top: 1px solid #252525;">
     <p style="font-size: 9pt; color: #666;">Ralph-to-Ralph</p>
-    <p style="font-size: 9pt; color: #22c55e;">Real API keys · Real emails · Real infra</p>
+    <p style="font-size: 9pt; color: #22c55e;">Real database · Real writes · Real deploy</p>
     <p style="font-size: 9pt; color: #666;">Demo 2026</p>
   </div>
 </body>
