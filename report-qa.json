@@ -262,5 +262,20 @@
       "Verified labels persist across queries"
     ],
     "bugs_found": []
+  },
+  {
+    "feature_id": "feature-017",
+    "status": "pass",
+    "tested_steps": [
+      "Ran card trash unit tests: npx vitest run tests/card-trash.test.ts",
+      "All 6 tests passed",
+      "Verified deleting a card sets deleted_at and purge_at, soft deletes the row",
+      "Verified soft-deleted cards are excluded from Kanban board and normal queries",
+      "Verified listDeletedCards filters by deleted_at, orders newest-first",
+      "Verified restoring a card clears deleted_at and purge_at",
+      "Verified restore is gated to pipe admins (permission check)",
+      "Verified deleted card phase_id is preserved for restore"
+    ],
+    "bugs_found": []
   }
 ]
