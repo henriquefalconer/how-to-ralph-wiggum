@@ -63,9 +63,9 @@ Designed to not fill up your context window.
 The specs and the plan, read before every pass. Between them they answer the
 only two questions it has: what am I making, and what am I doing next.
 
-**The specs** are your vision of the product, written down. How it looks, how it
-behaves, what counts as correct. This is what pins the vision in place, and it is
-why a hundred separate passes add up to one coherent thing.
+**The specs** are your vision of the product. How it looks, how it behaves, what
+counts as correct. This is what pins the vision in place, and it is why a
+hundred separate passes add up to one coherent thing.
 
 **The plan** is that same product split into pieces and put in order, each small
 enough to finish in a single pass. It doubles as the scoreboard, since finished
