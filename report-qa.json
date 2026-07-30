@@ -226,5 +226,25 @@
       "Verified Delete pipe section with red warning banner and delete button"
     ],
     "bugs_found": []
+  },
+  {
+    "feature_id": "feature-015",
+    "status": "pass",
+    "tested_steps": [
+      "Ran audit log unit tests: npx vitest run tests/audit-log.test.ts",
+      "All 11 tests passed",
+      "Verified card move logging under card_activity with both phase names",
+      "Verified pipe settings change logging under config_change with old/new values",
+      "Verified new pipe creation is logged ('created this pipe' entry)",
+      "Confirmed entries returned newest-first",
+      "Verified filtering by author (name and email matching)",
+      "Verified card creation and deletion are logged",
+      "Verified automation creation logging with trigger and action names",
+      "Verified phase and field creation logging under config_change",
+      "Verified message re-rendering in reader's locale",
+      "Verified CSV export functionality",
+      "Tested API endpoint: GET /api/pipes/{pipeId}/audit-log returns entries with correct structure"
+    ],
+    "bugs_found": []
   }
 ]
