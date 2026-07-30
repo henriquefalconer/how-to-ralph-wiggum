@@ -291,5 +291,23 @@
       "Email thread metadata (assignee, labels, due date) verified"
     ],
     "bugs_found": []
+  },
+  {
+    "feature_id": "feature-019",
+    "status": "fail",
+    "tested_steps": [
+      "Attempted to run unit tests: npx vitest run tests/ai-agents.test.ts",
+      "All 21 tests FAILED: database schema not implemented",
+      "Error: relation \"ai_agents\" does not exist"
+    ],
+    "bugs_found": [
+      {
+        "severity": "critical",
+        "description": "Feature-019 (AI Agents) not implemented in build phase - database schema missing",
+        "expected": "ai_agents, ai_agent_behaviors, ai_agent_knowledge_sources, ai_agent_runs tables should exist",
+        "actual": "Tables do not exist; all unit tests fail immediately on insert",
+        "reproduction": "Run: npm run test -- tests/ai-agents.test.ts"
+      }
+    ]
   }
 ]
