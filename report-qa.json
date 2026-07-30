@@ -246,5 +246,21 @@
       "Tested API endpoint: GET /api/pipes/{pipeId}/audit-log returns entries with correct structure"
     ],
     "bugs_found": []
+  },
+  {
+    "feature_id": "feature-016",
+    "status": "pass",
+    "tested_steps": [
+      "Ran labels unit tests: npx vitest run tests/labels.test.ts",
+      "All 7 tests passed",
+      "Verified label creation requires non-empty name (validation enforced)",
+      "Verified label color defaults to #35FFDD when not specified",
+      "Verified labels can be created with explicit colors",
+      "Verified labels are listed for a pipe",
+      "Verified duplicate label names are allowed in the same pipe (matches target behavior)",
+      "Verified created_at timestamp is set on creation",
+      "Verified labels persist across queries"
+    ],
+    "bugs_found": []
   }
 ]
