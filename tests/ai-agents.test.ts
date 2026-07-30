@@ -2,6 +2,8 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { randomUUID } from "crypto";
 import * as aiAgentsLib from "@/lib/ai-agents";
 import * as pipesLib from "@/lib/pipes";
+import * as cardsLib from "@/lib/cards";
+import { createField } from "@/lib/fields";
 import { db } from "@/lib/db";
 import { organizations } from "@/lib/db/schema";
 import { dictionaries } from "@/lib/i18n/dictionaries";
@@ -12,6 +14,7 @@ const uuid = randomUUID;
 describe("AI Agents", () => {
   let orgId: string;
   let pipeId: string;
+  let firstPhaseId: string;
 
   beforeEach(async () => {
     const [org] = await db
@@ -21,6 +24,14 @@ describe("AI Agents", () => {
     orgId = org.id;
     const pipe = await pipesLib.createPipe(orgId, "Test Pipe", dictionaries.en.defaultPhase);
     pipeId = pipe.id;
+    const pipeWithPhases = await pipesLib.getPipeWithPhases(pipeId);
+    firstPhaseId = pipeWithPhases?.phases?.[0]?.id || "";
+    // Create a start form field for card creation
+    await createField("start_form", pipeId, {
+      label: "Test Field",
+      type: "short_text",
+      required: true,
+    });
   });
 
   afterEach(async () => {
@@ -230,10 +241,8 @@ describe("AI Agents", () => {
       title: "Test",
       triggerType: "card_created",
     });
-    const card = await pipesLib.createCard({
-      pipeId,
-      title: "Test Card",
-      phaseId: "phase-1",
+    const card = await cardsLib.createCard(pipeId, firstPhaseId, {
+      test_field: "Test Card",
     });
     const run = await aiAgentsLib.createAgentRun(
       agent.id,
@@ -256,10 +265,8 @@ describe("AI Agents", () => {
       title: "Test",
       triggerType: "card_created",
     });
-    const card = await pipesLib.createCard({
-      pipeId,
-      title: "Test Card",
-      phaseId: "phase-1",
+    const card = await cardsLib.createCard(pipeId, firstPhaseId, {
+      test_field: "Test Card",
     });
     const created = await aiAgentsLib.createAgentRun(
       agent.id,
@@ -278,10 +285,8 @@ describe("AI Agents", () => {
       title: "Test",
       triggerType: "card_created",
     });
-    const card = await pipesLib.createCard({
-      pipeId,
-      title: "Test Card",
-      phaseId: "phase-1",
+    const card = await cardsLib.createCard(pipeId, firstPhaseId, {
+      test_field: "Test Card",
     });
     const run1 = await aiAgentsLib.createAgentRun(
       agent.id,
@@ -314,10 +319,8 @@ describe("AI Agents", () => {
       title: "Behavior 2",
       triggerType: "field_updated",
     });
-    const card = await pipesLib.createCard({
-      pipeId,
-      title: "Test Card",
-      phaseId: "phase-1",
+    const card = await cardsLib.createCard(pipeId, firstPhaseId, {
+      test_field: "Test Card",
     });
     await aiAgentsLib.createAgentRun(
       agent.id,
@@ -342,10 +345,8 @@ describe("AI Agents", () => {
       title: "Test",
       triggerType: "card_created",
     });
-    const card = await pipesLib.createCard({
-      pipeId,
-      title: "Test Card",
-      phaseId: "phase-1",
+    const card = await cardsLib.createCard(pipeId, firstPhaseId, {
+      test_field: "Test Card",
     });
     const run = await aiAgentsLib.createAgentRun(
       agent.id,
