@@ -80,9 +80,9 @@ Change the prompt and Ralph stops building. It works through an existing product
 instead, one page per pass, and what it writes down is the specs and the plan.
 Same loop, same short passes. The looking is the work.
 
-That only applies if you are copying something. If the idea is your own, describe
-it to Claude instead, have a discussion with it, and let it write the specs and
-the plan out of that conversation.
+That only applies if you are copying something. If you are coming up with
+something new, describe it to Claude instead, have a discussion with it, and let
+it write the specs and the plan out of that conversation.
 
 ---
 
