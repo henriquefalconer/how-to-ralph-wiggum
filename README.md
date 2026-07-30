@@ -60,8 +60,8 @@ Designed to not fill up your context window.
 
 ## What Ralph needs
 
-Two documents, read before every pass. Between them they answer the only two
-questions it has: what am I making, and what am I doing next.
+The specs and the plan, read before every pass. Between them they answer the
+only two questions it has: what am I making, and what am I doing next.
 
 **The specs** are your vision of the product, written down. How it looks, how it
 behaves, what counts as correct. This is what pins the vision in place, and it is
@@ -84,8 +84,6 @@ Same loop, same short passes. The looking is the work.
 That only applies if you are copying something. If the idea is your own, describe
 it to Claude instead, have a discussion with it, and let it write the specs and
 the plan out of that conversation.
-
-Ralph never asks where they came from.
 
 ---
 
