@@ -4,7 +4,7 @@
 
 A loop that runs itself, so you can be *on* the loop instead of in it.
 
-Point it at the work, walk away, and check in when you feel like it.
+Point it at the work, walk away, and check in.
 
 ---
 
