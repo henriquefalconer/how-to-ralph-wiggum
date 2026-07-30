@@ -3,23 +3,37 @@
 %% Deliberately free of mechanism: the picture is about the shape of the cycle,
 %% not how any part of it is implemented.
 %%
-%% Laid out left-to-right on purpose. Stacking it made the return arrow render
-%% as a stub that did not read as a loop, and the loop closing is the whole
+%% Laid out left-to-right on purpose. Stacked, the arrow closing the loop renders
+%% as a stub that does not read as a loop, and the loop closing is the whole
 %% point of the picture.
+%%
+%% What has been done so far is drawn in its own colour, arrows included, because
+%% it is not a step in the cycle — it is the thing the cycle reads from and adds
+%% to.
 flowchart LR
-    NEW["A fresh worker<br/>clean head, no baggage"]
+    NEW["A fresh Ralph<br/>clean head"]
     PICK["Picks the one thing<br/>that matters most now"]
     WORK["Does that<br/>one thing"]
-    CHECK{"Does it<br/>hold up?"}
     WRITE["Writes down<br/>what changed"]
     MORE{"Anything<br/>left?"}
     DONE(["Finished"])
     MEM[("What has been<br/>done so far")]
 
-    NEW --> PICK --> WORK --> CHECK
-    CHECK -- "no" --> WORK
-    CHECK -- "yes" --> WRITE --> MORE
+    NEW --> PICK
+    PICK --> WORK
+    WORK --> WRITE
+    WRITE --> MORE
     MORE -- "yes, go again" --> NEW
     MORE -- "no" --> DONE
     MEM -. "says where things stand" .-> PICK
     WRITE -. "adds to it" .-> MEM
+
+    %% Invisible, purely to pull the store to the left. Left to itself the layout
+    %% ranks it after the step that writes to it, which puts it on the far right
+    %% where it reads as the end of the line rather than something the cycle
+    %% leans on. Declared last so the link indices above stay put.
+    MEM ~~~ WORK
+
+    classDef mem fill:#0d2430,stroke:#38bdf8,stroke-width:1.5px,color:#d8f3ff
+    class MEM mem
+    linkStyle 6,7 stroke:#38bdf8,color:#7dd3fc

@@ -2,15 +2,18 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       width: 720pt;
       height: 405pt;
-      font-family: 'Pretendard', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+        Roboto, Helvetica, Arial, sans-serif;
       background: #0f0f0f;
-      padding: 32pt 48pt;
+      padding: 28pt 36pt;
       display: flex;
       flex-direction: column;
     }
@@ -18,67 +21,36 @@
 </head>
 <body>
   <!-- Header -->
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18pt;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10pt;">
     <div style="display: flex; align-items: center; gap: 12pt;">
-      <p style="display: inline-block; padding: 4pt 10pt; background: #f59e0b; color: #0f0f0f; border-radius: 4pt; font-size: 8pt; font-weight: 700;">PROBLEM</p>
-      <h2 style="font-size: 20pt; font-weight: 600; color: #ffffff;">PRDs Are Hard to Get Right</h2>
+      <p style="display: inline-block; padding: 4pt 10pt; background: #dc2626; color: #fff; border-radius: 4pt; font-size: 8pt; font-weight: 600;">LIVE DEMO</p>
+      <h2 style="font-size: 18pt; font-weight: 600; color: #ffffff;">Ralph on Build Mode</h2>
     </div>
     <p style="font-size: 10pt; color: #666;">05</p>
   </div>
 
-  <!-- Content -->
-  <div style="flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 24pt; overflow: hidden;">
-    <!-- Left: The pain -->
-    <div style="display: flex; flex-direction: column; gap: 14pt;">
-      <div style="background: #1a1a1a; border-radius: 8pt; padding: 16pt; border-left: 3pt solid #dc2626;">
-        <h3 style="font-size: 13pt; font-weight: 600; color: #ffffff; margin-bottom: 8pt;">The Old Way</h3>
-        <p style="font-size: 11pt; color: #b0b0b0; line-height: 1.6;">
-          Writing a <span style="color: #ffffff; font-weight: 500;">PRD.json</span> and <span style="color: #ffffff; font-weight: 500;">spec.md</span> manually takes hours — sometimes days. And if you get it wrong, it cascades through the entire build loop.
-        </p>
-      </div>
-      <div style="background: #1a1a1a; border-radius: 8pt; padding: 16pt; border: 1px solid #333;">
-        <p style="font-size: 11pt; color: #b0b0b0; line-height: 1.6;">
-          A bad PRD = bad architecture = bad code = failed QA = <span style="color: #dc2626; font-weight: 500;">start over</span>.
-        </p>
-        <p style="font-size: 11pt; color: #b0b0b0; line-height: 1.6; margin-top: 8pt;">
-          The spec is the foundation. If it's wrong, everything built on top collapses.
-        </p>
-      </div>
-    </div>
-
-    <!-- Right: Our solution -->
-    <div style="display: flex; flex-direction: column; gap: 14pt;">
-      <div style="background: #1a1a1a; border-radius: 8pt; padding: 16pt; border-left: 3pt solid #22c55e;">
-        <h3 style="font-size: 13pt; font-weight: 600; color: #ffffff; margin-bottom: 8pt;">The Ralph Way</h3>
-        <p style="font-size: 11pt; color: #b0b0b0; line-height: 1.6;">
-          Our <span style="color: #22c55e; font-weight: 500;">Inspect loop</span> auto-generates the PRD and spec by analyzing the real product:
-        </p>
-      </div>
-      <div style="display: flex; flex-direction: column; gap: 8pt;">
-        <div style="display: flex; align-items: center; gap: 8pt; background: #1a1a1a; border-radius: 6pt; padding: 10pt 12pt; border: 1px solid #333;">
-          <div style="width: 5pt; height: 5pt; background: #6366f1; border-radius: 50%; flex-shrink: 0;"></div>
-          <p style="font-size: 10pt; color: #e0e0e0;">Website docs &amp; API reference</p>
-        </div>
-        <div style="display: flex; align-items: center; gap: 8pt; background: #1a1a1a; border-radius: 6pt; padding: 10pt 12pt; border: 1px solid #333;">
-          <div style="width: 5pt; height: 5pt; background: #6366f1; border-radius: 50%; flex-shrink: 0;"></div>
-          <p style="font-size: 10pt; color: #e0e0e0;">Sitemap &amp; XML structure</p>
-        </div>
-        <div style="display: flex; align-items: center; gap: 8pt; background: #1a1a1a; border-radius: 6pt; padding: 10pt 12pt; border: 1px solid #333;">
-          <div style="width: 5pt; height: 5pt; background: #6366f1; border-radius: 50%; flex-shrink: 0;"></div>
-          <p style="font-size: 10pt; color: #e0e0e0;">UI screenshots of every page</p>
-        </div>
-      </div>
-      <div style="background: #1a2e1a; border-radius: 8pt; padding: 12pt 14pt; border: 1px solid #2d4a2d;">
-        <p style="font-size: 10pt; color: #22c55e; font-weight: 500; text-align: center;">
-          Zero manual PRD writing. Accurate specs. Stable loops.
-        </p>
-      </div>
+  <!-- Recording of the build phase's progress file as it is written -->
+  <div style="flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+    <div style="width: 100%; height: 100%; border-radius: 8pt; overflow: hidden; border: 1px solid #333; background: #0d0d0d; display: flex; align-items: center; justify-content: center;">
+      <video src="./assets/build-log.webm" poster="./assets/build-log-poster.jpg"
+             controls muted playsinline preload="metadata"
+             style="width: 100%; height: 100%; object-fit: contain; background: #0d0d0d;">
+        Your browser does not support the video tag.
+      </video>
     </div>
   </div>
 
+  <!-- Caption -->
+  <div style="display: flex; justify-content: center; padding-top: 8pt;">
+    <p style="font-size: 10pt; color: #b0b0b0; text-align: center;">
+      One pass, start to finish — Ralph picks a single piece, builds it, writes down what changed, and stops
+    </p>
+  </div>
+
   <!-- Footer -->
-  <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10pt; border-top: 1px solid #252525;">
+  <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8pt; border-top: 1px solid #252525;">
     <p style="font-size: 9pt; color: #666;">Ralph</p>
+    <p style="font-size: 9pt; color: #666;">Educational purposes only</p>
     <p style="font-size: 9pt; color: #666;">Demo 2026</p>
   </div>
 </body>

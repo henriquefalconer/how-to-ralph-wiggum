@@ -2,15 +2,18 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       width: 720pt;
       height: 405pt;
-      font-family: 'Pretendard', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+        Roboto, Helvetica, Arial, sans-serif;
       background: #0f0f0f;
-      padding: 28pt 36pt;
+      padding: 36pt 48pt;
       display: flex;
       flex-direction: column;
     }
@@ -18,50 +21,81 @@
 </head>
 <body>
   <!-- Header -->
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10pt;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20pt;">
     <div style="display: flex; align-items: center; gap: 12pt;">
-      <p style="display: inline-block; padding: 4pt 10pt; background: #22c55e; color: #0f0f0f; border-radius: 4pt; font-size: 8pt; font-weight: 600;">PROOF</p>
-      <h2 style="font-size: 18pt; font-weight: 600; color: #ffffff;">What Comes Out the Other End</h2>
+      <p style="display: inline-block; padding: 4pt 10pt; background: #22c55e; color: #0f0f0f; border-radius: 4pt; font-size: 8pt; font-weight: 700;">INSPECT MODE</p>
+      <h2 style="font-size: 22pt; font-weight: 600; color: #ffffff;">Using Inspect Mode to <span style="color: #22c55e;">Clone a Product</span></h2>
     </div>
     <p style="font-size: 10pt; color: #666;">09</p>
   </div>
 
-  <!-- 2x2 grid — screenshots of the generated clone running against its own database -->
-  <div style="flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 8pt; overflow: hidden;">
-    <!-- Kanban board - hero proof -->
-    <div style="border-radius: 6pt; overflow: hidden; border: 2px solid #22c55e; position: relative;">
-      <img src="./assets/product-kanban-board.jpg" style="width: 103%; height: 100%; object-fit: cover; object-position: top left;" alt="Generated Kanban board with phases and cards">
-      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.72) 45%, rgba(0,0,0,0.93)); padding: 10pt 8pt 6pt;">
-        <p style="font-size: 8pt; color: #22c55e; font-weight: 600;">A WORKING PRODUCT, NOT A MOCK-UP</p>
+  <!-- One-sentence definition -->
+  <div style="margin-bottom: 18pt; padding: 12pt 16pt; background: #1a1a1a; border-radius: 8pt; border-left: 3pt solid #22c55e;">
+    <p style="font-size: 13pt; color: #e0e0e0; line-height: 1.5;">
+      Told to look instead of build, Ralph works through an existing product <span style="color: #22c55e; font-weight: 600;">one page at a time</span>. Same loop, same short passes — but what it writes down is the specs and the plan. <span style="color: #ffffff; font-weight: 500;">The looking is the work.</span>
+    </p>
+  </div>
+
+  <!-- 4-phase workflow -->
+  <div style="flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12pt;">
+    <div style="background: #1a1a2e; border-radius: 8pt; padding: 14pt; display: flex; flex-direction: column; border-top: 2pt solid #818cf8;">
+      <p style="font-size: 8pt; font-weight: 600; color: #818cf8; letter-spacing: 0.08em; margin-bottom: 6pt;">STEP 1</p>
+      <h3 style="font-size: 15pt; font-weight: 600; color: #ffffff; margin-bottom: 8pt;">Read</h3>
+      <div style="flex: 1;">
+        <p style="font-size: 10pt; color: #b0b0b0; line-height: 1.6;">Everything the product says about itself</p>
+      </div>
+      <div style="margin-top: 8pt; display: flex; flex-direction: column; gap: 3pt;">
+        <p style="font-size: 9pt; color: #818cf8;">&rarr; its own documentation</p>
+        <p style="font-size: 9pt; color: #818cf8;">&rarr; how it explains its parts</p>
+        <p style="font-size: 9pt; color: #818cf8;">&rarr; what it tells developers</p>
       </div>
     </div>
-    <!-- Pipes home -->
-    <div style="border-radius: 6pt; overflow: hidden; border: 1px solid #333; position: relative;">
-      <img src="./assets/product-home-pipes.jpg" style="width: 103%; height: 100%; object-fit: cover; object-position: top left;" alt="Pipes and Databases home grid">
-      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.72) 45%, rgba(0,0,0,0.93)); padding: 10pt 8pt 6pt;">
-        <p style="font-size: 8pt; color: #b0b0b0;">Pipes + Databases home, served from Postgres</p>
+
+    <div style="background: #1a1a2e; border-radius: 8pt; padding: 14pt; display: flex; flex-direction: column; border-top: 2pt solid #a78bfa;">
+      <p style="font-size: 8pt; font-weight: 600; color: #a78bfa; letter-spacing: 0.08em; margin-bottom: 6pt;">STEP 2</p>
+      <h3 style="font-size: 15pt; font-weight: 600; color: #ffffff; margin-bottom: 8pt;">Map</h3>
+      <div style="flex: 1;">
+        <p style="font-size: 10pt; color: #b0b0b0; line-height: 1.6;">Every place you can get to</p>
+      </div>
+      <div style="margin-top: 8pt; display: flex; flex-direction: column; gap: 3pt;">
+        <p style="font-size: 9pt; color: #a78bfa;">&rarr; the full list of pages</p>
+        <p style="font-size: 9pt; color: #a78bfa;">&rarr; how they connect</p>
+        <p style="font-size: 9pt; color: #a78bfa;">&rarr; what is left to visit</p>
       </div>
     </div>
-    <!-- Phase editor -->
-    <div style="border-radius: 6pt; overflow: hidden; border: 1px solid #333; position: relative;">
-      <img src="./assets/product-phase-editor.jpg" style="width: 103%; height: 100%; object-fit: cover; object-position: top left;" alt="Phase editor with field type palette">
-      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.72) 45%, rgba(0,0,0,0.93)); padding: 10pt 8pt 6pt;">
-        <p style="font-size: 8pt; color: #b0b0b0;">Phase editor — 23 field types, 7 admin areas</p>
+
+    <div style="background: #1a1a2e; border-radius: 8pt; padding: 14pt; display: flex; flex-direction: column; border-top: 2pt solid #3b82f6;">
+      <p style="font-size: 8pt; font-weight: 600; color: #3b82f6; letter-spacing: 0.08em; margin-bottom: 6pt;">STEP 3</p>
+      <h3 style="font-size: 15pt; font-weight: 600; color: #ffffff; margin-bottom: 8pt;">Open</h3>
+      <div style="flex: 1;">
+        <p style="font-size: 10pt; color: #b0b0b0; line-height: 1.6;">One page, properly, per pass</p>
+      </div>
+      <div style="margin-top: 8pt; display: flex; flex-direction: column; gap: 3pt;">
+        <p style="font-size: 9pt; color: #3b82f6;">&rarr; click it, type in it, submit it</p>
+        <p style="font-size: 9pt; color: #3b82f6;">&rarr; capture what it looks like</p>
+        <p style="font-size: 9pt; color: #3b82f6;">&rarr; write down how it behaves</p>
       </div>
     </div>
-    <!-- RTL locale -->
-    <div style="border-radius: 6pt; overflow: hidden; border: 1px solid #333; position: relative;">
-      <img src="./assets/product-i18n-rtl.jpg" style="width: 103%; height: 100%; object-fit: cover; object-position: top right;" alt="Same page rendered right-to-left in Arabic">
-      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.72) 45%, rgba(0,0,0,0.93)); padding: 10pt 8pt 6pt;">
-        <p style="font-size: 8pt; color: #b0b0b0;">10 locales — RTL layout mirrors automatically</p>
+
+    <div style="background: #1a1a2e; border-radius: 8pt; padding: 14pt; display: flex; flex-direction: column; border-top: 2pt solid #22c55e;">
+      <p style="font-size: 8pt; font-weight: 600; color: #22c55e; letter-spacing: 0.08em; margin-bottom: 6pt;">STEP 4</p>
+      <h3 style="font-size: 15pt; font-weight: 600; color: #ffffff; margin-bottom: 8pt;">Settle</h3>
+      <div style="flex: 1;">
+        <p style="font-size: 10pt; color: #b0b0b0; line-height: 1.6;">Turn all of it into the specs and the plan</p>
+      </div>
+      <div style="margin-top: 8pt; display: flex; flex-direction: column; gap: 3pt;">
+        <p style="font-size: 9pt; color: #22c55e;">&rarr; the specs</p>
+        <p style="font-size: 9pt; color: #22c55e;">&rarr; the plan, in build order</p>
+        <p style="font-size: 9pt; color: #22c55e;">&rarr; ready to hand to build mode</p>
       </div>
     </div>
+
   </div>
 
   <!-- Footer -->
-  <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8pt; border-top: 1px solid #252525;">
+  <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 12pt; border-top: 1px solid #252525;">
     <p style="font-size: 9pt; color: #666;">Ralph</p>
-    <p style="font-size: 9pt; color: #22c55e;">Built one item per pass, unattended, start to finish</p>
+    <p style="font-size: 9pt; color: #666;">Educational purposes only</p>
     <p style="font-size: 9pt; color: #666;">Demo 2026</p>
   </div>
 </body>

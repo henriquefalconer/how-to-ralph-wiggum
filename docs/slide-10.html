@@ -2,15 +2,18 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       width: 720pt;
       height: 405pt;
-      font-family: 'Pretendard', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+        Roboto, Helvetica, Arial, sans-serif;
       background: #0f0f0f;
-      padding: 28pt 36pt;
+      padding: 32pt 48pt;
       display: flex;
       flex-direction: column;
     }
@@ -18,36 +21,100 @@
 </head>
 <body>
   <!-- Header -->
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10pt;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14pt;">
     <div style="display: flex; align-items: center; gap: 12pt;">
-      <p style="display: inline-block; padding: 4pt 10pt; background: #dc2626; color: #fff; border-radius: 4pt; font-size: 8pt; font-weight: 600;">LIVE DEMO</p>
-      <h2 style="font-size: 18pt; font-weight: 600; color: #ffffff;">One Pass, Start to Finish</h2>
+      <p style="display: inline-block; padding: 4pt 10pt; background: #f59e0b; color: #0f0f0f; border-radius: 4pt; font-size: 8pt; font-weight: 700;">OUR STACK</p>
+      <h2 style="font-size: 20pt; font-weight: 600; color: #ffffff;">What Powers It</h2>
     </div>
     <p style="font-size: 10pt; color: #666;">10</p>
   </div>
 
-  <!-- Recording of the build phase's progress file as it is written -->
-  <div style="flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-    <div style="width: 100%; height: 100%; border-radius: 8pt; overflow: hidden; border: 1px solid #333; background: #0d0d0d; display: flex; align-items: center; justify-content: center;">
-      <video src="./assets/build-log.webm" poster="./assets/build-log-poster.jpg"
-             controls muted playsinline preload="metadata"
-             style="width: 100%; height: 100%; object-fit: contain; background: #0d0d0d;">
-        Your browser does not support the video tag.
-      </video>
+  <!-- Content -->
+  <div style="flex: 1; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 20pt; overflow: hidden;">
+    <!-- Left: Claude hero -->
+    <div style="display: flex; flex-direction: column; gap: 10pt;">
+      <!-- Big brand -->
+      <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f0f0f 100%); border-radius: 8pt; padding: 18pt 16pt; border: 2px solid #3b82f6;">
+        <div style="display: flex; align-items: center; gap: 10pt; margin-bottom: 10pt;">
+          <div style="width: 28pt; height: 28pt; background: #3b82f6; border-radius: 6pt; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <p style="font-size: 14pt; color: #ffffff; font-weight: 700;">C</p>
+          </div>
+          <p style="font-size: 22pt; font-weight: 700; color: #ffffff;">Claude</p>
+        </div>
+        <p style="font-size: 18pt; font-weight: 600; color: #3b82f6; margin-bottom: 6pt;">Drives the browser you already use</p>
+        <p style="font-size: 9pt; color: #93c5fd; margin-bottom: 10pt;">Anthropic · runs in your Chrome</p>
+        <p style="font-size: 10pt; color: #b0b0b0; line-height: 1.5;">
+          The Inspect loop sees the target product exactly as a signed-in user does — <span style="color: #ffffff; font-weight: 500;">no scraping, no second session</span>.
+        </p>
+      </div>
+
+      <!-- Capabilities -->
+      <div style="display: flex; flex-direction: column; gap: 6pt;">
+        <div style="display: flex; align-items: center; gap: 8pt; background: #1a1a1a; border-radius: 5pt; padding: 7pt 10pt; border: 1px solid #333;">
+          <div style="width: 5pt; height: 5pt; background: #3b82f6; border-radius: 50%; flex-shrink: 0;"></div>
+          <p style="font-size: 9pt; color: #e0e0e0;"><span style="color: #ffffff; font-weight: 500;">Reads &amp; screenshots every page</span> to understand UI layout</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8pt; background: #1a1a1a; border-radius: 5pt; padding: 7pt 10pt; border: 1px solid #333;">
+          <div style="width: 5pt; height: 5pt; background: #3b82f6; border-radius: 50%; flex-shrink: 0;"></div>
+          <p style="font-size: 9pt; color: #e0e0e0;"><span style="color: #ffffff; font-weight: 500;">Clicks, types &amp; submits</span> to test what the UI actually does</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8pt; background: #1a1a1a; border-radius: 5pt; padding: 7pt 10pt; border: 1px solid #333;">
+          <div style="width: 5pt; height: 5pt; background: #3b82f6; border-radius: 50%; flex-shrink: 0;"></div>
+          <p style="font-size: 9pt; color: #e0e0e0;"><span style="color: #ffffff; font-weight: 500;">Reads console &amp; network traffic</span> — learns the product's real API shape</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Watchdog + other agents -->
+    <div style="display: flex; flex-direction: column; gap: 10pt;">
+      <p style="font-size: 10pt; font-weight: 600; color: #888; letter-spacing: 0.05em;">ALSO POWERED BY</p>
+
+      <div style="background: #1a1a1a; border-radius: 6pt; padding: 8pt 12pt; border: 1px solid #333; display: flex; align-items: center; gap: 10pt;">
+        <div style="width: 20pt; height: 20pt; background: #3b1f2b; border-radius: 4pt; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <p style="font-size: 10pt; color: #f472b6; font-weight: 700;">C</p>
+        </div>
+        <p style="font-size: 10pt; color: #b0b0b0;"><span style="color: #ffffff; font-weight: 500;">Claude Sonnet</span> — Inspect + Build loops</p>
+      </div>
+
+      <div style="background: #1a1a1a; border-radius: 6pt; padding: 8pt 12pt; border: 1px solid #333; display: flex; align-items: center; gap: 10pt;">
+        <div style="width: 20pt; height: 20pt; background: #1a2e1a; border-radius: 4pt; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <p style="font-size: 10pt; color: #22c55e; font-weight: 700;">X</p>
+        </div>
+        <p style="font-size: 10pt; color: #b0b0b0;"><span style="color: #ffffff; font-weight: 500;">Sonnet</span> — parallel QA agents</p>
+      </div>
+
+      <p style="font-size: 10pt; font-weight: 600; color: #888; letter-spacing: 0.05em; margin-top: 4pt;">WATCHDOG</p>
+
+      <div style="background: #1a1a1a; border-radius: 6pt; padding: 10pt 12pt; border: 1px solid #333; flex: 1; display: flex; flex-direction: column;">
+        <p style="font-size: 10pt; color: #b0b0b0; line-height: 1.5; margin-bottom: 8pt;">
+          Strict orchestrator — keeps the train on the tracks.
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 5pt;">
+          <div style="display: flex; align-items: center; gap: 6pt;">
+            <div style="width: 4pt; height: 4pt; background: #22c55e; border-radius: 50%; flex-shrink: 0;"></div>
+            <p style="font-size: 8pt; color: #e0e0e0;">Auto-restart on failure</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6pt;">
+            <div style="width: 4pt; height: 4pt; background: #22c55e; border-radius: 50%; flex-shrink: 0;"></div>
+            <p style="font-size: 8pt; color: #e0e0e0;">Git commit + push every milestone</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6pt;">
+            <div style="width: 4pt; height: 4pt; background: #22c55e; border-radius: 50%; flex-shrink: 0;"></div>
+            <p style="font-size: 8pt; color: #e0e0e0;">Cron backup for safety</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6pt;">
+            <div style="width: 4pt; height: 4pt; background: #f59e0b; border-radius: 50%; flex-shrink: 0;"></div>
+            <p style="font-size: 8pt; color: #e0e0e0;">Bug → Fix → Retest (up to 5 cycles)</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Caption -->
-  <div style="display: flex; justify-content: center; padding-top: 8pt;">
-    <p style="font-size: 10pt; color: #b0b0b0; text-align: center;">
-      One pass, start to finish — it picks a single item, builds it, proves it, writes it down, and stops
-    </p>
-  </div>
-
   <!-- Footer -->
-  <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8pt; border-top: 1px solid #252525;">
+  <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10pt; border-top: 1px solid #252525;">
     <p style="font-size: 9pt; color: #666;">Ralph</p>
-    <p style="font-size: 9pt; color: #666;">One pass finishing one item</p>
+    <p style="font-size: 9pt; color: #666;">Educational purposes only</p>
     <p style="font-size: 9pt; color: #666;">Demo 2026</p>
   </div>
 </body>
