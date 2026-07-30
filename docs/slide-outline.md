@@ -1,4 +1,4 @@
-# Ralph-to-Ralph — Demo 2026 Deck Outline
+# Ralph-to-Ralph — Ralph Demo Deck Outline
 
 ## Slide 1: Title
 - **Ralph-to-Ralph** — Autonomous Product Cloning Loop
