@@ -2,46 +2,69 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       width: 720pt;
       height: 405pt;
-      font-family: 'Pretendard', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+        Roboto, Helvetica, Arial, sans-serif;
       background: #0f0f0f;
-      padding: 32pt 48pt;
+      padding: 28pt 36pt;
       display: flex;
       flex-direction: column;
     }
   </style>
 </head>
 <body>
-  <!-- Main content centered -->
-  <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-    <div style="width: 18pt; height: 18pt; background: #ffffff; border-radius: 3pt; display: flex; align-items: center; justify-content: center; margin-bottom: 20pt;">
-      <p style="color: #0f0f0f; font-size: 10pt; font-weight: 700;">R</p>
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10pt;">
+    <div style="display: flex; align-items: center; gap: 12pt;">
+      <p style="display: inline-block; padding: 4pt 10pt; background: #22c55e; color: #0f0f0f; border-radius: 4pt; font-size: 8pt; font-weight: 600;">PROOF</p>
+      <h2 style="font-size: 18pt; font-weight: 600; color: #ffffff;">What Comes Out the Other End</h2>
     </div>
-    <h1 style="font-size: 48pt; font-weight: 600; color: #ffffff; letter-spacing: -0.02em; margin-bottom: 16pt;">
-      Q &amp; A
-    </h1>
-    <p style="font-size: 16pt; color: #b0b0b0; margin-bottom: 32pt;">
-      Thank you! Let's talk.
-    </p>
-    <div style="display: flex; gap: 40pt;">
-      <div style="text-align: center;">
-        <p style="font-size: 9pt; color: #666; margin-bottom: 4pt;">The whole idea</p>
-        <p style="font-size: 11pt; font-weight: 500; color: #6366f1;">Start empty · do one thing · write it down · go again</p>
+    <p style="font-size: 10pt; color: #666;">11</p>
+  </div>
+
+  <!-- 2x2 grid — screenshots of the generated clone running against its own database -->
+  <div style="flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 8pt; overflow: hidden;">
+    <!-- Kanban board - hero proof -->
+    <div style="border-radius: 6pt; overflow: hidden; border: 2px solid #22c55e; position: relative;">
+      <img src="./assets/product-kanban-board.jpg" style="width: 103%; height: 100%; object-fit: cover; object-position: top left;" alt="Generated Kanban board with phases and cards">
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.72) 45%, rgba(0,0,0,0.93)); padding: 10pt 8pt 6pt;">
+        <p style="font-size: 8pt; color: #22c55e; font-weight: 600;">A WORKING PRODUCT, NOT A MOCK-UP</p>
       </div>
-      <div style="text-align: center;">
-        <p style="font-size: 9pt; color: #666; margin-bottom: 4pt;">Why it holds</p>
-        <p style="font-size: 11pt; font-weight: 500; color: #6366f1;">No pass lasts long enough to go wrong</p>
+    </div>
+    <!-- Pipes home -->
+    <div style="border-radius: 6pt; overflow: hidden; border: 1px solid #333; position: relative;">
+      <img src="./assets/product-home-pipes.jpg" style="width: 103%; height: 100%; object-fit: cover; object-position: top left;" alt="Pipes and Databases home grid">
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.72) 45%, rgba(0,0,0,0.93)); padding: 10pt 8pt 6pt;">
+        <p style="font-size: 8pt; color: #b0b0b0;">Pipes + Databases home, served from Postgres</p>
+      </div>
+    </div>
+    <!-- Phase editor -->
+    <div style="border-radius: 6pt; overflow: hidden; border: 1px solid #333; position: relative;">
+      <img src="./assets/product-phase-editor.jpg" style="width: 103%; height: 100%; object-fit: cover; object-position: top left;" alt="Phase editor with field type palette">
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.72) 45%, rgba(0,0,0,0.93)); padding: 10pt 8pt 6pt;">
+        <p style="font-size: 8pt; color: #b0b0b0;">Phase editor — 23 field types, 7 admin areas</p>
+      </div>
+    </div>
+    <!-- RTL locale -->
+    <div style="border-radius: 6pt; overflow: hidden; border: 1px solid #333; position: relative;">
+      <img src="./assets/product-i18n-rtl.jpg" style="width: 103%; height: 100%; object-fit: cover; object-position: top right;" alt="Same page rendered right-to-left in Arabic">
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.72) 45%, rgba(0,0,0,0.93)); padding: 10pt 8pt 6pt;">
+        <p style="font-size: 8pt; color: #b0b0b0;">10 locales — RTL layout mirrors automatically</p>
       </div>
     </div>
   </div>
 
   <!-- Footer -->
-  <div style="display: flex; justify-content: center; padding-top: 10pt; border-top: 1px solid #252525;">
+  <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8pt; border-top: 1px solid #252525;">
+    <p style="font-size: 9pt; color: #666;">Ralph</p>
+    <p style="font-size: 9pt; color: #666;">Educational purposes only</p>
     <p style="font-size: 9pt; color: #666;">Demo 2026</p>
   </div>
 </body>
