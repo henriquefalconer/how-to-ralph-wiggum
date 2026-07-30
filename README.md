@@ -2,22 +2,21 @@
 
 *Let Ralph ralph.*
 
-A loop that runs itself. Be *on* the loop, not in it.
+A loop that runs itself, so you can be *on* the loop instead of in it.
 
-Point it at the work. Walk away. Check in.
+Point it at the work, walk away, and check in when you feel like it.
 
 ---
 
 ## Be on the loop, not in it
 
-**In the loop**, you are a step in the work. Nothing moves unless you move it.
-Answer the question. Make the call. Start the next piece. It runs at your speed.
-It stops when you look away. Your attention is the bottleneck. It fills up your
-context window.
+**In the loop**, you are a step in the work. Nothing moves unless you move it,
+so it runs at exactly your speed and stops the moment you look away. Your
+attention is the bottleneck, and it fills up your context window.
 
-**On the loop**, it runs without you. You read what it is doing. You decide if it
-is going the right way. You change what it was asked for. You step in because you
-want to. The loop stays closed.
+**On the loop**, it runs without you. You read what it is doing, decide whether
+it is going the right way, and change what it was asked for. You step in because
+you want to, not because it stalled.
 
 Ralph will not make you faster at the work. It gets you out of the middle of it.
 
@@ -25,8 +24,8 @@ Ralph will not make you faster at the work. It gets you out of the middle of it.
 
 ## How Ralph works
 
-Ralph never carries the whole job. It runs one short pass. It declares progress.
-Then it starts clean. It keeps the plan of what is left.
+Ralph never carries the whole job. It runs one short pass, declares progress,
+then starts clean again with the plan of what is left.
 
 ```mermaid
 flowchart LR
@@ -54,20 +53,22 @@ flowchart LR
     linkStyle 6,7 stroke:#38bdf8,color:#7dd3fc
 ```
 
-No pass fills up the context window.
+No pass ever lasts long enough to fill up the context window.
 
 ---
 
 ## What Ralph needs
 
-Two things, read before every pass. What am I making? What am I doing next?
+Two documents, read before every pass. Between them they answer the only two
+questions it has: what am I making, and what am I doing next.
 
-**The specs.** Your vision of the product. How it looks. How it behaves. What
-counts as correct. This pins your vision down. A hundred passes add up to one
-thing.
+**The specs** are your vision of the product, written down. How it looks, how it
+behaves, what counts as correct. This is what pins the vision in place, and it is
+why a hundred separate passes add up to one coherent thing.
 
-**The plan.** The same product, split up and ordered. Each piece fits in one
-pass. It doubles as the scoreboard. Finished pieces get marked off.
+**The plan** is that same product split into pieces and put in order, each small
+enough to finish in a single pass. It doubles as the scoreboard, since finished
+pieces get marked off as they go.
 
 ---
 
@@ -75,9 +76,9 @@ pass. It doubles as the scoreboard. Finished pieces get marked off.
 
 There are multiple ways. Here is one.
 
-Change the prompt. Ralph stops building. It works through a product instead. One
-page per pass. It writes down the specs and the plan. Same loop. Same short
-passes. The looking is the work.
+Change the prompt and Ralph stops building. It works through an existing product
+instead, one page per pass, and what it writes down is the specs and the plan.
+Same loop, same short passes. The looking is the work.
 
 | | |
 |---|---|
@@ -86,9 +87,9 @@ passes. The looking is the work.
 | **Open** | one page per pass, properly |
 | **Settle** | all of it into the specs and the plan |
 
-**Only if you are copying.** That needs a product to exist. Building your own
-idea? Skip it. Describe it to Claude. Argue about it. Change your mind. Let it
-write the specs and the plan.
+That only applies if you are copying something. If the idea is your own, describe
+it to Claude instead, argue about it, change your mind, and let it write the
+specs and the plan out of the conversation.
 
 Ralph never asks where they came from.
 
